@@ -17,7 +17,7 @@ kubernetes_version                    = "1.18.6-gke.4801"
 cluster_endpoint_public_access_cidrs  = []
 default_nodepool_node_count           = 2
 default_nodepool_vm_type              = "n1-standard-1"
-tags                                  = { project_name = "viya", environment = "test" }
+tags                                  = { project_name = "viya", environment = "sampel-std" }
 
 # GKE Node Pools config
 create_cas_nodepool       = true
