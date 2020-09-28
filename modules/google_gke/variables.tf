@@ -1,0 +1,9 @@
+variable "name" {}
+variable "location" {}
+variable "kubernetes_version" {}
+variable "kubernetes_channel" {}
+variable "labels" {}
+variable "network" {}
+variable "subnet" {}
+variable "endpoint_access" {}
+variable "pod_cidr_block" {}
