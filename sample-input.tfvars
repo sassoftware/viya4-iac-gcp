@@ -10,7 +10,7 @@ location                        = "us-east1-b"
 # for the articated associated with this key.
 #
 ssh_public_key                  = "~/.ssh/id_rsa.pub"
-postgres_administrator_password = "GoSASViya4"
+postgres_administrator_password = "mySup3rS3cretPassw0rd"
 
 # GKE Config
 kubernetes_version                    = "1.18.6-gke.4801"
