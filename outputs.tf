@@ -3,7 +3,7 @@ output "cluster_name" {
   value       = module.gke_cluster.cluster_name
 }
 
-output "public_endpoint" {
+output "gke_host" {
   description = "GKE Cluster public IP"
   value       = module.gke_cluster.public_endpoint
 }
@@ -16,6 +16,12 @@ output "postgres_server_private_ip" {
   description = "Private IP of the PostgreSQL server. Use this value to set DATABASE_HOST in your Viya deployment."
   value       = module.postgresql.postgres_server_private_ip
 }
+
+output "postgres_server_public_ip" {
+  description = "Public IP of the PostgreSQL server. Use this value to connect database clients."
+  value       = length(local.postgres_public_access_cidrs) > 0 ? module.postgresql.postgres_server_public_ip : null
+}
+
 
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
@@ -59,7 +65,7 @@ output "jump_public_ip" {
   value = module.jump_server.public_ip
 }
 
-output jump_admin_username {
+output "jump_admin_username" {
   value = module.jump_server.admin_username
 }
 

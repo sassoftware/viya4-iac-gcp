@@ -38,3 +38,13 @@ variable "ssl_enforcement_enabled" {
   default     = true
 }
 
+variable "create_public_ip" {
+  description = "Allow out-of-network access."
+  default     = false
+
+}
+
+variable "public_access_cidrs" {
+  type = list(string)
+  default = null
+}
