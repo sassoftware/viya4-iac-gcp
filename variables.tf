@@ -9,15 +9,23 @@ variable "location" {
   If you aren't sure which to choose, go with a ZONE instead of a region. 
   If not set, it defaults to the google environment variables, as documented in https://www.terraform.io/docs/providers/google/guides/provider_reference.html"
   EOF
-  default     = "us-east1-b"
 }
 
-## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - Currently only channel that supports k8s v1.18
-variable "kubernetes_channel" {
-  default = "RAPID"
+variable "service_account_keyfile" {
+  type = string
 }
+
+variable "project" {
+  type = string
+}
+
 variable "kubernetes_version" {
   default = "1.18.6-gke.4801"
+}
+
+## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - RAPID is currently the only channel that supports k8s v1.18
+variable "kubernetes_channel" {
+  default = "RAPID"
 }
 
 variable "tags" {
@@ -57,7 +65,7 @@ variable "ssh_public_key" {
 # Bastion VM
 variable "create_jump_vm" {
   type    = bool
-  default = null  # the actual default depends on the value for storage_type and is being calculated as local.create_jump_vm
+  default = null # the actual default depends on the value for storage_type and is being calculated as local.create_jump_vm
 }
 
 variable "jump_vm_admin" {
@@ -100,15 +108,15 @@ variable "default_nodepool_vm_type" {
 }
 
 variable "default_nodepool_local_ssd_count" {
-  default = 1
+  default = 0
 }
 
 variable "default_nodepool_os_disk_size" {
-  default = 200
+  default = 128
 }
 
 variable "default_nodepool_node_count" {
-  default = 3
+  default = 2
 }
 
 variable "default_nodepool_max_nodes" {
@@ -142,7 +150,7 @@ variable "cas_nodepool_vm_type" {
 }
 
 variable "cas_nodepool_local_ssd_count" {
-  default = 1
+  default = 0
 }
 
 variable "cas_nodepool_os_disk_size" {
@@ -187,7 +195,7 @@ variable "compute_nodepool_vm_type" {
 }
 
 variable "compute_nodepool_local_ssd_count" {
-  default = 1
+  default = 0
 }
 
 variable "compute_nodepool_os_disk_size" {
@@ -233,7 +241,7 @@ variable "connect_nodepool_vm_type" {
 }
 
 variable "connect_nodepool_local_ssd_count" {
-  default = 1
+  default = 0
 }
 
 variable "connect_nodepool_os_disk_size" {
@@ -359,13 +367,13 @@ variable "stateful_nodepool_labels" {
 
 ## PostgresSQL inputs
 variable "create_postgres" {
-  description = "Create a PostgreSQL Server isntance"
+  description = "Create a PostgreSQL Server instance"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "postgres_name" {
-  description = "Specifies the name of the PostgreSQL Server. Changing this forces a new resource to be created."
+  description = "The name of the PostgreSQL Server. Changing this forces a new resource to be created."
   default     = ""
 }
 
@@ -385,7 +393,7 @@ variable "postgres_administrator_login" {
 }
 
 variable "postgres_administrator_password" {
-  description = "The Password associated with the postgres_administrator_login for the PostgreSQL Server."
+  description = "The password for the postgres_administrator_login ID"
   default     = null
 }
 

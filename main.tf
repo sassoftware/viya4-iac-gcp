@@ -8,10 +8,14 @@ terraform {
 }
 
 provider "google" {
-  version = "~> 3.35"
+  credentials = file(var.service_account_keyfile)
+  project     = var.project
 }
 
-provider "google-beta" {}
+provider "google-beta" {
+  credentials = file(var.service_account_keyfile)
+  project     = var.project
+}
 
 resource "local_file" "kubeconfig" {
   content  = module.gke_cluster.kubeconfig_raw
