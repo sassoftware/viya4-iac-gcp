@@ -3,7 +3,7 @@ output "cluster_name" {
   value       = module.gke_cluster.cluster_name
 }
 
-output "gke_host" {
+output "cluster_endpoint" {
   description = "GKE Cluster public IP"
   value       = module.gke_cluster.public_endpoint
 }
