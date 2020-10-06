@@ -8,3 +8,12 @@ output "postgres_server_private_ip" {
                 : null )
 }
 
+output "postgres_server_public_ip" {
+  description = "Public IP of the PostgreSQL server. Use this value for client access."
+  value       = ( var.create_postgres ? 
+                   ( length(google_sql_database_instance.utility-database) > 0 
+                    ? google_sql_database_instance.utility-database[0].public_ip_address 
+                    : null )
+                : null )
+}
+

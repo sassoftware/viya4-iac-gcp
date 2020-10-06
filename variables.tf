@@ -26,19 +26,28 @@ variable "tags" {
   default     = {}
 }
 
+variable "default_public_access_cidrs" {
+  description = "List of CIDRs to access created resources"
+  type        = list(string)
+  default     = null
+}
+
 variable "cluster_endpoint_public_access_cidrs" {
-  description = "Kubernetes cluster access IP ranges"
-  type        = list
+  description = "List of CIDRs to access Kubernetes cluster"
+  type        = list(string)
+  default     = null
 }
 
-variable "pod_cidr_block" {
-  description = "IP range for cluster pods"
-  default     = "10.2.0.0/16"
+variable "vm_public_access_cidrs" {
+  description = "List of CIDRs to access jump or nfs VM"
+  type        = list(string)
+  default     = null
 }
 
-variable "vm_cidr_block" {
-  description = "IP range for cluter VMs"
-  default     = "10.5.0.0/16"
+variable "postgres_public_access_cidrs" {
+  description = "List of CIDRs to access PostgreSQL server"
+  type        = list(string)
+  default     = null
 }
 
 variable "ssh_public_key" {
@@ -48,7 +57,7 @@ variable "ssh_public_key" {
 # Bastion VM
 variable "create_jump_vm" {
   type    = bool
-  default = false
+  default = null  # the actual default depends on the value for storage_type and is being calculated as local.create_jump_vm
 }
 
 variable "jump_vm_admin" {
@@ -123,7 +132,7 @@ variable "default_nodepool_labels" {
 
 # CAS Node pool config
 variable "create_cas_nodepool" {
-  description = "Flag to create (or not) CAS Node Pool"
+  description = "Create the CAS Node Pool"
   type        = bool
   default     = true
 }
@@ -168,7 +177,7 @@ variable "cas_nodepool_labels" {
 
 # compute Node pool config
 variable "create_compute_nodepool" {
-  description = "Flag to create (or not) Compute Node Pool"
+  description = "Create the Compute Node Pool"
   type        = bool
   default     = true
 }
@@ -212,9 +221,55 @@ variable "compute_nodepool_labels" {
   }
 }
 
+# connect Node pool config
+variable "create_connect_nodepool" {
+  description = "Create the Connect Node Pool"
+  type        = bool
+  default     = true
+}
+
+variable "connect_nodepool_vm_type" {
+  default = "n1-highmem-16"
+}
+
+variable "connect_nodepool_local_ssd_count" {
+  default = 1
+}
+
+variable "connect_nodepool_os_disk_size" {
+  default = 200
+}
+
+variable "connect_nodepool_node_count" {
+  default = 1
+}
+
+variable "connect_nodepool_max_nodes" {
+  default = 5
+}
+
+variable "connect_nodepool_min_nodes" {
+  default = 1
+}
+
+variable "connect_nodepool_taints" {
+  type = list
+  default = [{ "key" : "workload.sas.com/class",
+    "value" : "connect",
+  "effect" : "NO_SCHEDULE" }]
+}
+
+variable "connect_nodepool_labels" {
+  type = map
+  default = {
+    "workload.sas.com/class"        = "connect"
+    "launcher.sas.com/prepullImage" = "sas-programming-environment"
+  }
+}
+
 # Stateless Node pool config
 variable "create_stateless_nodepool" {
-  description = "Flag to create (or not) Stateless Node Pool"
+  description = "Create the Stateless Node Pool"
   type        = bool
   default     = true
 }
@@ -259,7 +314,7 @@ variable "stateless_nodepool_labels" {
 
 # Stateful Node pool config
 variable "create_stateful_nodepool" {
-  description = "Flag to create (or not) Stateful Node Pool"
+  description = "Create the Stateful Node Pool"
   type        = bool
   default     = true
 }
@@ -304,7 +359,7 @@ variable "stateful_nodepool_labels" {
 
 ## PostgresSQL inputs
 variable "create_postgres" {
-  description = "Boolean flag to create (or not) an Azure Postgres DB"
+  description = "Create a PostgreSQL Server isntance"
   type        = bool
   default     = true
 }
@@ -320,7 +375,7 @@ variable "postgres_machine_type" {
 }
 
 variable "postgres_storage_gb" {
-  description = "Min storage for the Postgres server instance."
+  description = "Min storage for the PostgreSQL Server instance."
   default     = 10
 }
 
@@ -335,12 +390,12 @@ variable "postgres_administrator_password" {
 }
 
 variable "postgres_server_version" {
-  description = "Specifies the version of PostgreSQL to use. Valid values are 9.6, 10, 11, and 12."
+  description = "The version of PostgreSQL to use. Valid values are 9.6, 10, 11, and 12."
   default     = "11"
 }
 
 variable "postgres_ssl_enforcement_enabled" {
-  description = "Specifies if SSL should be enforced on connections."
+  description = "Enforce SSL on connections."
   default     = true
 }
 

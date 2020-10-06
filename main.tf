@@ -40,6 +40,17 @@ locals {
 
   cluster_name = "${var.prefix}-gke"
 
+  pod_cidr_block = "10.2.0.0/16"
+  vm_cidr_block  = "10.5.0.0/16"
+
+  create_jump_vm_default = var.storage_type == "standard" ? true : false
+  create_jump_vm         = var.create_jump_vm != null ? var.create_jump_vm : local.create_jump_vm_default
+
+  default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
+  vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
+  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
+  postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
+
 }
 
 module "network" {
@@ -47,14 +58,14 @@ module "network" {
   name              = "${var.prefix}-vpc"
   region            = local.region
   project           = data.google_client_config.current.project
-  subnet_cidr_block = var.vm_cidr_block
+  subnet_cidr_block = local.vm_cidr_block
 }
 
 data "template_file" "cloudconfig" {
   # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
   template = file("${path.module}/files/nfs-cloud-config")
   vars = {
-    vm_cidr_block = var.vm_cidr_block
+    vm_cidr_block = local.vm_cidr_block
   }
 }
 
@@ -97,7 +108,7 @@ data "template_file" "jump_bootstrap" {
 
 module "jump_server" {
   source           = "./modules/google_vm"
-  create_vm        = var.storage_type == "standard" ? true : var.create_jump_vm
+  create_vm        = local.create_jump_vm
   create_public_ip = var.create_jump_public_ip
 
   name         = "${var.prefix}-jump-server"
@@ -128,8 +139,8 @@ module "gke_cluster" {
   labels             = var.tags
   network            = module.network.id
   subnet             = module.network.subnet
-  endpoint_access    = var.cluster_endpoint_public_access_cidrs
-  pod_cidr_block     = var.pod_cidr_block
+  endpoint_access    = local.cluster_endpoint_public_access_cidrs
+  pod_cidr_block     = local.pod_cidr_block
 }
 
 module "rwx_filestore" {
@@ -148,10 +159,11 @@ module "postgresql" {
   source          = "./modules/postgresql"
   create_postgres = var.create_postgres
 
-  name     = "${var.prefix}-pgsql"
-  location = local.location
-  labels   = var.tags
-  network  = module.network.id
+  name                = "${var.prefix}-pgsql"
+  location            = local.location
+  labels              = var.tags
+  network             = module.network.id
+  public_access_cidrs = local.postgres_public_access_cidrs
 
   machine_type   = var.postgres_machine_type
   disk_size_gb   = var.postgres_storage_gb
@@ -218,6 +230,25 @@ module "compute_node_pool" {
   node_labels     = merge(var.tags, var.compute_nodepool_labels)
 }
 
+module "connect_node_pool" {
+  source           = "./modules/gke_node_pool"
+  create_node_pool = var.create_connect_nodepool
+
+  node_pool_name     = "connect"
+  gke_cluster        = module.gke_cluster.cluster_name
+  node_pool_location = module.gke_cluster.location
+
+  machine_type    = var.connect_nodepool_vm_type
+  os_disk_size    = var.connect_nodepool_os_disk_size
+  local_ssd_count = var.connect_nodepool_local_ssd_count
+  node_count      = var.connect_nodepool_node_count
+  max_nodes       = var.connect_nodepool_max_nodes
+  min_nodes       = var.connect_nodepool_min_nodes
+  node_taints     = var.connect_nodepool_taints
+  node_labels     = merge(var.tags, var.connect_nodepool_labels)
+}
+
+
 module "stateless_node_pool" {
   source           = "./modules/gke_node_pool"
   create_node_pool = var.create_stateless_nodepool
@@ -271,12 +302,13 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
   # the node group vms are tagged with the cluster name
   source_tags = [module.gke_cluster.cluster_name,
   "${var.prefix}-jump-server"]
-  source_ranges = [var.pod_cidr_block] # allow the pods
+  source_ranges = distinct(concat([local.pod_cidr_block], local.vm_public_access_cidrs)) # allow the pods
 }
 
 resource "google_compute_firewall" "jump_vm_firewall" {
-  name    = "${var.prefix}-jump-server-firewall"
-  count   = var.create_jump_vm ? 1 : 0
+  name  = "${var.prefix}-jump-server-firewall"
+  count = (var.create_jump_public_ip && local.create_jump_vm && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
+
   network = module.network.id
 
   allow {

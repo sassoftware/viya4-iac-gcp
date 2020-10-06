@@ -18,9 +18,17 @@ resource "google_sql_database_instance" "utility-database" {
     user_labels = var.labels
 
     ip_configuration {
-       ipv4_enabled    = false
-       private_network = var.network
-       require_ssl     = var.ssl_enforcement_enabled
+      private_network = var.network
+      require_ssl     = var.ssl_enforcement_enabled
+
+      ipv4_enabled    = length(var.public_access_cidrs) > 0 ? true : false
+      dynamic "authorized_networks" {
+        for_each = var.public_access_cidrs
+        iterator = cidr
+        content {
+          value = cidr.value
+        }
+      }
     }
   }
 }
