@@ -22,12 +22,13 @@ Terraform input variables can be set in the following ways:
 - As [environment variables](https://www.terraform.io/docs/configuration/variables.html#environment-variables). We recommend this way for the variables that set the [Azure authentication](#required-variables-for-azure-authentication).
 
 ## Required Variables
+
 | Name | Description | Type | Notes |
-| :--- | ---: | ---: | ---: | ---: | 
-| prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
-| location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script.   | string | Choosing a Region will make this a multi-zonal cluster.   If you are not sure which to choose, go with a ZONE instead of a region  |
-| project | The GCP Project to use | string ||
-| service_account_keyfile | Filename of the Service Account JSON file | string| |
+| :--- | ---: | ---: | ---: | 
+| prefix | A prefix used in the name of all the GCP resources created by this script. | string |  The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
+| location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script.  | string | Choosing a Region will make this a multi-zonal cluster. If you are not sure which to choose, go with a ZONE instead of a region  |
+| project | The GCP Project to use | string | |
+| service_account_keyfile | Filename of the Service Account JSON file | string | |
 
 ## Admin Access
 
