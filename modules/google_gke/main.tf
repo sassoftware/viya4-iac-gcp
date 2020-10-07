@@ -10,6 +10,7 @@ resource "google_container_cluster" "primary" {
   network            = var.network
   subnetwork         = var.subnet
 
+
   # Kubenretes channel and version
   release_channel {
     channel = var.kubernetes_channel
