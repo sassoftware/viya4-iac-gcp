@@ -2,8 +2,8 @@ terraform {
   required_version = ">= 0.13"
 
   required_providers {
-    google      = ">= 1.19.0"
-    google-beta = ">= 1.19.0"
+    google      = ">= 3.42.0"
+    google-beta = ">= 3.42.0"
   }
 }
 
@@ -95,7 +95,6 @@ module "nfs_server" {
   data_disk_count = 4
   data_disk_size  = var.nfs_raid_disk_size
 
-  depends_on = [module.network]
 }
 
 data "template_file" "jump_bootstrap" {
@@ -111,6 +110,7 @@ data "template_file" "jump_bootstrap" {
 }
 
 module "jump_server" {
+
   source           = "./modules/google_vm"
   create_vm        = local.create_jump_vm
   create_public_ip = var.create_jump_public_ip
@@ -129,7 +129,7 @@ module "jump_server" {
   user_data      = "${data.template_file.jump_bootstrap.rendered}"
   user_data_type = "startup-script"
 
-  depends_on = [module.network, module.nfs_server]
+  depends_on = [module.nfs_server]
 }
 
 # kubernetes cluster
@@ -145,6 +145,8 @@ module "gke_cluster" {
   subnet             = module.network.subnet
   endpoint_access    = local.cluster_endpoint_public_access_cidrs
   pod_cidr_block     = local.pod_cidr_block
+
+  depends_on = [module.jump_server] # workaround to avoid jump server subnet error
 }
 
 module "rwx_filestore" {
