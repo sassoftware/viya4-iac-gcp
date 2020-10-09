@@ -19,7 +19,7 @@ Supported configuration variables are listed in the table below.  All variables 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).
 - In [variable definitions (.tfvars) files](https://www.terraform.io/docs/configuration/variables.html#variable-definitions-tfvars-files). We recommend this way for most variables.
-- As [environment variables](https://www.terraform.io/docs/configuration/variables.html#environment-variables). We recommend this way for the variables that set the [Azure authentication](#required-variables-for-azure-authentication).
+- As [environment variables](https://www.terraform.io/docs/configuration/variables.html#environment-variables). 
 
 ## Required Variables
 
