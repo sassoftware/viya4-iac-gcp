@@ -48,7 +48,7 @@ cd viya4-iac-gcp
 
 ### Authenticating Terraform to access GCP
 
-See [Authenticating Terraform to access TCP](./docs/user/TerraformGCPAuthentication.md) for details.
+See [Authenticating Terraform to access GCP](./docs/user/TerraformGCPAuthentication.md) for details.
 
 ### Customize Input Values
 
