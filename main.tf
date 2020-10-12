@@ -107,6 +107,8 @@ data "template_file" "jump_bootstrap" {
       ? "/export"
     : "/${module.rwx_filestore.mount_path}")
   }
+  depends_on = [module.nfs_server, module.rwx_filestore]
+
 }
 
 module "jump_server" {
