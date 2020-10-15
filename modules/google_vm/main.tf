@@ -24,7 +24,7 @@ resource "google_compute_instance" "google_vm" {
   }
 
   metadata = {
-    ssh-keys       = "${var.vm_admin}:${file("${var.ssh_public_key}")}"
+    ssh-keys       = "${var.vm_admin}:${var.ssh_public_key}"
     user-data      = var.user_data_type == "cloud-init" ? var.user_data : null     # cloud-init for ubuntu
     startup-script = var.user_data_type == "startup-script" ? var.user_data : null # no cloud-init for centos
   }

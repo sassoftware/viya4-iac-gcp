@@ -28,6 +28,17 @@ data "google_compute_zones" "available" {
   region = local.region
 }
 
+
+resource "tls_private_key" "private_key" {
+  count = var.ssh_public_key == "" ? 1 : 0
+  algorithm = "RSA"
+}
+
+data "tls_public_key" "public_key" {
+  count = var.ssh_public_key == "" ? 1 : 0
+  private_key_pem = element(coalescelist(tls_private_key.private_key.*.private_key_pem), 0)
+}
+
 locals {
 
   # get the region from "location", or else from the local config
@@ -54,6 +65,8 @@ locals {
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
   cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
+
+  ssh_public_key = var.ssh_public_key != "" ? file(var.ssh_public_key) : element(coalescelist(data.tls_public_key.public_key.*.public_key_openssh, [""]), 0)
 
 }
 
@@ -88,7 +101,7 @@ module "nfs_server" {
   os_image = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin       = var.nfs_vm_admin
-  ssh_public_key = var.ssh_public_key
+  ssh_public_key = local.ssh_public_key
 
   user_data      = length(data.template_file.nfs_cloudconfig) == 1 ? "${data.template_file.nfs_cloudconfig.0.rendered}" : null
   user_data_type = "cloud-init"
@@ -130,7 +143,7 @@ module "jump_server" {
   os_image = "centos-cloud/centos-7"
 
   vm_admin       = var.jump_vm_admin
-  ssh_public_key = var.ssh_public_key
+  ssh_public_key = local.ssh_public_key
 
   user_data      = length(data.template_file.jump_bootstrap) == 1 ? "${data.template_file.jump_bootstrap.0.rendered}" : null
   user_data_type = "startup-script"
