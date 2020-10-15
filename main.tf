@@ -310,7 +310,7 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
   # the node group vms are tagged with the cluster name
   source_tags = [module.gke_cluster.cluster_name,
   "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([local.pod_cidr_block], local.vm_public_access_cidrs)) # allow the pods
+  source_ranges = distinct(concat([local.pod_cidr_block], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
 }
 
 resource "google_compute_firewall" "jump_vm_firewall" {
@@ -326,5 +326,5 @@ resource "google_compute_firewall" "jump_vm_firewall" {
 
   target_tags = ["${var.prefix}-jump-server"] # matches the tag on the jump server
 
-  source_ranges = var.cluster_endpoint_public_access_cidrs
+  source_ranges = local.vm_public_access_cidrs
 }
