@@ -79,7 +79,7 @@ node_pools = {
       "machine_type"   = "e2-standard-8"
       "os_disk_size"   = 200
       "min_node_count" = 2
-      "max_node_count" = 
+      "max_node_count" = 3
       "node_taints"    = ["workload.sas.com/class=stateful:NoSchedule"]
       "node_labels" = {
          "workload.sas.com/class" = "stateful"

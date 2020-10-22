@@ -8,10 +8,6 @@ variable "machine_type" {
   default = "n1-standard-1"
 }
 
-variable "node_count" {
-  default = 4
-}
-
 variable "max_nodes" {
   default = 10
 }
