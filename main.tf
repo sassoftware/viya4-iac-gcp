@@ -215,7 +215,7 @@ module "node_pools" {
   local_ssd_count = each.value.local_ssd_count
   node_count      = each.value.min_node_count
   min_nodes       = each.value.min_node_count
-  max_nodes       = each.value.min_node_count
+  max_nodes       = each.value.max_node_count
   node_taints     = each.value.node_taints
   node_labels     = merge(var.tags, each.value.node_labels)
 }
