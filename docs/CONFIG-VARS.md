@@ -8,11 +8,7 @@ Supported configuration variables are listed in the table below.  All variables 
 * [General](#general)
 * [Nodepools](#nodepools)
    + [Default Nodepool](#default-nodepool)
-   + [CAS Nodepool](#cas-nodepool)
-   + [Compute Nodepool](#compute-nodepool)
-   + [Connect Nodepool](#connect-nodepool)
-   + [Stateless Nodepool](#stateless-nodepool)
-   + [Stateful Nodepool](#stateful-nodepool)
+   + [Additional Nodepools](#additional-nodepools)
 * [Storage](#storage)
 * [Postgres](#postgres)
 
@@ -71,68 +67,83 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | default_nodepool_taints | Taints for the default nodepool VMs | list of strings |  | |
 | default_nodepool_labels | Labels to add to the default nodepool VMs | map | | |
 
-### CAS Nodepool
-| Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| create_cas_nodepool | Create CAS nodepool | bool | true | |
-| cas_nodepool_vm_type | Type of the CAS nodepool VMs | string | "n1-highmem-16" | |
-| cas_nodepool_node_count | Number of nodes in the CAS nodepool | number | 1 | The value must be between `cas_nodepool_min_nodes` and `cas_nodepool_max_nodes`|
-| cas_nodepool_max_nodes | Maximum number of nodes for the CAS nodepool | number | 5 | |
-| cas_nodepool_min_nodes | Minimum number of nodes for the CAS nodepool | number | 1 | |
-| cas_nodepool_os_disk_size | Disk size for CAS nodepool VMs in GB | number | 200 ||
-| cas_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| cas_nodepool_taints | Taints for the CAS nodepool VMs | list of strings | ["workload.sas.com/class=cas:NoSchedule"] | |
-| cas_nodepool_labels | Labels to add to the CAS nodepool VMs | map | {"workload.sas.com/class" = "cas"} | |
-### Compute Nodepool
-| Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| create_compute_nodepool | Create Compute nodepool | bool | true | false | |
-| compute_nodepool_vm_type | Type of the Compute nodepool VMs | string | "n1-highmem-16" | |
-| compute_nodepool_node_count | Number of nodes in the Compute nodepool | number | 1 | The value must be between 'compute_nodepool_min_nodes` and `compute_nodepool_max_nodes`|
-| compute_nodepool_max_nodes | Maximum number of nodes for the Compute nodepool | number | 5 | |
-| compute_nodepool_min_nodes | Minimum number of nodes for the Compute nodepool | number | 1 | |
-| compute_nodepool_os_disk_size | Disk size for Compute nodepool VMs in GB | number | 200 ||
-| compute_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| compute_nodepool_taints | Taints for the Compute nodepool VMs | list of strings | ["workload.sas.com/class=compute:NoSchedule"] | |
-| compute_nodepool_labels | Labels to add to the Compute nodepool VMs | map | {"workload.sas.com/class" = "compute"  "launcher.sas.com/prepullImage" = "sas-programming-environment" }  | |
+### Additional Nodepools
 
-### Connect Nodepool
-| Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| create_connect_nodepool | Create Connect nodepool | bool | true | false | |
-| connect_nodepool_vm_type | Type of the Connect nodepool VMs | string | "n1-highmem-16" | |
-| connect_nodepool_node_count | Number of nodes in the Connect nodepool | number | 1 | The value must be between 'connect_nodepool_min_nodes` and `connect_nodepool_max_nodes`|
-| connect_nodepool_max_nodes | Maximum number of nodes for the Connect nodepool | number | 5 | |
-| connect_nodepool_min_nodes | Minimum number of nodes for the Connect nodepool | number | 1 | |
-| connect_nodepool_os_disk_size | Disk size for Connect nodepool VMs in GB | number | 200 ||
-| connect_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| connect_nodepool_taints | Taints for the Connect nodepool VMs | list of strings | ["workload.sas.com/class=connect:NoSchedule"] | |
-| connect_nodepool_labels | Labels to add to the Connect nodepool VMs | map | {"workload.sas.com/class" = "connect"  "launcher.sas.com/prepullImage" = "sas-programming-environment" } | |
+Additional node pools can be created separate from the default nodepool. This is done with the `node_pools` variable which is a map of objects. Each nodepool requires the following variables:
 
-### Stateless Nodepool
-| Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| create_stateless_nodepool | Create Stateless nodepool | bool | true | |
-| stateless_nodepool_vm_type | Type of the Stateless nodepool VMs | string | "e2-standard-16" | |
-| stateless_nodepool_node_count | Number of nodes in the Stateless nodepool | number | 1 | The value must be between 'stateless_nodepool_min_nodes` and `stateless_nodepool_max_nodes`|
-| stateless_nodepool_max_nodes | Maximum number of nodes for the Stateless nodepool | number | 5 | |
-| stateless_nodepool_min_nodes | Minimum number of nodes for the Stateless nodepool | number | 1 | |
-| stateless_nodepool_os_disk_size | Disk size for Stateless nodepool VMs in GB | number | 200 ||
-| stateless_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| stateless_nodepool_taints | Taints for the Stateless nodepool VMs | list of strings | ["workload.sas.com/class=stateless:NoSchedule"] | |
-| stateless_nodepool_labels | Labels to add to the Stateless nodepool VMs | map | {"workload.sas.com/class" = "stateless" } | |
-### Stateful Nodepool
-| Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| create_stateful_nodepool | Create Stateful nodepool | bool | true | |
-| stateful_nodepool_vm_type | Type of the Stateful nodepool VMs | string | "e2-standard-8" | |
-| stateful_nodepool_node_count | Number of nodes in the Stateful nodepool | number | 1 | The value must be between 'stateful_nodepool_min_nodes` and `stateful_nodepool_max_nodes`|
-| stateful_nodepool_max_nodes | Maximum number of nodes for the Stateful nodepool | number | 3 | |
-| stateful_nodepool_min_nodes | Minimum number of nodes for the Stateful nodepool | number | 1 | |
-| stateful_nodepool_os_disk_size | Disk size for Stateful nodepool VMs in GB | number | 200 ||
-| stateful_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| stateful_nodepool_taints | Taints for the Stateful nodepool VMs | list of strings | ["workload.sas.com/class=stateful:NoSchedule"] | |
-| stateful_nodepool_labels | Labels to add to the Stateful nodepool VMs | map | {"workload.sas.com/class" = "stateful" }  | |
+| Name | Description | Type | Notes |
+| :--- | ---: | ---: | ---: |
+| machine_type | Type of the nodepool VMs | string | |
+| os_disk_size | Disk size for nodepool VMs in GB | number | |
+| min_node_count | Minimum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
+| max_node_count | Maximum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
+| node_taints | Taints for the nodepool VMs | list of strings | |
+| node_labels | Labels to add to the nodepool VMs | map | |
+| local_ssd_count | Number of 375 GB local ssd disks to provision  | number ||
+
+The default values for the `node_pools` variable are:
+
+```yaml
+{
+  cas = {
+    "machine_type"   = "n1-highmem-16"
+    "os_disk_size"   = 200
+    "min_node_count" = 1
+    "max_node_count" = 5
+    "node_taints" = ["workload.sas.com/class=cas:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class" = "cas"
+    }
+    "local_ssd_count" = 0
+  },
+  compute = {
+    "machine_type"   = "n1-highmem-16"
+    "os_disk_size"   = 200
+    "min_node_count" = 1
+    "max_node_count" = 5
+    "node_taints" = ["workload.sas.com/class=compute:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class"        = "compute"
+      "launcher.sas.com/prepullImage" = "sas-programming-environment"
+    }
+    "local_ssd_count" = 0
+  },
+  connect = {
+    "machine_type"   = "n1-highmem-16"
+    "os_disk_size"   = 200
+    "min_node_count" = 1
+    "max_node_count" = 5
+    "node_taints" = ["workload.sas.com/class=connect:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class"        = "connect"
+      "launcher.sas.com/prepullImage" = "sas-programming-environment"
+    }
+    "local_ssd_count" = 0
+  },
+  stateless = {
+    "machine_type"   = "e2-standard-16"
+    "os_disk_size"   = 200
+    "min_node_count" = 1
+    "max_node_count" = 5
+    "node_taints" = ["workload.sas.com/class=stateless:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class" = "stateless"
+    }
+    "local_ssd_count" = 0
+  },
+  stateful = {
+    "machine_type"   = "e2-standard-8"
+    "os_disk_size"   = 200
+    "min_node_count" = 1
+    "max_node_count" = 3
+    "node_taints" = ["workload.sas.com/class=stateful:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class" = "stateful"
+    }
+    "local_ssd_count" = 0
+  }
+}
+```
 
 ## Storage
 | Name | Description | Type | Default | Notes |

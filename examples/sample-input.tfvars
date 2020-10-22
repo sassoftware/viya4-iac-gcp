@@ -24,37 +24,73 @@ create_postgres                  = true # set this to "false" when using interna
 postgres_ssl_enforcement_enabled = false
 postgres_administrator_password  = "mySup3rS3cretPassw0rd"
 
-# AKS config
+# GKE config
 kubernetes_version                   = "1.18.6-gke.4801"
 kubernetes_channel                   = "RAPID"
 default_nodepool_node_count          = 2
 default_nodepool_vm_type             = "n1-standard-1"
 
-# AKS Node Pools config
-create_cas_nodepool       = true
-cas_nodepool_node_count   = 1
-cas_nodepool_min_nodes    = 1
-cas_nodepool_vm_type      = "n1-highmem-16"
+# Node Pools config
+node_pools = {
+   cas = {
+      "machine_type"   = "n1-highmem-16"
+      "os_disk_size"   = 200
+      "min_node_count" = 1
+      "max_node_count" = 1
+      "node_taints"    = ["workload.sas.com/class=cas:NoSchedule"]
+      "node_labels" = {
+         "workload.sas.com/class" = "cas"
+      }
+      "local_ssd_count" = 0
+   },
+   compute = {
+      "machine_type"   = "n1-highmem-16"
+      "os_disk_size"   = 200
+      "min_node_count" = 1
+      "max_node_count" = 1
+      "node_taints"    = ["workload.sas.com/class=compute:NoSchedule"]
+      "node_labels" = {
+         "workload.sas.com/class"        = "compute"
+         "launcher.sas.com/prepullImage" = "sas-programming-environment"
+      }
+      "local_ssd_count" = 0
+   },
+   connect = {
+      "machine_type"   = "n1-highmem-16"
+      "os_disk_size"   = 200
+      "min_node_count" = 1
+      "max_node_count" = 1
+      "node_taints"    = ["workload.sas.com/class=connect:NoSchedule"]
+      "node_labels" = {
+         "workload.sas.com/class"        = "connect"
+         "launcher.sas.com/prepullImage" = "sas-programming-environment"
+      }
+      "local_ssd_count" = 0
+   },
+   stateless = {
+      "machine_type"   = "e2-standard-16"
+      "os_disk_size"   = 200
+      "min_node_count" = 1
+      "max_node_count" = 2
+      "node_taints"    = ["workload.sas.com/class=stateless:NoSchedule"]
+      "node_labels" = {
+         "workload.sas.com/class" = "stateless"
+      }
+      "local_ssd_count" = 0
+   },
+   stateful = {
+      "machine_type"   = "e2-standard-8"
+      "os_disk_size"   = 200
+      "min_node_count" = 1
+      "max_node_count" = 3
+      "node_taints"    = ["workload.sas.com/class=stateful:NoSchedule"]
+      "node_labels" = {
+         "workload.sas.com/class" = "stateful"
+      }
+      "local_ssd_count" = 0
+   }
+}
 
-create_compute_nodepool       = true
-compute_nodepool_node_count   = 1
-compute_nodepool_min_nodes    = 1
-compute_nodepool_vm_type      = "n1-highmem-16"
-
-create_connect_nodepool       = true
-connect_nodepool_node_count   = 1
-connect_nodepool_min_nodes    = 1
-connect_nodepool_vm_type      = "n1-highmem-16"
-
-create_stateless_nodepool       = true
-stateless_nodepool_node_count   = 2
-stateless_nodepool_min_nodes    = 2
-stateless_nodepool_vm_type      = "e2-standard-16"
-
-create_stateful_nodepool       = true
-stateful_nodepool_node_count   = 3
-stateful_nodepool_min_nodes    = 3
-stateful_nodepool_vm_type      = "e2-standard-8"
 
 # Jump Box
 create_jump_public_ip          = true

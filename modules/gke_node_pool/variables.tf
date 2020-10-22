@@ -4,10 +4,6 @@ variable "node_pool_location" {}
 variable "gke_cluster" {}
 
 # OPTIONAL variables (these have defaults)
-variable "create_node_pool" {
-   default = false
-}
-
 variable "machine_type" {
   default = "n1-standard-1"
 }

@@ -1,12 +1,31 @@
-resource "google_container_node_pool" "node_pool" {
+locals {
+  # convert k8s taint syntax into struct required by gke
+  # e.g. 
+    #  "workload.sas.com/class:compute:NO_SCHEDULE"
+    #  into
+    # { "key" : "workload.sas.com/class",
+    #   "value" : "compute",
+    #   "effect" : "NO_SCHEDULE" }
+    #   ]
+  taint_effects = { NoSchedule = "NO_SCHEDULE"
+                    PreferNoSchedule = "PREFER_NO_SCHEDULE"
+                    NoExecute = "NO_EXECUTE"}
+  node_taints = [
+    for taint in var.node_taints : {
+      key = split("=",split(":",taint)[0])[0]
+      value = split("=",split(":",taint)[0])[1]
+      effect = local.taint_effects[split(":",taint)[1]]
+    }
+  ]
+}
 
-  count               = var.create_node_pool ? 1 : 0
+
+resource "google_container_node_pool" "node_pool" {
 
   # REQUIRED variables (must be set by caller of the module)
   name                = var.node_pool_name
   location            = var.node_pool_location
   cluster             = var.gke_cluster
-
 
   node_config {
     preemptible     = false
@@ -16,7 +35,7 @@ resource "google_container_node_pool" "node_pool" {
     local_ssd_count = var.local_ssd_count
 
     labels          = var.node_labels
-    taint           = var.node_taints
+    taint           = local.node_taints
     tags            = [ var.gke_cluster ]
  
     oauth_scopes = [
