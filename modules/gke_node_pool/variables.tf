@@ -4,16 +4,12 @@ variable "node_pool_location" {}
 variable "gke_cluster" {}
 
 # OPTIONAL variables (these have defaults)
-variable "create_node_pool" {
-   default = false
-}
-
 variable "machine_type" {
   default = "n1-standard-1"
 }
 
 variable "node_count" {
-  default = 4
+  default = 1
 }
 
 variable "max_nodes" {
@@ -25,19 +21,19 @@ variable "min_nodes" {
 }
 
 variable "node_taints" {
-  type = list
+  type    = list
   default = []
 }
 
 variable "node_labels" {
-  type = map
+  type    = map
   default = {}
 }
 
 variable "tags" {
   description = "Map of tags to be placed on the Resources"
   type        = map
-  default     = {project_name="viya401"}
+  default     = { project_name = "viya401" }
 }
 
 variable "local_ssd_count" {

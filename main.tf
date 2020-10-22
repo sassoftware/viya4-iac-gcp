@@ -185,8 +185,7 @@ module "postgresql" {
 
 # nodepools
 module "default_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = true
+  source = "./modules/gke_node_pool"
 
   node_pool_name     = "default"
   gke_cluster        = module.gke_cluster.cluster_name
@@ -202,96 +201,25 @@ module "default_node_pool" {
   node_labels     = merge(var.tags, var.default_nodepool_labels)
 }
 
-module "cas_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = var.create_cas_nodepool
+module "node_pools" {
+  source = "./modules/gke_node_pool"
 
-  node_pool_name     = "cas"
+  for_each = var.node_pools
+
+  node_pool_name     = each.key
   gke_cluster        = module.gke_cluster.cluster_name
   node_pool_location = module.gke_cluster.location
 
-  machine_type    = var.cas_nodepool_vm_type
-  os_disk_size    = var.cas_nodepool_os_disk_size
-  local_ssd_count = var.cas_nodepool_local_ssd_count
-  node_count      = var.cas_nodepool_node_count
-  max_nodes       = var.cas_nodepool_max_nodes
-  min_nodes       = var.cas_nodepool_min_nodes
-  node_taints     = var.cas_nodepool_taints
-  node_labels     = merge(var.tags, var.cas_nodepool_labels)
+  machine_type    = each.value.machine_type
+  os_disk_size    = each.value.os_disk_size
+  local_ssd_count = each.value.local_ssd_count
+  node_count      = each.value.min_node_count
+  min_nodes       = each.value.min_node_count
+  max_nodes       = each.value.min_node_count
+  node_taints     = each.value.node_taints
+  node_labels     = merge(var.tags, each.value.node_labels)
 }
 
-module "compute_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = var.create_compute_nodepool
-
-  node_pool_name     = "compute"
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
-
-  machine_type    = var.compute_nodepool_vm_type
-  os_disk_size    = var.compute_nodepool_os_disk_size
-  local_ssd_count = var.compute_nodepool_local_ssd_count
-  node_count      = var.compute_nodepool_node_count
-  max_nodes       = var.compute_nodepool_max_nodes
-  min_nodes       = var.compute_nodepool_min_nodes
-  node_taints     = var.compute_nodepool_taints
-  node_labels     = merge(var.tags, var.compute_nodepool_labels)
-}
-
-module "connect_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = var.create_connect_nodepool
-
-  node_pool_name     = "connect"
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
-
-  machine_type    = var.connect_nodepool_vm_type
-  os_disk_size    = var.connect_nodepool_os_disk_size
-  local_ssd_count = var.connect_nodepool_local_ssd_count
-  node_count      = var.connect_nodepool_node_count
-  max_nodes       = var.connect_nodepool_max_nodes
-  min_nodes       = var.connect_nodepool_min_nodes
-  node_taints     = var.connect_nodepool_taints
-  node_labels     = merge(var.tags, var.connect_nodepool_labels)
-}
-
-
-module "stateless_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = var.create_stateless_nodepool
-
-  node_pool_name     = "stateless"
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
-
-  machine_type    = var.stateless_nodepool_vm_type
-  os_disk_size    = var.stateless_nodepool_os_disk_size
-  local_ssd_count = var.stateless_nodepool_local_ssd_count
-  node_count      = var.stateless_nodepool_node_count
-  max_nodes       = var.stateless_nodepool_max_nodes
-  min_nodes       = var.stateless_nodepool_min_nodes
-  node_taints     = var.stateless_nodepool_taints
-  node_labels     = merge(var.tags, var.stateless_nodepool_labels)
-}
-
-module "stateful_node_pool" {
-  source           = "./modules/gke_node_pool"
-  create_node_pool = var.create_stateful_nodepool
-
-  node_pool_name     = "stateful"
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
-
-  machine_type    = var.stateful_nodepool_vm_type
-  os_disk_size    = var.stateful_nodepool_os_disk_size
-  local_ssd_count = var.stateful_nodepool_local_ssd_count
-  node_count      = var.stateful_nodepool_node_count
-  max_nodes       = var.stateful_nodepool_max_nodes
-  min_nodes       = var.stateful_nodepool_min_nodes
-  node_taints     = var.stateful_nodepool_taints
-  node_labels     = merge(var.tags, var.stateful_nodepool_labels)
-}
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
   name    = "${var.prefix}-nfs-server-firewall"
