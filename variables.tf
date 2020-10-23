@@ -19,8 +19,10 @@ variable "project" {
   type = string
 }
 
+# Versions: gcloud container get-server-config
+#           https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  default = "1.18.6-gke.4801"
+  default = "1.18.9-gke.1501"
 }
 
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - RAPID is currently the only channel that supports k8s v1.18

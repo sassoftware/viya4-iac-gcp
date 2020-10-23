@@ -16,13 +16,15 @@ default_public_access_cidrs    = []  # e.g., ["123.45.6.89/32"]
 # add labels to the created resources
 tags                                    = { } # e.g., { "key1" = "value1", "key2" = "value2" }
 
-# Azure Postgres config
+# Postgres config
 create_postgres                  = true # set this to "false" when using internal Crunchy Postgres
 postgres_ssl_enforcement_enabled = false
 postgres_administrator_password  = "mySup3rS3cretPassw0rd"
 
 # GKE config
-kubernetes_version                   = "1.18.6-gke.4801"
+# VERSIONS: gcloud container get-server-config
+#           https://cloud.google.com/kubernetes-engine/docs/release-notes
+kubernetes_version                   = "1.18.9-gke.1501"
 kubernetes_channel                   = "RAPID"
 default_nodepool_node_count          = 2
 default_nodepool_vm_type             = "n1-standard-1"

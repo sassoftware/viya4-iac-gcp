@@ -46,7 +46,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 ## General 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: | 
-| kubernetes_version | The GKE cluster K8S version | string | "1.18.6-gke.4801" | Valid depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
+| kubernetes_version | The GKE cluster K8S version | string | "1.18.9-gke.1501" | Valid values depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
 | kubernetes_channel | The GKE cluster channel | string | "RAPID" | Possible values: "STABLE", "REGULAR", "RAPID", "" |
 | ssh_public_key | Public ssh key for VMs | string | | |
 | create_jump_vm | Create bastion host | bool | true for storage_type == "standard", otherwise false| |
@@ -64,8 +64,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
 | default_nodepool_os_disk_size | Disk size for default nodepool VMs in GB | number | 128 ||
 | default_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
-| default_nodepool_taints | Taints for the default nodepool VMs | list of strings |  | |
-| default_nodepool_labels | Labels to add to the default nodepool VMs | map | | |
+| default_nodepool_taints | Taints for the default nodepool VMs | list of strings | [] | |
+| default_nodepool_labels | Labels to add to the default nodepool VMs | map | {} | |
 
 ### Additional Nodepools
 
