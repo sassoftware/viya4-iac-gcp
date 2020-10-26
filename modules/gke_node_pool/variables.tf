@@ -33,7 +33,7 @@ variable "node_labels" {
 variable "tags" {
   description = "Map of tags to be placed on the Resources"
   type        = map
-  default     = { project_name = "viya401" }
+  default     = {}
 }
 
 variable "local_ssd_count" {

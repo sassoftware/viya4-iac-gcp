@@ -38,14 +38,14 @@ resource "google_container_node_pool" "node_pool" {
     taint  = local.node_taints
     tags   = [var.gke_cluster]
 
-     oauth_scopes = [
-       "https://www.googleapis.com/auth/logging.write",
-       "https://www.googleapis.com/auth/monitoring",
-       "https://www.googleapis.com/auth/devstorage.read_only",
-       "https://www.googleapis.com/auth/servicecontrol",
-       "https://www.googleapis.com/auth/service.management.readonly",
-       "https://www.googleapis.com/auth/trace.append"
-     ]
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/servicecontrol",
+      "https://www.googleapis.com/auth/service.management.readonly",
+      "https://www.googleapis.com/auth/trace.append"
+    ]
   }
 
   initial_node_count = var.node_count
@@ -59,4 +59,10 @@ resource "google_container_node_pool" "node_pool" {
     auto_upgrade = true
   }
 
+  # see https://github.com/hashicorp/terraform-provider-google/issues/6901
+  lifecycle {
+    ignore_changes = [
+      initial_node_count
+    ]
+  }
 }

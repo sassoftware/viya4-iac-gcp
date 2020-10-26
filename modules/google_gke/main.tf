@@ -4,14 +4,14 @@ locals {
 
 resource "google_container_cluster" "primary" {
   # REQUIRED variables (must be set by caller of the module)
-  name               = var.name
-  location           = var.location
-  resource_labels    = var.labels
-  network            = var.network
-  subnetwork         = var.subnet
+  name            = var.name
+  location        = var.location
+  resource_labels = var.labels
+  network         = var.network
+  subnetwork      = var.subnet
 
 
-  # Kubenretes channel and version
+  # Kubernetes channel and version
   release_channel {
     channel = var.kubernetes_channel
   }
@@ -19,12 +19,10 @@ resource "google_container_cluster" "primary" {
 
   # default node pool
   # terraform recommends to create the default nodepool separately
-  # we tried that, but the helm provisioner fails with a connection error if the default nodepool is deleted
   remove_default_node_pool = true
   initial_node_count       = 1
 
   master_authorized_networks_config {
-
     dynamic "cidr_blocks" {
       for_each = var.endpoint_access
       content {

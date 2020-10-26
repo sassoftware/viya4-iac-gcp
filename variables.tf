@@ -142,7 +142,7 @@ variable "default_nodepool_labels" {
 variable "node_pools" {
   description = "Node pool definitions"
   type = map(object({
-    machine_type    = string
+    vm_type         = string
     os_disk_size    = number
     min_node_count  = string
     max_node_count  = string
@@ -152,7 +152,7 @@ variable "node_pools" {
   }))
   default = {
     cas = {
-      "machine_type"   = "n1-highmem-16"
+      "vm_type"        = "n1-highmem-16"
       "os_disk_size"   = 200
       "min_node_count" = 1
       "max_node_count" = 5
@@ -163,7 +163,7 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     compute = {
-      "machine_type"   = "n1-highmem-16"
+      "vm_type"        = "n1-highmem-16"
       "os_disk_size"   = 200
       "min_node_count" = 1
       "max_node_count" = 5
@@ -175,7 +175,7 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     connect = {
-      "machine_type"   = "n1-highmem-16"
+      "vm_type"        = "n1-highmem-16"
       "os_disk_size"   = 200
       "min_node_count" = 1
       "max_node_count" = 5
@@ -187,7 +187,7 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     stateless = {
-      "machine_type"   = "e2-standard-16"
+      "vm_type"        = "e2-standard-16"
       "os_disk_size"   = 200
       "min_node_count" = 1
       "max_node_count" = 5
@@ -198,7 +198,7 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     stateful = {
-      "machine_type"   = "e2-standard-8"
+      "vm_type"        = "e2-standard-8"
       "os_disk_size"   = 200
       "min_node_count" = 1
       "max_node_count" = 3
