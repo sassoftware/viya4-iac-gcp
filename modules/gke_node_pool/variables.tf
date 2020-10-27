@@ -8,7 +8,7 @@ variable "machine_type" {
   default = "n1-standard-1"
 }
 
-variable "node_count" {
+variable "initial_node_count" {
   default = 1
 }
 

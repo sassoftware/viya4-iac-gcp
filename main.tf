@@ -191,14 +191,14 @@ module "default_node_pool" {
   gke_cluster        = module.gke_cluster.cluster_name
   node_pool_location = module.gke_cluster.location
 
-  machine_type    = var.default_nodepool_vm_type
-  os_disk_size    = var.default_nodepool_os_disk_size
-  local_ssd_count = var.default_nodepool_local_ssd_count
-  node_count      = var.default_nodepool_node_count
-  max_nodes       = var.default_nodepool_max_nodes
-  min_nodes       = var.default_nodepool_min_nodes
-  node_taints     = var.default_nodepool_taints
-  node_labels     = merge(var.tags, var.default_nodepool_labels)
+  machine_type       = var.default_nodepool_vm_type
+  os_disk_size       = var.default_nodepool_os_disk_size
+  local_ssd_count    = var.default_nodepool_local_ssd_count
+  initial_node_count = var.default_nodepool_initial_node_count
+  max_nodes          = var.default_nodepool_max_nodes
+  min_nodes          = var.default_nodepool_min_nodes
+  node_taints        = var.default_nodepool_taints
+  node_labels        = merge(var.tags, var.default_nodepool_labels)
 }
 
 module "node_pools" {
@@ -210,14 +210,14 @@ module "node_pools" {
   gke_cluster        = module.gke_cluster.cluster_name
   node_pool_location = module.gke_cluster.location
 
-  machine_type    = each.value.vm_type
-  os_disk_size    = each.value.os_disk_size
-  local_ssd_count = each.value.local_ssd_count
-  node_count      = each.value.min_node_count
-  min_nodes       = each.value.min_node_count
-  max_nodes       = each.value.max_node_count
-  node_taints     = each.value.node_taints
-  node_labels     = merge(var.tags, each.value.node_labels)
+  machine_type       = each.value.vm_type
+  os_disk_size       = each.value.os_disk_size
+  local_ssd_count    = each.value.local_ssd_count
+  initial_node_count = each.value.min_nodes
+  min_nodes          = each.value.min_nodes
+  max_nodes          = each.value.max_nodes
+  node_taints        = each.value.node_taints
+  node_labels        = merge(var.tags, each.value.node_labels)
 }
 
 

@@ -59,7 +59,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | default_nodepool_vm_type | Type of the default nodepool VMs | string | "n1-standard-1" | |
-| default_nodepool_node_count | Number of nodes in the default nodepool | number | 2 | The value must be between `default_nodepool_min_nodes` and `default_nodepool_max_nodes`|
+| default_nodepool_initial_node_count | Number of nodes in the default nodepool | number | 2 | The value must be between `default_nodepool_min_nodes` and `default_nodepool_max_nodes`|
 | default_nodepool_max_nodes | Maximum number of nodes for the default nodepool | number | 5 | |
 | default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
 | default_nodepool_os_disk_size | Disk size for default nodepool VMs in GB | number | 128 ||
@@ -73,10 +73,10 @@ Additional node pools can be created separate from the default nodepool. This is
 
 | Name | Description | Type | Notes |
 | :--- | ---: | ---: | ---: |
-| machine_type | Type of the nodepool VMs | string | |
+| vm_type | Type of the nodepool VMs | string | |
 | os_disk_size | Disk size for nodepool VMs in GB | number | |
-| min_node_count | Minimum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
-| max_node_count | Maximum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
+| min_nodes | Minimum and initial number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
+| max_nodes | Maximum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
 | node_taints | Taints for the nodepool VMs | list of strings | |
 | node_labels | Labels to add to the nodepool VMs | map | |
 | local_ssd_count | Number of 375 GB local ssd disks to provision  | number ||
@@ -84,64 +84,62 @@ Additional node pools can be created separate from the default nodepool. This is
 The default values for the `node_pools` variable are:
 
 ```yaml
-{
-  cas = {
-    "machine_type"   = "n1-highmem-16"
-    "os_disk_size"   = 200
-    "min_node_count" = 1
-    "max_node_count" = 5
-    "node_taints" = ["workload.sas.com/class=cas:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class" = "cas"
-    }
-    "local_ssd_count" = 0
-  },
-  compute = {
-    "machine_type"   = "n1-highmem-16"
-    "os_disk_size"   = 200
-    "min_node_count" = 1
-    "max_node_count" = 5
-    "node_taints" = ["workload.sas.com/class=compute:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class"        = "compute"
-      "launcher.sas.com/prepullImage" = "sas-programming-environment"
-    }
-    "local_ssd_count" = 0
-  },
-  connect = {
-    "machine_type"   = "n1-highmem-16"
-    "os_disk_size"   = 200
-    "min_node_count" = 1
-    "max_node_count" = 5
-    "node_taints" = ["workload.sas.com/class=connect:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class"        = "connect"
-      "launcher.sas.com/prepullImage" = "sas-programming-environment"
-    }
-    "local_ssd_count" = 0
-  },
-  stateless = {
-    "machine_type"   = "e2-standard-16"
-    "os_disk_size"   = 200
-    "min_node_count" = 1
-    "max_node_count" = 5
-    "node_taints" = ["workload.sas.com/class=stateless:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class" = "stateless"
-    }
-    "local_ssd_count" = 0
-  },
-  stateful = {
-    "machine_type"   = "e2-standard-8"
-    "os_disk_size"   = 200
-    "min_node_count" = 1
-    "max_node_count" = 3
-    "node_taints" = ["workload.sas.com/class=stateful:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class" = "stateful"
-    }
-    "local_ssd_count" = 0
+cas = {
+  "vm_type"      = "n1-highmem-16"
+  "os_disk_size" = 200
+  "min_nodes"    = 1
+  "max_nodes"    = 5
+  "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
+  "node_labels" = {
+    "workload.sas.com/class" = "cas"
   }
+  "local_ssd_count" = 0
+},
+compute = {
+  "vm_type"      = "n1-highmem-16"
+  "os_disk_size" = 200
+  "min_nodes"    = 1
+  "max_nodes"    = 5
+  "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
+  "node_labels" = {
+    "workload.sas.com/class"        = "compute"
+    "launcher.sas.com/prepullImage" = "sas-programming-environment"
+  }
+  "local_ssd_count" = 0
+},
+connect = {
+  "vm_type"      = "n1-highmem-16"
+  "os_disk_size" = 200
+  "min_nodes"    = 1
+  "max_nodes"    = 5
+  "node_taints"  = ["workload.sas.com/class=connect:NoSchedule"]
+  "node_labels" = {
+    "workload.sas.com/class"        = "connect"
+    "launcher.sas.com/prepullImage" = "sas-programming-environment"
+  }
+  "local_ssd_count" = 0
+},
+stateless = {
+  "vm_type"      = "e2-standard-16"
+  "os_disk_size" = 200
+  "min_nodes"    = 1
+  "max_nodes"    = 5
+  "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
+  "node_labels" = {
+    "workload.sas.com/class" = "stateless"
+  }
+  "local_ssd_count" = 0
+},
+stateful = {
+  "vm_type"      = "e2-standard-8"
+  "os_disk_size" = 200
+  "min_nodes"    = 1
+  "max_nodes"    = 3
+  "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
+  "node_labels" = {
+    "workload.sas.com/class" = "stateful"
+  }
+  "local_ssd_count" = 0
 }
 ```
 

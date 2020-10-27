@@ -117,7 +117,7 @@ variable "default_nodepool_os_disk_size" {
   default = 128
 }
 
-variable "default_nodepool_node_count" {
+variable "default_nodepool_initial_node_count" {
   default = 2
 }
 
@@ -144,30 +144,30 @@ variable "node_pools" {
   type = map(object({
     vm_type         = string
     os_disk_size    = number
-    min_node_count  = string
-    max_node_count  = string
+    min_nodes       = string
+    max_nodes       = string
     node_taints     = list(string)
     node_labels     = map(string)
     local_ssd_count = number
   }))
   default = {
     cas = {
-      "vm_type"        = "n1-highmem-16"
-      "os_disk_size"   = 200
-      "min_node_count" = 1
-      "max_node_count" = 5
-      "node_taints"    = ["workload.sas.com/class=cas:NoSchedule"]
+      "vm_type"      = "n1-highmem-16"
+      "os_disk_size" = 200
+      "min_nodes"    = 1
+      "max_nodes"    = 5
+      "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class" = "cas"
       }
       "local_ssd_count" = 0
     },
     compute = {
-      "vm_type"        = "n1-highmem-16"
-      "os_disk_size"   = 200
-      "min_node_count" = 1
-      "max_node_count" = 5
-      "node_taints"    = ["workload.sas.com/class=compute:NoSchedule"]
+      "vm_type"      = "n1-highmem-16"
+      "os_disk_size" = 200
+      "min_nodes"    = 1
+      "max_nodes"    = 5
+      "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class"        = "compute"
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
@@ -175,11 +175,11 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     connect = {
-      "vm_type"        = "n1-highmem-16"
-      "os_disk_size"   = 200
-      "min_node_count" = 1
-      "max_node_count" = 5
-      "node_taints"    = ["workload.sas.com/class=connect:NoSchedule"]
+      "vm_type"      = "n1-highmem-16"
+      "os_disk_size" = 200
+      "min_nodes"    = 1
+      "max_nodes"    = 5
+      "node_taints"  = ["workload.sas.com/class=connect:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class"        = "connect"
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
@@ -187,22 +187,22 @@ variable "node_pools" {
       "local_ssd_count" = 0
     },
     stateless = {
-      "vm_type"        = "e2-standard-16"
-      "os_disk_size"   = 200
-      "min_node_count" = 1
-      "max_node_count" = 5
-      "node_taints"    = ["workload.sas.com/class=stateless:NoSchedule"]
+      "vm_type"      = "e2-standard-16"
+      "os_disk_size" = 200
+      "min_nodes"    = 1
+      "max_nodes"    = 5
+      "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class" = "stateless"
       }
       "local_ssd_count" = 0
     },
     stateful = {
-      "vm_type"        = "e2-standard-8"
-      "os_disk_size"   = 200
-      "min_node_count" = 1
-      "max_node_count" = 3
-      "node_taints"    = ["workload.sas.com/class=stateful:NoSchedule"]
+      "vm_type"      = "e2-standard-8"
+      "os_disk_size" = 200
+      "min_nodes"    = 1
+      "max_nodes"    = 3
+      "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class" = "stateful"
       }
