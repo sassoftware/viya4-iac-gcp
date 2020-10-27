@@ -65,9 +65,10 @@ module "network" {
   subnet_cidr_block = local.vm_cidr_block
 }
 
-data "template_file" "cloudconfig" {
+data "template_file" "nfs_cloudconfig" {
   # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
   template = file("${path.module}/files/nfs-cloud-config")
+  count    = var.storage_type == "standard" ? 1 : 0
   vars = {
     vm_cidr_block = local.vm_cidr_block
   }
@@ -89,7 +90,7 @@ module "nfs_server" {
   vm_admin       = var.nfs_vm_admin
   ssh_public_key = var.ssh_public_key
 
-  user_data      = "${data.template_file.cloudconfig.rendered}"
+  user_data      = length(data.template_file.nfs_cloudconfig) == 1 ? "${data.template_file.nfs_cloudconfig.0.rendered}" : null
   user_data_type = "cloud-init"
 
   data_disk_count = 4
@@ -98,7 +99,10 @@ module "nfs_server" {
 }
 
 data "template_file" "jump_bootstrap" {
+
   template = file("${path.module}/files/jump-nfs-mount.sh")
+  count    = local.create_jump_vm ? 1 : 0
+
   vars = {
     rwx_filestore_endpoint = (var.storage_type == "standard"
       ? module.nfs_server.private_ip
@@ -128,7 +132,7 @@ module "jump_server" {
   vm_admin       = var.jump_vm_admin
   ssh_public_key = var.ssh_public_key
 
-  user_data      = "${data.template_file.jump_bootstrap.rendered}"
+  user_data      = length(data.template_file.jump_bootstrap) == 1 ? "${data.template_file.jump_bootstrap.0.rendered}" : null
   user_data_type = "startup-script"
 
   depends_on = [module.nfs_server]

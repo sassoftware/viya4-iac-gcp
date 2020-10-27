@@ -4,7 +4,7 @@ variable "labels" {}
 variable "network" {}
 variable "create_postgres" {
   description = "Boolean flag to create Google Cloud Postgres Instance"
-  default = true
+  default     = true
 }
 
 
@@ -45,6 +45,6 @@ variable "create_public_ip" {
 }
 
 variable "public_access_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = null
 }
