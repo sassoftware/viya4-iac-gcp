@@ -194,7 +194,7 @@ module "default_node_pool" {
   machine_type       = var.default_nodepool_vm_type
   os_disk_size       = var.default_nodepool_os_disk_size
   local_ssd_count    = var.default_nodepool_local_ssd_count
-  initial_node_count = var.default_nodepool_initial_node_count
+  initial_node_count = var.default_nodepool_node_count
   max_nodes          = var.default_nodepool_max_nodes
   min_nodes          = var.default_nodepool_min_nodes
   node_taints        = var.default_nodepool_taints

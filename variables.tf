@@ -117,7 +117,7 @@ variable "default_nodepool_os_disk_size" {
   default = 128
 }
 
-variable "default_nodepool_initial_node_count" {
+variable "default_nodepool_node_count" {
   default = 2
 }
 
