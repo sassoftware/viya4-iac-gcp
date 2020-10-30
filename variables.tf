@@ -61,7 +61,7 @@ variable "postgres_public_access_cidrs" {
 }
 
 variable "ssh_public_key" {
-  default = "~/.ssh/id_rsa.pub"
+  default = ""
 }
 
 # Bastion VM
