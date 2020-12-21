@@ -55,6 +55,7 @@ runcmd:
   # Update /etc/exports 
   #
   - echo "/export         ${vm_cidr_block}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
+  - echo "/export         ${pod_cidr_block}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
   
   #
   # Restart nfs-server service

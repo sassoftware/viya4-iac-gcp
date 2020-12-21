@@ -83,7 +83,8 @@ data "template_file" "nfs_cloudconfig" {
   template = file("${path.module}/files/nfs-cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
-    vm_cidr_block = local.vm_cidr_block
+    vm_cidr_block  = local.vm_cidr_block
+    pod_cidr_block = local.pod_cidr_block
   }
 }
 
