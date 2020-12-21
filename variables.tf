@@ -253,3 +253,6 @@ variable "postgres_ssl_enforcement_enabled" {
   default     = true
 }
 
+variable "nodepools_inline" {
+  default = true
+}
