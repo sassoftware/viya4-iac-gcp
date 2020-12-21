@@ -256,3 +256,11 @@ variable "postgres_ssl_enforcement_enabled" {
 variable "nodepools_inline" {
   default = true
 }
+
+variable "cluster_networking" {
+   default = "route-based"
+   validation {
+      condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
+      error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
+   }
+}
