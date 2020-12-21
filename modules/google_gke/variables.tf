@@ -51,3 +51,12 @@ variable "default_nodepool_create" {
 
 variable "node_pools" {
 }
+
+
+variable "cluster_networking" {
+   default = "route-based"
+   validation {
+      condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
+      error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
+   }
+}

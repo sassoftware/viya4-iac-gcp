@@ -46,10 +46,13 @@ resource "google_container_cluster" "primary" {
   }
 
   # create the nodes without public ips
-  private_cluster_config {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
-    master_ipv4_cidr_block  = local.master_ipv4_cidr_block
+  dynamic "private_cluster_config" {
+    for_each = var.cluster_networking == "vcp-native" ? [0] : []
+    content {
+      enable_private_nodes    = true
+      enable_private_endpoint = false
+      master_ipv4_cidr_block  = local.master_ipv4_cidr_block
+    }
   }
 
   master_auth {
@@ -61,8 +64,11 @@ resource "google_container_cluster" "primary" {
 
   }
 
-  ip_allocation_policy {
-    cluster_ipv4_cidr_block = var.pod_cidr_block
+  dynamic "ip_allocation_policy" {
+    for_each = var.cluster_networking == "vcp-native" ? [0] : []
+    content {
+      cluster_ipv4_cidr_block = var.pod_cidr_block
+    }
   }
 
   initial_node_count       = var.default_nodepool_create ? 0 : 1

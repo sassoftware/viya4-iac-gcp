@@ -165,6 +165,7 @@ module "gke_cluster" {
   subnet             = module.network.subnet
   endpoint_access    = local.cluster_endpoint_public_access_cidrs
   pod_cidr_block     = local.pod_cidr_block
+  cluster_networking = var.cluster_networking
 
   default_nodepool_create          = var.nodepools_inline
   default_nodepool_vm_type         = var.default_nodepool_vm_type
