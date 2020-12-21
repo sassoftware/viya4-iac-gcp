@@ -2,8 +2,8 @@ terraform {
   required_version = ">= 0.13"
 
   required_providers {
-    google      = ">= 3.42.0"
-    google-beta = ">= 3.42.0"
+    google      = ">= 3.51.0"
+    google-beta = ">= 3.51.0"
   }
 }
 
@@ -30,12 +30,12 @@ data "google_compute_zones" "available" {
 
 
 resource "tls_private_key" "private_key" {
-  count = var.ssh_public_key == "" ? 1 : 0
+  count     = var.ssh_public_key == "" ? 1 : 0
   algorithm = "RSA"
 }
 
 data "tls_public_key" "public_key" {
-  count = var.ssh_public_key == "" ? 1 : 0
+  count           = var.ssh_public_key == "" ? 1 : 0
   private_key_pem = element(coalescelist(tls_private_key.private_key.*.private_key_pem), 0)
 }
 
@@ -166,6 +166,18 @@ module "gke_cluster" {
   endpoint_access    = local.cluster_endpoint_public_access_cidrs
   pod_cidr_block     = local.pod_cidr_block
 
+  default_nodepool_create          = var.nodepools_inline
+  default_nodepool_vm_type         = var.default_nodepool_vm_type
+  default_nodepool_os_disk_size    = var.default_nodepool_os_disk_size
+  default_nodepool_local_ssd_count = var.default_nodepool_local_ssd_count
+  default_nodepool_node_count      = var.default_nodepool_node_count
+  default_nodepool_max_nodes       = var.default_nodepool_max_nodes
+  default_nodepool_min_nodes       = var.default_nodepool_min_nodes
+  default_nodepool_taints          = var.default_nodepool_taints
+  default_nodepool_labels          = merge(var.tags, var.default_nodepool_labels)
+
+  node_pools = var.nodepools_inline ? var.node_pools : {}
+
   depends_on = [module.jump_server] # workaround to avoid jump server subnet error
 }
 
@@ -204,6 +216,7 @@ module "postgresql" {
 # nodepools
 module "default_node_pool" {
   source = "./modules/gke_node_pool"
+  count  = var.nodepools_inline ? 0 : 1
 
   node_pool_name     = "default"
   gke_cluster        = module.gke_cluster.cluster_name
@@ -222,7 +235,7 @@ module "default_node_pool" {
 module "node_pools" {
   source = "./modules/gke_node_pool"
 
-  for_each = var.node_pools
+  for_each = var.nodepools_inline ? {} : var.node_pools
 
   node_pool_name     = each.key
   gke_cluster        = module.gke_cluster.cluster_name
@@ -236,6 +249,8 @@ module "node_pools" {
   max_nodes          = each.value.max_nodes
   node_taints        = each.value.node_taints
   node_labels        = merge(var.tags, each.value.node_labels)
+
+  depends_on = [module.default_node_pool]
 }
 
 
