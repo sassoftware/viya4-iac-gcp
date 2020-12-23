@@ -17,6 +17,8 @@ locals {
       effect = local.taint_effects[split(":", taint)[1]]
     }
   ]
+  autoscaling = (var.min_nodes == var.max_nodes) ? false : true
+
 }
 
 
@@ -48,15 +50,21 @@ resource "google_container_node_pool" "node_pool" {
     ]
   }
 
-  initial_node_count = var.initial_node_count
-  autoscaling {
-    min_node_count = var.min_nodes
-    max_node_count = var.max_nodes
-  }
-
   management {
     auto_repair  = true
     auto_upgrade = true
+  }
+
+  node_count = local.autoscaling ? null : var.min_nodes
+
+  initial_node_count = local.autoscaling ? var.min_nodes : null
+
+  dynamic "autoscaling" {
+    for_each = local.autoscaling ? [1] : []
+    content {
+      min_node_count = var.min_nodes
+      max_node_count = var.max_nodes
+    }
   }
 
   # see https://github.com/hashicorp/terraform-provider-google/issues/6901
