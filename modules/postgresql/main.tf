@@ -11,6 +11,7 @@ resource "google_sql_database_instance" "utility-database" {
   database_version = "POSTGRES_${var.server_version}"
   region           = regex("^[a-z0-9]*-[a-z0-9]*", var.location)
 
+  deletion_protection = false
   depends_on = [google_service_networking_connection.private_vpc_connection]
 
   settings {
