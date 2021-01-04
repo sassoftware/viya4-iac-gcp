@@ -12,7 +12,7 @@ output "kube_config" {
   value = module.gke_cluster.kubeconfig_raw
 }
 
-output "postgres_server_private_ip" {
+output "postgres_fqdn" {
   description = "Private IP of the PostgreSQL server. Use this value to set DATABASE_HOST in your Viya deployment."
   value       = module.postgresql.postgres_server_private_ip
 }
@@ -20,6 +20,22 @@ output "postgres_server_private_ip" {
 output "postgres_server_public_ip" {
   description = "Public IP of the PostgreSQL server. Use this value to connect database clients."
   value       = length(local.postgres_public_access_cidrs) > 0 ? module.postgresql.postgres_server_public_ip : null
+}
+
+output "postgres_server_name" {
+  value = var.create_postgres ? element(coalescelist(module.postgresql.*.postgres_server_name, [" "]), 0) : null
+}
+output "postgres_admin" {
+  value = var.create_postgres ? element(coalescelist(module.postgresql.*.postgres_admin, [" "]), 0) : null
+}
+output "postgres_password" {
+  value = var.create_postgres ? element(coalescelist(module.postgresql.*.postgres_password, [" "]), 0) : null
+}
+output "postgres_server_id" {
+  value = var.create_postgres ? element(coalescelist(module.postgresql.*.postgres_server_id, [" "]), 0) : null
+}
+output "postgres_server_port" {
+  value = var.create_postgres ? element(coalescelist(module.postgresql.*.postgres_server_port, [" "]), 0) : null
 }
 
 
