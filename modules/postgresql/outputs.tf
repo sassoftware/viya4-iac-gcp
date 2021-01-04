@@ -17,3 +17,28 @@ output "postgres_server_public_ip" {
   : null)
 }
 
+output "postgres_server_name" {
+  value = (var.create_postgres ?
+    (length(google_sql_database_instance.utility-database) > 0
+      ? google_sql_database_instance.utility-database[0].name
+    : null)
+  : null)
+}
+output "postgres_admin" {
+  value = var.create_postgres ? var.administrator_login : null
+}
+output "postgres_password" {
+  value = var.create_postgres ? var.administrator_password : null
+}
+output "postgres_server_id" {
+  value = (var.create_postgres ?
+    (length(google_sql_database_instance.utility-database) > 0
+      ? google_sql_database_instance.utility-database[0].self_link
+    : null)
+  : null)
+}
+output "postgres_server_port" {
+  value = var.create_postgres ? "5432" : null
+}
+
+
