@@ -21,6 +21,8 @@ locals {
   default_nodepool_autoscaling = var.default_nodepool_min_nodes == var.default_nodepool_max_nodes ? false : true
 }
 
+data "google_client_config" "current" {}
+
 resource "google_container_cluster" "primary" {
   # REQUIRED variables (must be set by caller of the module)
   name            = var.name
@@ -43,6 +45,11 @@ resource "google_container_cluster" "primary" {
         cidr_block = cidr_blocks.value
       }
     }
+  }
+
+  # needed for Cloud SQL Proxy
+  workload_identity_config {
+    identity_namespace = "${data.google_client_config.current.project}.svc.id.goog"
   }
 
   # create the nodes without public ips
