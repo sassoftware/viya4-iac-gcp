@@ -19,8 +19,10 @@ variable "project" {
   type = string
 }
 
-# Versions: gcloud container get-server-config
-#           https://cloud.google.com/kubernetes-engine/docs/release-notes
+# Google Cloud will utilize the current default value for the given channel.
+# A specific version can be provided to override the default.
+# Available Versions: gcloud container get-server-config
+#                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
   default = ""
 }
