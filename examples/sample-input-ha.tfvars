@@ -22,10 +22,6 @@ postgres_ssl_enforcement_enabled = false
 postgres_administrator_password  = "mySup3rS3cretPassw0rd"
 
 # GKE config
-# VERSIONS: gcloud container get-server-config
-#           https://cloud.google.com/kubernetes-engine/docs/release-notes
-kubernetes_version          = "1.18.9-gke.1501"
-kubernetes_channel          = "RAPID"
 default_nodepool_node_count = 2
 default_nodepool_vm_type    = "n1-standard-1"
 
