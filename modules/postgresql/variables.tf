@@ -48,3 +48,5 @@ variable "public_access_cidrs" {
   type    = list(string)
   default = null
 }
+
+variable "service_account_credentials" {}

@@ -4,6 +4,11 @@ terraform {
   required_providers {
     google      = ">= 3.51.0"
     google-beta = ">= 3.51.0"
+    kubernetes = "~> 1.13.3"
+    local = "~> 1.4.0"
+    random = "~> 2.3.0"
+    template = "~> 2.1.2"
+    tls = "~> 3.0.0"
   }
 }
 
@@ -15,6 +20,13 @@ provider "google" {
 provider "google-beta" {
   credentials = file(var.service_account_keyfile)
   project     = var.project
+}
+
+provider "kubernetes" {
+  host                   = module.gke_cluster.public_endpoint
+  cluster_ca_certificate = module.gke_cluster.cluster_ca_certificate
+  token = data.google_client_config.current.access_token
+  load_config_file       = false
 }
 
 resource "local_file" "kubeconfig" {
@@ -67,7 +79,7 @@ locals {
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
   ssh_public_key = var.ssh_public_key != "" ? file(var.ssh_public_key) : element(coalescelist(data.tls_public_key.public_key.*.public_key_openssh, [""]), 0)
-
+  
 }
 
 module "network" {
@@ -211,6 +223,8 @@ module "postgresql" {
   administrator_login     = var.postgres_administrator_login
   administrator_password  = var.postgres_administrator_password
   ssl_enforcement_enabled = var.postgres_ssl_enforcement_enabled
+
+  service_account_credentials = file(var.service_account_keyfile)
 
 }
 
