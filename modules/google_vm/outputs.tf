@@ -1,5 +1,5 @@
 output "private_ip" {
-  value = (var.create_vm
+  value = (var.create_vm && length(google_compute_instance.google_vm) > 0
     ? google_compute_instance.google_vm.0.network_interface.0.network_ip
   : null)
 }
