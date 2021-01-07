@@ -1,3 +1,9 @@
+locals {
+  sql_proxy_namespace = "cloud-sql-proxy"
+  cloud_sql_secret = "cloudsql-instance-credentials"
+}
+
+
 resource "random_id" "suffix" {
   count       = var.create_postgres ? 1 : 0
   byte_length = 4
@@ -76,5 +82,87 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
 }
 
+# Cloud SQL Proxy
+resource "kubernetes_namespace" "cloud_sql_proxy" {
+  count = var.create_postgres ? 1 : 0
+  metadata {
+    name = local.sql_proxy_namespace
+  }
+}  
+resource "kubernetes_secret" "cloudsql-instance-credentials" {
+  count = var.create_postgres ? 1 : 0
+  metadata {
+    name = local.cloud_sql_secret
+    namespace = local.sql_proxy_namespace
+  }
+  data = {
+    "credentials.json" = var.service_account_credentials
+  }
+}
 
-#servicenetworking.googleapis.com 
+resource "kubernetes_deployment" "sql_proxy_deployment" {
+  count = var.create_postgres ? 1 : 0
+  metadata {
+    labels = {
+      app = "sql-proxy"
+    }
+    name = "sql-proxy-deployment"
+    namespace = local.sql_proxy_namespace
+  }
+  spec {
+    replicas = 2
+    selector {
+      match_labels = {
+        app = "sql-proxy"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "sql-proxy"
+        }
+      }
+      spec {
+        container {
+          command = [
+            "/cloud_sql_proxy",
+            "-instances=${google_sql_database_instance.utility-database[0].connection_name}=tcp:0.0.0.0:5432",
+            "-credential_file=/secrets/cloudsql/credentials.json",
+          ]
+          image = "gcr.io/cloudsql-docker/gce-proxy:1.10"
+          name = "sql-proxy"
+          volume_mount {
+            mount_path = "/secrets/cloudsql"
+            name = "cloudsql-instance-credentials"
+            read_only = true
+          }
+        }
+        
+        volume {
+          name = "cloudsql-instance-credentials"
+          secret {
+            secret_name = local.cloud_sql_secret
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "sql_proxy_service" {
+  count = var.create_postgres ? 1 : 0
+  metadata {
+    name = "sql-proxy-service"
+    namespace = local.sql_proxy_namespace
+  }
+  spec {
+    port {
+      port = 5432
+      protocol = "TCP"
+      target_port = 5432
+    }
+    selector = {
+      app = "sql-proxy"
+    }
+  }
+}
