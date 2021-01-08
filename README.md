@@ -9,7 +9,7 @@ This project contains Terraform scripts to provision Google GCP infrastructure r
   - System and User GKE Node pools with required Labels and Taints
   - Infrastructure to deploy SAS Viya CAS in SMP or MPP mode
   - Shared Storage options for SAS Viya -  Google Filestore (ha) or NFS Server (standard)
-  - Google Cloud PostgreSQL instance, optional
+  - Google Cloud SQL for PostgreSQL instance, optional
 
 ## Prerequisites
 
