@@ -1,6 +1,6 @@
 locals {
   sql_proxy_namespace = "cloud-sql-proxy"
-  cloud_sql_secret = "cloudsql-instance-credentials"
+  cloud_sql_secret    = "cloudsql-instance-credentials"
 }
 
 
@@ -18,7 +18,7 @@ resource "google_sql_database_instance" "utility-database" {
   region           = regex("^[a-z0-9]*-[a-z0-9]*", var.location)
 
   deletion_protection = false
-  depends_on = [google_service_networking_connection.private_vpc_connection]
+  depends_on          = [google_service_networking_connection.private_vpc_connection]
 
   settings {
     tier        = var.machine_type # 30Gb needed to get 600 max_connections default: https://cloud.google.com/sql/docs/postgres/quotas
@@ -88,11 +88,11 @@ resource "kubernetes_namespace" "cloud_sql_proxy" {
   metadata {
     name = local.sql_proxy_namespace
   }
-}  
+}
 resource "kubernetes_secret" "cloudsql-instance-credentials" {
   count = var.create_postgres ? 1 : 0
   metadata {
-    name = local.cloud_sql_secret
+    name      = local.cloud_sql_secret
     namespace = local.sql_proxy_namespace
   }
   data = {
@@ -106,7 +106,7 @@ resource "kubernetes_deployment" "sql_proxy_deployment" {
     labels = {
       app = "sql-proxy"
     }
-    name = "sql-proxy-deployment"
+    name      = "sql-proxy-deployment"
     namespace = local.sql_proxy_namespace
   }
   spec {
@@ -130,14 +130,14 @@ resource "kubernetes_deployment" "sql_proxy_deployment" {
             "-credential_file=/secrets/cloudsql/credentials.json",
           ]
           image = "gcr.io/cloudsql-docker/gce-proxy:1.10"
-          name = "sql-proxy"
+          name  = "sql-proxy"
           volume_mount {
             mount_path = "/secrets/cloudsql"
-            name = "cloudsql-instance-credentials"
-            read_only = true
+            name       = "cloudsql-instance-credentials"
+            read_only  = true
           }
         }
-        
+
         volume {
           name = "cloudsql-instance-credentials"
           secret {
@@ -152,13 +152,13 @@ resource "kubernetes_deployment" "sql_proxy_deployment" {
 resource "kubernetes_service" "sql_proxy_service" {
   count = var.create_postgres ? 1 : 0
   metadata {
-    name = "sql-proxy-service"
+    name      = "sql-proxy-service"
     namespace = local.sql_proxy_namespace
   }
   spec {
     port {
-      port = 5432
-      protocol = "TCP"
+      port        = 5432
+      protocol    = "TCP"
       target_port = 5432
     }
     selector = {

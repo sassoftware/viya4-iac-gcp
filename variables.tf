@@ -260,9 +260,9 @@ variable "nodepools_inline" {
 }
 
 variable "cluster_networking" {
-   default = "route-based"
-   validation {
-      condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
-      error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
-   }
+  default = "route-based"
+  validation {
+    condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
+    error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
+  }
 }
