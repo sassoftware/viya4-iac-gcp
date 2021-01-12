@@ -14,11 +14,9 @@ How to create a GCP Service Account: https://cloud.google.com/iam/docs/creating-
 GCLOUD CLI Example:
 
 ```bash
-SA_NAME="<my-tf-gke>"  #  <=== CHANGE
-gcloud iam service-accounts create $SA_NAME  --description "SA used for all terraform actions for gke" --display-name "$SA_NAME"
-
+SA_NAME="<my-service-account>"  #  <=== CHANGE
+gcloud iam service-accounts create $SA_NAME  --description "Service Account used Terraform Viya4 Infrastructure" --display-name "$SA_NAME"
 ```
-
 
 ## Apply the necessary Roles to the Service Account
 
@@ -37,18 +35,15 @@ How modify IAM access to GCP resources:  https://cloud.google.com/iam/docs/grant
 
 GCLOUD CLI Example:
 ```bash
-PROJECT="<my-project>"  # <== CHANGE
-SA_NAME="<my-tf-gke>"   # <>== CHANGE
+PROJECT="<my-project>"           # <== CHANGE
+SA_NAME="<my-service-account>"   # <== CHANGE
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/compute.networkAdmin
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/compute.admin  
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/container.admin  	
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/iam.serviceAccountUser
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/file.editor
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com  --role roles/cloudsql.admin
-
 ```
-
-
 
 ## Create the Service Account Keyfile
 
@@ -56,9 +51,11 @@ Manage key files using the Cloud Console: https://console.cloud.google.com/apis/
 
 GCLOUD CLI Example:
 ```bash
-PROJECT="<my-project>"  # <== CHANGE
-SA_NAME="<my-tf-gke>"   # <>== CHANGE
-gcloud iam service-accounts keys create ~/.config/gcloud/${SA_NAME}-${PROJECT}-service-account.json --iam-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com
+PROJECT="<my-project>"           # <== CHANGE
+SA_NAME="<my-service-account>"   # <== CHANGE
+SA_KEY_FILE="$HOME/./${SA_NAME}-${PROJECT}gcp-service-account.json"
+gcloud iam service-accounts keys create ${SA_KEY_FILE} --iam-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com
+chmod 500 ${SA_KEY_FILE} # secure the keyfile
 ```
 
 ## Terraform project variables to authenticate with GCP
@@ -69,4 +66,3 @@ As part of your [Terraform input variables](../../README.md#customize-input-valu
 | :--- | :--- |   
 | project | The GCP Project to use | 
 | service_account_keyfile | Filename of the Service Account JSON file | 
-

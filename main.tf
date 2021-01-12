@@ -9,6 +9,7 @@ terraform {
     random      = "~> 2.3.0"
     template    = "~> 2.1.2"
     tls         = "~> 3.0.0"
+    null        = "~> 3.0.0"
   }
 }
 
@@ -28,10 +29,19 @@ provider "kubernetes" {
   token                  = data.google_client_config.current.access_token
   load_config_file       = false
 }
-
-resource "local_file" "kubeconfig" {
-  content  = module.gke_cluster.kubeconfig_raw
-  filename = "${var.prefix}-gcp-kubeconfig.conf"
+resource "null_resource" "copy_kubeconfig" {
+  triggers = {
+    kubeconfig = module.gke_cluster.kubeconfig_raw
+#    always_run = timestamp()
+  }
+  provisioner "local-exec" {
+    # copy the kubeconfig file into different location for local or docker execution
+    command = "[[ ! -z \"$TF_VAR_iac_tooling\" && -d '/workspace' ]] && echo \"${module.gke_cluster.kubeconfig_raw}\" > /workspace/$FILENAME || echo \"${module.gke_cluster.kubeconfig_raw}\" > $FILENAME"
+    environment = {
+      FILENAME = "${var.prefix}-gcp-kubeconfig.conf"
+    }
+    interpreter = ["/bin/bash", "-c"]
+  }
 }
 
 data "google_client_config" "current" {}
@@ -116,7 +126,7 @@ module "nfs_server" {
   vm_admin       = var.nfs_vm_admin
   ssh_public_key = local.ssh_public_key
 
-  user_data      = length(data.template_file.nfs_cloudconfig) == 1 ? "${data.template_file.nfs_cloudconfig.0.rendered}" : null
+  user_data      = length(data.template_file.nfs_cloudconfig) == 1 ? data.template_file.nfs_cloudconfig.0.rendered : null
   user_data_type = "cloud-init"
 
   data_disk_count = 4
@@ -158,7 +168,7 @@ module "jump_server" {
   vm_admin       = var.jump_vm_admin
   ssh_public_key = local.ssh_public_key
 
-  user_data      = length(data.template_file.jump_bootstrap) == 1 ? "${data.template_file.jump_bootstrap.0.rendered}" : null
+  user_data      = length(data.template_file.jump_bootstrap) == 1 ? data.template_file.jump_bootstrap.0.rendered : null
   user_data_type = "startup-script"
 
   depends_on = [module.nfs_server]

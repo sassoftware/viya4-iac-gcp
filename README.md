@@ -1,5 +1,4 @@
 # SAS Viya 4 IaC for Google GCP
-
 ## Overview
 
 This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 products. Here is a list of resources this project can create :
@@ -13,42 +12,30 @@ This project contains Terraform scripts to provision Google GCP infrastructure r
 
 ## Prerequisites
 
-Operational knowledge of [Terraform](https://www.terraform.io/intro/index.html), [Google Cloud Platform](https://https://cloud.google.com/), and [Kubernetes](https://kubernetes.io/docs/concepts/).
-This tool supports running both from terraform installed on your local machine or via a docker container. The Dockerfile for the container can be found [here](Dockerfile)
+Operational knowledge of 
+- [Terraform](https://www.terraform.io/intro/index.html)
+- [Docker](https://www.docker.com/)
+- [Google Cloud Platform](https://https://cloud.google.com/)
+- [Kubernetes](https://kubernetes.io/docs/concepts/).
 
 ### Required
 
-#### GCP Project
-
-Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) and a [**Google CLoud Service Account**](./docs/user/TerraformGCPAuthentication.md).
-Make sure Google Cloud Project has at least the following [API Services](https://cloud.google.com/apis/docs/getting-started#enabling_apis) enabled:
-
-| API  Service Name | Description/Link | Use |
-| :--- | :--- | :---  |
-| `container.googleapis.com` | [Kubernetes Engine API](https://console.cloud.google.com/apis/library/container.googleapis.com) ||
-| `compute.googleapis.com`| [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com) ||
-| `file.googleapis.com` | [Cloud Filestore API](https://console.cloud.google.com/apis/library/file.googleapis.com) | Only needed for `storage_type="ha"` |
-| `sqladmin.googleapis.com`| [Cloud SQL Admin API](https://console.cloud.google.com/apis/library/sqladmin.googleapis.com) | Only needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres)
-| `servicenetworking.googleapis.com`| [Service Networking API](https://console.cloud.google.com/apis/library/servicenetworking.googleapis.com) | Only needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres)
-| `cloudresourcemanager.googleapis.com`| [Cloud Resource Manager API](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com) | only needed if you create an [SQL Postgres instance](../CONFIG-VARS.md#postgres) |
-
-#### Terraform
-
-[Terraform](https://www.terraform.io/downloads.html) - v0.13.3
-
-#### Docker
-
-[Docker](https://docs.docker.com/get-docker/)
-
-### Optional
-
-- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - comes in handy as an alternative to the Google CLoud Platform Portal
+- Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
+- A [Google CLoud Service Account](./docs/user/TerraformGCPAuthentication.md).
+- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
+- Terraform or Docker
+  - #### Terraform
+    - [Terraform](https://www.terraform.io/downloads.html) - v0.13.4
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
+    - [jq](https://stedolan.github.io/jq/) - v1.6Docker
+  - #### Docker
+    - [Docker](https://docs.docker.com/get-docker/)
 
 ## Getting Started
 
-Run these commands in a Terminal session
-
 ### Clone this project
+
+Run these commands in a Terminal session:
 
 ```bash
 # clone this repo
@@ -66,56 +53,19 @@ See [Authenticating Terraform to access GCP](./docs/user/TerraformGCPAuthenticat
 
 Create a file named `terraform.tfvars` to customize any input variable value. For starters, you can copy one of the provided example variable definition files in `./examples` folder. For more details on the variables declared in [variables.tf](variables.tf) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
+**NOTE:** You will need to update the `cidr_blocks` in the [variables.tf](variables.tf) file to allow traffic from your current network. Without these rules, access to the cluster will only be allowed via the AWS Console.
+
 When using a variable definition file other than `terraform.tfvars`, see [Advanced Terraform Usage](docs/user/AdvancedTerraformUsage.md) for additional command options.
 
-### Running Terraform Commands
+## Creating and Managing the Cloud Resources
 
-Initialize the Terraform environment for this project by running 
+Create and manage the GCP cloud resources by either 
 
-```bash
-terraform init
-```
+- using [Terraform](docs/user/TerraformUsage.md) directly on your workstation, or
+- using a [Docker container](docs/user/DockerUsage.md). 
 
-This creates a `.terraform` directory locally that contains Terraform plugins/modules used in this project.
 
-**Note:** `terraform init` only needs to be run once unless new Terraform plugins/modules were added.
-
-To preview the resources that the Terraform script will create, optionally run
-
-```bash
-terraform plan
-```
-
-When satisfied with the plan and ready to create cloud resources, run
-
-```bash
-terraform apply
-```
-
-`terraform apply` can take a few minutes to complete. Once complete, output values are written to the console. These output values can be displayed anytime by again running
-
-```bash
-terraform output
-```
-
-### Modifying Cloud Resources
-
-After provisioning the infrastructure if changes were to be made to inputs e.g., change number of nodes in a node pool or set create_postgres to true/false, then add the variable to terraform.tfvars and changes the value and run `terrafom apply`.
-
-### Interacting with Kubernetes cluster
-
-Terraform script writes `kube_config` output value to a file `./[prefix]-gke-kubeconfig.conf`. Now that you have your Kubernetes cluster up and running, here's how to connect to the cluster
-
-```bash
-export KUBECONFIG=./[prefix]-gke-kubeconfig.conf
-kubectl get nodes
-```
-
-### Examples
-
-We include several samples - `sample-input*.tfvars` in this repo to get started. Evaluate the sample files, then review the [CONFIG-VARS.md](docs/CONFIG-VARS.md) to see what other variables can be used.
-
-### Troubleshooting
+## Troubleshooting
 
 See [troubleshooting](./docs/Troubleshooting.md) page.
 
