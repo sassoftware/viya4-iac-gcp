@@ -58,7 +58,7 @@ GCLOUD CLI Example:
 ```bash
 PROJECT="<my-project>"  # <== CHANGE
 SA_NAME="<my-tf-gke>"   # <>== CHANGE
-gcloud iam service-accounts keys create ~/.config/gcloud/${SA_NAME}-${PROJECT}-service-account.json --iam-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com
+gcloud iam service-accounts keys create ./${SA_NAME}-${PROJECT}-service-account.json --iam-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com
 ```
 
 ## Terraform project variables to authenticate with GCP

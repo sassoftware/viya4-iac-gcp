@@ -13,36 +13,27 @@ This project contains Terraform scripts to provision Google GCP infrastructure r
 
 ## Prerequisites
 
-Operational knowledge of [Terraform](https://www.terraform.io/intro/index.html), [Google Cloud Platform](https://https://cloud.google.com/), and [Kubernetes](https://kubernetes.io/docs/concepts/).
+Operational knowledge of 
+- [Terraform](https://www.terraform.io/intro/index.html)
+- [Google Cloud Platform](https://https://cloud.google.com/)
+- [Kubernetes](https://kubernetes.io/docs/concepts/).
+
+Google Cloud Resources:
+
+- Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
+- A [Google CLoud Service Account](./docs/user/TerraformGCPAuthentication.md).
+- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
+
 This tool supports running both from terraform installed on your local machine or via a docker container. The Dockerfile for the container can be found [here](Dockerfile)
 
-### Required
+### Terraform
 
-#### GCP Project
+- [Terraform](https://www.terraform.io/downloads.html) - v0.13.4
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
+- [jq](https://stedolan.github.io/jq/) - v1.6
+### Docker
 
-Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) and a [**Google CLoud Service Account**](./docs/user/TerraformGCPAuthentication.md).
-Make sure Google Cloud Project has at least the following [API Services](https://cloud.google.com/apis/docs/getting-started#enabling_apis) enabled:
-
-| API  Service Name | Description/Link | Use |
-| :--- | :--- | :---  |
-| `container.googleapis.com` | [Kubernetes Engine API](https://console.cloud.google.com/apis/library/container.googleapis.com) ||
-| `compute.googleapis.com`| [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com) ||
-| `file.googleapis.com` | [Cloud Filestore API](https://console.cloud.google.com/apis/library/file.googleapis.com) | Only needed for `storage_type="ha"` |
-| `sqladmin.googleapis.com`| [Cloud SQL Admin API](https://console.cloud.google.com/apis/library/sqladmin.googleapis.com) | Only needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres)
-| `servicenetworking.googleapis.com`| [Service Networking API](https://console.cloud.google.com/apis/library/servicenetworking.googleapis.com) | Only needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres)
-| `cloudresourcemanager.googleapis.com`| [Cloud Resource Manager API](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com) | only needed if you create an [SQL Postgres instance](../CONFIG-VARS.md#postgres) |
-
-#### Terraform
-
-[Terraform](https://www.terraform.io/downloads.html) - v0.13.3
-
-#### Docker
-
-[Docker](https://docs.docker.com/get-docker/)
-
-### Optional
-
-- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - comes in handy as an alternative to the Google CLoud Platform Portal
+- [Docker](https://docs.docker.com/get-docker/)
 
 ## Getting Started
 
@@ -62,13 +53,23 @@ cd viya4-iac-gcp
 
 See [Authenticating Terraform to access GCP](./docs/user/TerraformGCPAuthentication.md) for details.
 
+### Building the docker image
+
+Run the following command to create your `viya4-iac-gcp` local docker image
+
+```bash
+docker build -t viya4-iac-gcp .
+```
+
 ### Customize Input Values
 
 Create a file named `terraform.tfvars` to customize any input variable value. For starters, you can copy one of the provided example variable definition files in `./examples` folder. For more details on the variables declared in [variables.tf](variables.tf) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
 
 When using a variable definition file other than `terraform.tfvars`, see [Advanced Terraform Usage](docs/user/AdvancedTerraformUsage.md) for additional command options.
 
-### Running Terraform Commands
+### Running 
+
+#### Terraform
 
 Initialize the Terraform environment for this project by running 
 
@@ -88,7 +89,7 @@ terraform plan
 
 When satisfied with the plan and ready to create cloud resources, run
 
-```bash
+```bash 
 terraform apply
 ```
 
@@ -98,17 +99,93 @@ terraform apply
 terraform output
 ```
 
-### Modifying Cloud Resources
-
-After provisioning the infrastructure if changes were to be made to inputs e.g., change number of nodes in a node pool or set create_postgres to true/false, then add the variable to terraform.tfvars and changes the value and run `terrafom apply`.
-
-### Interacting with Kubernetes cluster
-
-Terraform script writes `kube_config` output value to a file `./[prefix]-gke-kubeconfig.conf`. Now that you have your Kubernetes cluster up and running, here's how to connect to the cluster
+To destroy the kubernetes cluster and all related resources, run
 
 ```bash
-export KUBECONFIG=./[prefix]-gke-kubeconfig.conf
+terraform destroy
+```
+NOTE: The "destroy" action is destructive and irreversible.
+
+#### Docker
+
+##### Preparation
+
+When using the Docker container you need to make sure that all file references in your `terraform.tfvars` file are accessible inside the container. The easiest way to achieve this is to make sure that the files specified in the following variables are stored within your project directory:
+
+| Name | Description | 
+| :--- | :--- |   
+| service_account_keyfile | Filename of the Service Account JSON file |
+| ssh_public_key | Filename of the public ssh key to use for all VMs | 
+
+Then copy `terraform.tfvars` file to `terraform.docker.tfvars` and modify the paths to those variables to use `/workspace/<relative filename in the current project directory>`, because your current project directory will be mounted as `/workspace` within the container.
+
+##### Sample Actions
+
+To preview the resources that the Terraform script will create, optionally run
+
+```bash
+docker run --rm -u "$UID:$GID" \
+  -v $(pwd):/workspace \
+  viya4-iac-gcp \
+  plan -var-file=/workspace/terraform.docker.tfvars \
+       -state /workspace/terraform.tfstate  
+```
+
+When satisfied with the plan and ready to create cloud resources, run
+
+```bash
+docker run --rm -u "$UID:$GID" \
+  -v $(pwd):/workspace viya4-iac-gcp \
+  apply -auto-approve \
+        -var-file=/workspace/terraform.docker.tfvars \
+        -state /workspace/terraform.tfstate 
+```
+`terraform apply` can take a few minutes to complete. Once complete, output values are written to the console.
+
+The output values can be displayed anytime by again running
+
+```bash
+docker run --rm -u "$UID:$GID" \
+  -v $(pwd):/workspace viya4-iac-gcp \
+  output -state /workspace/terraform.tfstate 
+ 
+```
+
+To destroy the kubernetes cluster and all related resources, run
+
+```bash
+docker run --rm -u "$UID:$GID" \
+  -v $(pwd):/workspace viya4-iac-gcp \
+  destroy -auto-approve \
+          -var-file=/workspace/terraform.docker.tfvars \
+          -state /workspace/terraform.tfstate
+```
+NOTE: The "destroy" action is destructive and irreversible.
+
+
+### Modifying Cloud Resources
+
+After provisioning the infrastructure if changes were to be made to inputs e.g., change number of nodes in a node pool or set create_postgres to true/false, then add the variable to terraform.tfvars and changes the value and run either `terraform apply` or the equivalent `docker run ... apply` command.
+### Interacting with Kubernetes cluster
+
+Terraform script writes `kube_config` output value to a file `./[prefix]-gke-kubeconfig.conf`. Now that you have your Kubernetes cluster up and running, here iis how to connect to the cluster:
+
+#### Terraform 
+
+```bash
+export KUBECONFIG=./<your prefix>-gke-kubeconfig.conf
 kubectl get nodes
+```
+
+#### Docker
+
+```bash
+docker run --rm \
+  -e KUBECONFIG=/workspace/<your prefix>-gcp-kubeconfig.conf \
+  -v $(pwd):/workspace \
+  --entrypoint kubectl \
+  viya4-iac-gcp get nodes 
+
 ```
 
 ### Examples
