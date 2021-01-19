@@ -2,8 +2,8 @@
 
 ## Prereqs
 
-- Make sure you have all the necessary tools [installed on your workstation](../../README.md#terraform.
-- Prepare a file with authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md)
+- Make sure you have all the necessary tools [installed on your workstation](../../README.md#terraform).
+- Prepare a file with authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md).
 - Prepare your `terraform.tfvars` file, as described in [Customize Input Values](../../README.md#customize-input-values).
 
 
