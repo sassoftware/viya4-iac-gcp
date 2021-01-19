@@ -108,7 +108,7 @@ NOTE: The "destroy" action is irreversible.
 
 **Note** this requires [`cluster_endpoint_public_access_cidrs`](../CONFIG-VARS.md#admin-access) value to be set to your local ip or CIDR range.
 
-### Using `kubectl` Example
+### `kubectl` Example:
 
 ```bash
 docker run --rm \

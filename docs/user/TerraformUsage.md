@@ -64,7 +64,7 @@ Terraform script writes the `kube_config` output value to a file `./[prefix]-gke
 
 **Note** this requires [`cluster_endpoint_public_access_cidrs`](../CONFIG-VARS.md#admin-access) value to be set to your local ip or CIDR range.
 
-### `kubectl` Example
+### `kubectl` Example:
 
 ```bash
 export KUBECONFIG=./<your prefix>-gke-kubeconfig.conf
