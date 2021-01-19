@@ -53,7 +53,7 @@ GCLOUD CLI Example:
 ```bash
 PROJECT="<my-project>"           # <== CHANGE
 SA_NAME="<my-service-account>"   # <== CHANGE
-SA_KEY_FILE="$HOME/./${SA_NAME}-${PROJECT}gcp-service-account.json"
+SA_KEY_FILE="$HOME/.viya4-tf-gcp-service-account.json"
 gcloud iam service-accounts keys create ${SA_KEY_FILE} --iam-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com
 chmod 500 ${SA_KEY_FILE} # secure the keyfile
 ```
