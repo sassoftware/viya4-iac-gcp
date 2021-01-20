@@ -29,19 +29,12 @@ provider "kubernetes" {
   token                  = data.google_client_config.current.access_token
   load_config_file       = false
 }
-resource "null_resource" "copy_kubeconfig" {
-  triggers = {
-    kubeconfig = module.gke_cluster.kubeconfig_raw
-#    always_run = timestamp()
-  }
-  provisioner "local-exec" {
-    # copy the kubeconfig file into different location for local or docker execution
-    command = "[[ ! -z \"$TF_VAR_iac_tooling\" && -d '/workspace' ]] && echo \"${module.gke_cluster.kubeconfig_raw}\" > /workspace/$FILENAME || echo \"${module.gke_cluster.kubeconfig_raw}\" > $FILENAME"
-    environment = {
-      FILENAME = "${var.prefix}-gcp-kubeconfig.conf"
-    }
-    interpreter = ["/bin/bash", "-c"]
-  }
+
+resource "local_file" "kubeconfig" {
+  content              =  module.gke_cluster.kubeconfig_raw
+  filename             = local.kubeconfig_path
+  file_permission      = "0644"
+  directory_permission = "0755"
 }
 
 data "google_client_config" "current" {}
@@ -49,7 +42,6 @@ data "google_client_config" "current" {}
 data "google_compute_zones" "available" {
   region = local.region
 }
-
 
 resource "tls_private_key" "private_key" {
   count     = var.ssh_public_key == "" ? 1 : 0
@@ -89,6 +81,9 @@ locals {
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
   ssh_public_key = var.ssh_public_key != "" ? file(var.ssh_public_key) : element(coalescelist(data.tls_public_key.public_key.*.public_key_openssh, [""]), 0)
+
+  kubeconfig_filename = "${var.prefix}-gke-kubeconfig.conf"
+  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : local.kubeconfig_filename
 
 }
 
