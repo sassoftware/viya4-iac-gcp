@@ -10,6 +10,7 @@ terraform {
     template    = "~> 2.1.2"
     tls         = "~> 3.0.0"
     null        = "~> 3.0.0"
+    external    = "~> 2.0.0"
   }
 }
 
@@ -85,6 +86,33 @@ locals {
   kubeconfig_filename = "${var.prefix}-gke-kubeconfig.conf"
   kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : local.kubeconfig_filename
 
+}
+
+data "external" "git_hash" {
+  program = ["git", "log", "-1", "--format=format:{ \"git-hash\": \"%H\" }"]
+}
+
+data "external" "iac_tooling_version" {
+  program = ["files/iac_tooling_version.sh"]
+}
+
+resource "kubernetes_config_map" "sas_iac_buildinfo" {
+  metadata {
+    name      = "sas-iac-buildinfo"
+    namespace = "kube-system"
+  }
+
+  data = {
+    git-hash    = lookup(data.external.git_hash.result, "git-hash")
+    timestamp   = chomp(timestamp())
+    iac-tooling = var.iac_tooling
+    terraform   = <<EOT
+      version: ${lookup(data.external.iac_tooling_version.result, "terraform_version")}
+      revision: ${lookup(data.external.iac_tooling_version.result, "terraform_revision")}
+      provider-selections: ${lookup(data.external.iac_tooling_version.result, "provider_selections")}
+      outdated: ${lookup(data.external.iac_tooling_version.result, "terraform_outdated")}
+EOT
+  }
 }
 
 module "network" {
