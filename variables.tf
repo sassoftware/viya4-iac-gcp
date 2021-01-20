@@ -27,6 +27,12 @@ variable "kubernetes_version" {
   default = ""
 }
 
+variable "iac_tooling" {
+  description = "Value used to identify the tooling used to generate this providers infrastructure."
+  type        = string
+  default     = "terraform"
+}
+
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - RAPID is currently the only channel that supports k8s v1.18
 variable "kubernetes_channel" {
   default = "RAPID"
