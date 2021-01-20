@@ -56,7 +56,7 @@ docker run --rm -u "$(id -u):$(id -g)" \
 ```
 This command can take a few minutes to complete. Once complete, output values are written to the console.
 
-The kubeconfig file for the cluster is being written to `[prefix]-gcp-kubeconfig.conf` in the current directory `$(pwd)`.
+The kubeconfig file for the cluster is being written to `[prefix]-gke-kubeconfig.conf` in the current directory `$(pwd)`.
 
 ## Display Outputs
 
