@@ -14,7 +14,7 @@ WORKDIR /viya4-iac-gcp
 
 COPY . .
 
-RUN terraform init /viya4-iac-gcp
+RUN apt-get install -y jq && terraform init /viya4-iac-gcp
 
 ENV TF_VAR_iac_tooling=docker
 ENTRYPOINT [ "/bin/terraform" ]
