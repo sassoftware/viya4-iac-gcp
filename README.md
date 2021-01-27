@@ -25,7 +25,7 @@ Operational knowledge of
 - [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
 - Terraform or Docker
   - #### Terraform
-    - [Terraform](https://www.terraform.io/downloads.html) - v0.13.4
+    - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
     - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
     - [jq](https://stedolan.github.io/jq/) - v1.6Docker
   - #### Docker

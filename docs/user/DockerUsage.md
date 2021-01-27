@@ -31,10 +31,10 @@ Note that local references to `$HOME` (or "`~`") need to map to the root directo
 To preview which resources will be created, run
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" \
-  --volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
-  --volume=$HOME/.ssh:/.ssh \
-  --volume=$(pwd):/workspace \
+docker run --rm --userr "$(id -u):$(id -g)" \
+  --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+  --volume $HOME/.ssh:/.ssh \
+  --volume $(pwd):/workspace \
   viya4-iac-gcp \
   plan -var-file=/workspace/terraform.tfvars \
        -state=/workspace/terraform.tfstate  
@@ -45,10 +45,10 @@ docker run --rm -u "$(id -u):$(id -g)" \
 To create the cloud resources, run
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" \
-  --volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
-  --volume=$HOME/.ssh:/.ssh \
-  --volume=$(pwd):/workspace \
+docker run --rm --user "$(id -u):$(id -g)"  --group-add root \
+  --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+  --volume $HOME/.ssh:/.ssh \
+  --volume $(pwd):/workspace \
   viya4-iac-gcp \
   apply -auto-approve \
         -var-file=/workspace/terraform.tfvars \
@@ -63,8 +63,8 @@ The kubeconfig file for the cluster is being written to `[prefix]-gke-kubeconfig
 The output values can be displayed anytime again by running
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" \
-  --volume=$(pwd):/workspace \
+docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+  --volume $(pwd):/workspace \
   viya4-iac-gcp \
   output -state=/workspace/terraform.tfstate 
  
@@ -75,10 +75,10 @@ docker run --rm -u "$(id -u):$(id -g)" \
 After provisioning the infrastructure if further changes were to be made then add the variable and desired value to `terraform.tfvars` and run again:
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" \
-  --volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
-  --volume=$HOME/.ssh:/.ssh \
-  --volume=$(pwd):/workspace \
+docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+  --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+  --volume $HOME/.ssh:/.ssh \
+  --volume $(pwd):/workspace \
   viya4-iac-gcp \
   apply -auto-approve \
         -var-file=/workspace/terraform.tfvars \
@@ -91,10 +91,10 @@ docker run --rm -u "$(id -u):$(id -g)" \
 To destroy the cloud resources created with the previous commands, run
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" \
-  --volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
-  --volume=$HOME/.ssh:/.ssh \
-  --volume=$(pwd):/workspace \
+docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+  --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+  --volume $HOME/.ssh:/.ssh \
+  --volume $(pwd):/workspace \
   viya4-iac-gcp \
   destroy -auto-approve \
           -var-file=/workspace/terraform.tfvars \
