@@ -154,6 +154,9 @@ resource "kubernetes_service" "sql_proxy_service" {
   metadata {
     name      = "sql-proxy-service"
     namespace = local.sql_proxy_namespace
+    annotations = { "kubernetes.io/ingress.class" = "nginx",
+                    "cloud.google.com/neg" =  jsonencode({ingress = false})
+                  }
   }
   spec {
     port {

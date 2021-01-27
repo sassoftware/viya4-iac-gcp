@@ -47,11 +47,6 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-  # needed for Cloud SQL Proxy
-  workload_identity_config {
-    identity_namespace = "${data.google_client_config.current.project}.svc.id.goog"
-  }
-
   # create the nodes without public ips
   dynamic "private_cluster_config" {
     for_each = var.cluster_networking == "vpc-native" ? [0] : []
@@ -196,4 +191,20 @@ resource "random_id" "username" {
 resource "random_id" "password" {
   byte_length = 16
 }
+
+resource "google_compute_firewall" "ingress_webhook_firewall" {
+  name    = "${var.name}-ingress-webhook-firewall"
+  count   = var.cluster_networking == "vpc-native" ? 1 : 0
+  network = var.network
+
+  allow {
+    protocol = "tcp"
+    ports    = [ 8443 ]
+  }
+
+  target_tags = [ var.name ]
+
+  source_ranges = [local.master_ipv4_cidr_block]
+}
+
 
