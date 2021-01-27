@@ -16,10 +16,10 @@ output "cluster_ca_certificate" {
 }
 
 output "cluster_user_name" {
-    value = google_container_cluster.primary.master_auth[0].username
+  value = google_container_cluster.primary.master_auth[0].username
 }
 output "cluster_user_password" {
-    value = google_container_cluster.primary.master_auth[0].password
+  value = google_container_cluster.primary.master_auth[0].password
 }
 output "kubeconfig_raw" {
   value = data.template_file.kubeconfig.rendered

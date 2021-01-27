@@ -32,7 +32,7 @@ provider "kubernetes" {
 }
 
 resource "local_file" "kubeconfig" {
-  content              =  module.gke_cluster.kubeconfig_raw
+  content              = module.gke_cluster.kubeconfig_raw
   filename             = local.kubeconfig_path
   file_permission      = "0644"
   directory_permission = "0755"
