@@ -8,7 +8,6 @@ terraform {
     local       = "~> 1.4.0"
     random      = "~> 2.3.0"
     template    = "~> 2.1.2"
-    tls         = "~> 3.0.0"
     null        = "~> 3.0.0"
     external    = "~> 2.0.0"
   }
@@ -44,16 +43,6 @@ data "google_compute_zones" "available" {
   region = local.region
 }
 
-resource "tls_private_key" "private_key" {
-  count     = var.ssh_public_key == "" ? 1 : 0
-  algorithm = "RSA"
-}
-
-data "tls_public_key" "public_key" {
-  count           = var.ssh_public_key == "" ? 1 : 0
-  private_key_pem = element(coalescelist(tls_private_key.private_key.*.private_key_pem), 0)
-}
-
 locals {
 
   # get the region from "location", or else from the local config
@@ -81,7 +70,7 @@ locals {
   cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
-  ssh_public_key = var.ssh_public_key != "" ? file(var.ssh_public_key) : element(coalescelist(data.tls_public_key.public_key.*.public_key_openssh, [""]), 0)
+  ssh_public_key = file(var.ssh_public_key)
 
   kubeconfig_filename = "${var.prefix}-gke-kubeconfig.conf"
   kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : local.kubeconfig_filename
