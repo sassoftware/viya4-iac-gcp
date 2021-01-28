@@ -72,16 +72,6 @@ output "provider" {
   value = "gcp"
 }
 
-
-
-output "ssh_private_key" {
-  value = var.ssh_public_key == "" ? element(coalescelist(data.tls_public_key.public_key.*.private_key_pem, [""]), 0) : null
-}
-output "ssh_public_key" {
-  value = var.ssh_public_key == "" ? element(coalescelist(data.tls_public_key.public_key.*.public_key_pem, [""]), 0) : null
-}
-
-
 # bastion server
 output "jump_private_ip" {
   value = module.jump_server.private_ip

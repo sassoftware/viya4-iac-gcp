@@ -25,6 +25,7 @@ Terraform input variables can be set in the following ways:
 | location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script.  | string | Choosing a Region will make this a multi-zonal cluster. If you are not sure which to choose, go with a ZONE instead of a region  |
 | project | The GCP Project to use | string | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | |
+| ssh_public_key | Public ssh key for VMs | string | "" | Name of file with public ssh to use for jump resp. nfs VM.  |
 
 ## Admin Access
 
@@ -48,7 +49,6 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | :--- | ---: | ---: | ---: | ---: | 
 | kubernetes_version | The GKE cluster K8S version | string | "1.18.9-gke.1501" | Valid values depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
 | kubernetes_channel | The GKE cluster channel | string | "RAPID" | Possible values: "STABLE", "REGULAR", "RAPID", "" |
-| ssh_public_key | Public ssh key for VMs | string | "" | Name of file with public ssh to use for jump resp. nfs VM. If no key is given, a keypair will be generated and output int the `ssh_public_key` and `ssh_private_key` output variables |
 | create_jump_vm | Create bastion host | bool | true for storage_type == "standard", otherwise false| |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 
