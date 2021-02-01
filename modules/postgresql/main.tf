@@ -53,10 +53,11 @@ resource "google_sql_database" "database" {
 }
 
 resource "google_sql_user" "pgadmin" {
-  name     = var.administrator_login
-  count    = var.create_postgres ? 1 : 0
-  instance = google_sql_database_instance.utility-database[0].name
-  password = var.administrator_password
+  name            = var.administrator_login
+  count           = var.create_postgres ? 1 : 0
+  instance        = google_sql_database_instance.utility-database[0].name
+  password        = var.administrator_password
+  deletion_policy = "ABANDON"
 }
 
 
@@ -155,8 +156,8 @@ resource "kubernetes_service" "sql_proxy_service" {
     name      = "sql-proxy-service"
     namespace = local.sql_proxy_namespace
     annotations = { "kubernetes.io/ingress.class" = "nginx",
-                    "cloud.google.com/neg" =  jsonencode({ingress = false})
-                  }
+      "cloud.google.com/neg" = jsonencode({ ingress = false })
+    }
   }
   spec {
     port {
