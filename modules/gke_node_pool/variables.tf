@@ -1,6 +1,6 @@
 # REQUIRED variables (must be set by caller of the module)
 variable "node_pool_name" {}
-variable "node_pool_location" {}
+variable "node_locations" {}
 variable "gke_cluster" {}
 
 # OPTIONAL variables (these have defaults)

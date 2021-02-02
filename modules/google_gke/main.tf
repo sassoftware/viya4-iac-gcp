@@ -27,10 +27,10 @@ resource "google_container_cluster" "primary" {
   # REQUIRED variables (must be set by caller of the module)
   name            = var.name
   location        = var.location
+  node_locations  = var.node_locations
   resource_labels = var.labels
   network         = var.network
   subnetwork      = var.subnet
-
 
   # Kubernetes channel and version
   release_channel {
@@ -81,6 +81,7 @@ resource "google_container_cluster" "primary" {
     for_each = var.default_nodepool_create ? [0] : []
     content {
       name = "default"
+
       node_config {
         preemptible     = false
         machine_type    = var.default_nodepool_vm_type
@@ -199,10 +200,10 @@ resource "google_compute_firewall" "ingress_webhook_firewall" {
 
   allow {
     protocol = "tcp"
-    ports    = [ 8443 ]
+    ports    = [8443]
   }
 
-  target_tags = [ var.name ]
+  target_tags = [var.name]
 
   source_ranges = [local.master_ipv4_cidr_block]
 }

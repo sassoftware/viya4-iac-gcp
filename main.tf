@@ -129,7 +129,7 @@ module "nfs_server" {
 
   name         = "${var.prefix}-nfs-server"
   machine_type = "n1-standard-1"
-  location     = var.location
+  location     = local.zone
   tags         = var.tags
 
   subnet   = module.network.subnet
@@ -171,7 +171,7 @@ module "jump_server" {
 
   name         = "${var.prefix}-jump-server"
   machine_type = "n1-standard-1"
-  location     = var.location
+  location     = local.zone
   tags         = var.tags
 
   subnet   = module.network.subnet
@@ -191,7 +191,8 @@ module "gke_cluster" {
   source = "./modules/google_gke"
 
   name               = local.cluster_name
-  location           = local.location
+  location           = local.region
+  node_locations     = [local.zone]
   kubernetes_version = var.kubernetes_version
   kubernetes_channel = var.kubernetes_channel
   labels             = var.tags
@@ -233,7 +234,7 @@ module "postgresql" {
   create_postgres = var.create_postgres
 
   name                = "${var.prefix}-pgsql"
-  location            = local.location
+  location            = local.zone
   labels              = var.tags
   network             = module.network.id
   public_access_cidrs = local.postgres_public_access_cidrs
@@ -255,9 +256,9 @@ module "default_node_pool" {
   source = "./modules/gke_node_pool"
   count  = var.nodepools_inline ? 0 : 1
 
-  node_pool_name     = "default"
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
+  node_pool_name = "default"
+  gke_cluster    = module.gke_cluster.cluster_name
+  node_locations = [local.zone]
 
   machine_type       = var.default_nodepool_vm_type
   os_disk_size       = var.default_nodepool_os_disk_size
@@ -274,9 +275,9 @@ module "node_pools" {
 
   for_each = var.nodepools_inline ? {} : var.node_pools
 
-  node_pool_name     = each.key
-  gke_cluster        = module.gke_cluster.cluster_name
-  node_pool_location = module.gke_cluster.location
+  node_pool_name = each.key
+  gke_cluster    = module.gke_cluster.cluster_name
+  node_locations = [local.zone]
 
   machine_type       = each.value.vm_type
   os_disk_size       = each.value.os_disk_size
@@ -289,7 +290,6 @@ module "node_pools" {
 
   depends_on = [module.default_node_pool]
 }
-
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
   name    = "${var.prefix}-nfs-server-firewall"
