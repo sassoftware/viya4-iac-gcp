@@ -25,9 +25,9 @@ locals {
 resource "google_container_node_pool" "node_pool" {
 
   # REQUIRED variables (must be set by caller of the module)
-  name     = var.node_pool_name
-  location = var.node_pool_location
-  cluster  = var.gke_cluster
+  name           = var.node_pool_name
+  node_locations = var.node_locations
+  cluster        = var.gke_cluster
 
   node_config {
     preemptible     = false

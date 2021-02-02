@@ -52,6 +52,8 @@ variable "default_nodepool_create" {
 variable "node_pools" {
 }
 
+variable "node_locations" {
+}
 
 variable "cluster_networking" {
   default = "route-based"
