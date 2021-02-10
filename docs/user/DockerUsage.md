@@ -31,7 +31,7 @@ Note that local references to `$HOME` (or "`~`") need to map to the root directo
 To preview which resources will be created, run
 
 ```bash
-docker run --rm --userr "$(id -u):$(id -g)" \
+docker run --rm --user "$(id -u):$(id -g)" \
   --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
   --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
