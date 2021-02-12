@@ -210,7 +210,7 @@ module "gke_cluster" {
   default_nodepool_max_nodes       = var.default_nodepool_max_nodes
   default_nodepool_min_nodes       = var.default_nodepool_min_nodes
   default_nodepool_taints          = var.default_nodepool_taints
-  default_nodepool_labels          = merge(var.tags, var.default_nodepool_labels)
+  default_nodepool_labels          = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
 
   node_pools = var.nodepools_inline ? var.node_pools : {}
 
@@ -267,7 +267,7 @@ module "default_node_pool" {
   max_nodes          = var.default_nodepool_max_nodes
   min_nodes          = var.default_nodepool_min_nodes
   node_taints        = var.default_nodepool_taints
-  node_labels        = merge(var.tags, var.default_nodepool_labels)
+  node_labels        = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
 }
 
 module "node_pools" {

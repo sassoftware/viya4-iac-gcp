@@ -78,7 +78,7 @@ Additional node pools can be created separate from the default nodepool. This is
 | min_nodes | Minimum and initial number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
 | max_nodes | Maximum number of nodes for the nodepool | number | Value must be between 1 and 100. Setting min and max node counts the same disables autoscaling |
 | node_taints | Taints for the nodepool VMs | list of strings | |
-| node_labels | Labels to add to the nodepool VMs | map | On nodes you wish to run SAS pods you will need to include this label: "workload.sas.com/node" = "" |
+| node_labels | Labels to add to the nodepool VMs | map | |
 | local_ssd_count | Number of 375 GB local ssd disks to provision  | number ||
 
 The default values for the `node_pools` variable are:
