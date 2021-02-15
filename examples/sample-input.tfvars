@@ -18,7 +18,7 @@ default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
 # add labels to the created resources
 tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
-# Azure Postgres config
+# Postgres config
 create_postgres                  = true # set this to "false" when using internal Crunchy Postgres
 postgres_ssl_enforcement_enabled = false
 postgres_administrator_password  = "mySup3rS3cretPassw0rd"
