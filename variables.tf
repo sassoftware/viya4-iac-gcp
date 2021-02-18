@@ -114,7 +114,7 @@ variable "storage_type" {
 
 # Default Node pool config
 variable "default_nodepool_vm_type" {
-  default = "e2-medium"
+  default = "e2-standard-8"
 }
 
 variable "default_nodepool_local_ssd_count" {
@@ -126,7 +126,7 @@ variable "default_nodepool_os_disk_size" {
 }
 
 variable "default_nodepool_node_count" {
-  default = 3
+  default = 1  
 }
 
 variable "default_nodepool_max_nodes" {

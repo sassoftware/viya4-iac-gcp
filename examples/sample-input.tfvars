@@ -23,10 +23,6 @@ create_postgres                  = true # set this to "false" when using interna
 postgres_ssl_enforcement_enabled = false
 postgres_administrator_password  = "mySup3rS3cretPassw0rd"
 
-# GKE config
-default_nodepool_node_count = 2
-default_nodepool_vm_type    = "n1-standard-1"
-
 # Node Pools config
 node_pools = {
   cas = {
