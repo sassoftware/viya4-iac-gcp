@@ -52,6 +52,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | create_jump_vm | Create bastion host | bool | true for storage_type == "standard", otherwise false| |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 
+| jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
 
 ## Nodepools

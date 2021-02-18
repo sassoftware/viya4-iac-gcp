@@ -5,12 +5,12 @@ yum -y install nfs-utils
 #
 # create mount directory
 #
-mkdir -p /mnt/viya-share
+mkdir -p ${jump_rwx_filestore_path} 
 
 #
 # fstab entry
 #
-echo "${rwx_filestore_endpoint}:${rwx_filestore_path}    /mnt/viya-share    nfs    _netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=3,tcp,namlen=255,retrans=2,sec=sys,local_lock=none 0 0" >>/etc/fstab
+echo "${rwx_filestore_endpoint}:${rwx_filestore_path}    ${jump_rwx_filestore_path}    nfs    _netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=3,tcp,namlen=255,retrans=2,sec=sys,local_lock=none 0 0" >>/etc/fstab
 
 #
 # mount the nfs
@@ -30,6 +30,6 @@ mount -a
 #
 # Change permissions and owener
 #
-mkdir -p /mnt/viya-share/pvs
-chmod 777 /mnt/viya-share -R
-chown -R nobody:nobody /mnt/viya-share
+mkdir -p ${jump_rwx_filestore_path}/pvs
+chmod 777 ${jump_rwx_filestore_path} -R
+chown -R nobody:nobody ${jump_rwx_filestore_path}

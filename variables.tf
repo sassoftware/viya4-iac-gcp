@@ -87,6 +87,11 @@ variable "create_jump_public_ip" {
   default = true
 }
 
+variable "jump_rwx_filestore_path" {
+  description = "OS path used for NFS integration"
+  default     = "/viya-share"
+}
+
 # NFS VM
 variable "nfs_vm_admin" {
   description = "OS Admin User for NFS VM"

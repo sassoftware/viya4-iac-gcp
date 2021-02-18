@@ -158,6 +158,7 @@ data "template_file" "jump_bootstrap" {
     rwx_filestore_path = (var.storage_type == "standard"
       ? "/export"
     : "/${module.rwx_filestore.mount_path}")
+    jump_rwx_filestore_path = var.jump_rwx_filestore_path
   }
   depends_on = [module.nfs_server, module.rwx_filestore]
 

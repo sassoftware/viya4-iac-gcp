@@ -81,6 +81,10 @@ output "jump_public_ip" {
   value = module.jump_server.public_ip
 }
 
+output jump_rwx_filestore_path {
+  value = var.create_jump_vm ? var.jump_rwx_filestore_path : null
+}
+
 output "jump_admin_username" {
   value = module.jump_server.admin_username
 }
