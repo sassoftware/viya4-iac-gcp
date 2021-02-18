@@ -62,9 +62,6 @@ locals {
   pod_cidr_block = "10.2.0.0/16"
   vm_cidr_block  = "10.5.0.0/16"
 
-  create_jump_vm_default = var.storage_type == "standard" ? true : false
-  create_jump_vm         = var.create_jump_vm != null ? var.create_jump_vm : local.create_jump_vm_default
-
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
   cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
@@ -149,7 +146,7 @@ module "nfs_server" {
 data "template_file" "jump_bootstrap" {
 
   template = file("${path.module}/files/jump-nfs-mount.sh")
-  count    = local.create_jump_vm ? 1 : 0
+  count    = var.create_jump_vm ? 1 : 0
 
   vars = {
     rwx_filestore_endpoint = (var.storage_type == "standard"
@@ -167,7 +164,7 @@ data "template_file" "jump_bootstrap" {
 module "jump_server" {
 
   source           = "./modules/google_vm"
-  create_vm        = local.create_jump_vm
+  create_vm        = var.create_jump_vm
   create_public_ip = var.create_jump_public_ip
 
   name         = "${var.prefix}-jump-server"
@@ -314,7 +311,7 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
 
 resource "google_compute_firewall" "jump_vm_firewall" {
   name  = "${var.prefix}-jump-server-firewall"
-  count = (var.create_jump_public_ip && local.create_jump_vm && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
+  count = (var.create_jump_public_ip && var.create_jump_vm && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
 
   network = module.network.id
 

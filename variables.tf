@@ -75,7 +75,7 @@ variable "ssh_public_key" {
 # Bastion VM
 variable "create_jump_vm" {
   type    = bool
-  default = null # the actual default depends on the value for storage_type and is being calculated as local.create_jump_vm
+  default = true
 }
 
 variable "jump_vm_admin" {
