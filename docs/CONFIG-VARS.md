@@ -47,8 +47,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 ## General 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: | 
-| kubernetes_version | The GKE cluster K8S version | string | "1.18.9-gke.1501" | Valid values depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
-| kubernetes_channel | The GKE cluster channel | string | "RAPID" | Possible values: "STABLE", "REGULAR", "RAPID", "" |
+| kubernetes_version | The GKE cluster K8S version | string | "1.18" | Valid values depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
+| kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 

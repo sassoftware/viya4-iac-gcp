@@ -24,6 +24,7 @@ locals {
 data "google_client_config" "current" {}
 
 resource "google_container_cluster" "primary" {
+
   # REQUIRED variables (must be set by caller of the module)
   name            = var.name
   location        = var.location
@@ -102,7 +103,7 @@ resource "google_container_cluster" "primary" {
       }
       management {
         auto_repair  = true
-        auto_upgrade = true
+        auto_upgrade = false
       }
       node_count         = local.default_nodepool_autoscaling ? null : var.default_nodepool_min_nodes
       initial_node_count = local.default_nodepool_autoscaling ? var.default_nodepool_min_nodes : null
@@ -147,7 +148,7 @@ resource "google_container_cluster" "primary" {
       }
       management {
         auto_repair  = true
-        auto_upgrade = true
+        auto_upgrade = false
       }
 
       node_count         = ((node_pool.value["min_nodes"] == node_pool.value["max_nodes"]) ? false : true) ? null : node_pool.value["min_nodes"]

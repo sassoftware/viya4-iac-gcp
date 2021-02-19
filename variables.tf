@@ -24,7 +24,7 @@ variable "project" {
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  default = ""
+  default = "1.18"
 }
 
 variable "iac_tooling" {
@@ -35,7 +35,7 @@ variable "iac_tooling" {
 
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - RAPID is currently the only channel that supports k8s v1.18
 variable "kubernetes_channel" {
-  default = "RAPID"
+  default = "UNSPECIFIED"
 }
 
 variable "tags" {
