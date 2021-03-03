@@ -102,13 +102,6 @@ locals {
 
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
-  # cluster_endpoint_public_access_cidrs = [
-  #   for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
-  #     display_name = cidr
-  #     cidr_block   = cidr
-  #   }
-  # ]
-
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
   ssh_public_key = file(var.ssh_public_key)
@@ -329,7 +322,7 @@ module "gke" {
   region                     = local.region
   # TODO: add var for user to change cluster to zonal
   regional                   = true
-  # zones                      = [local.zone]
+  zones                      = [local.zone]
   network                    = module.vpc.network_name
   subnetwork                 = module.vpc.subnets_names[0]
   ip_range_pods              = "${var.prefix}-gke-pods"
@@ -338,27 +331,28 @@ module "gke" {
   horizontal_pod_autoscaling = true
   enable_private_endpoint    = false
   enable_private_nodes       = true
+  ## TODO add var to change master cidr block
   master_ipv4_cidr_block     = "10.2.0.0/28"
   add_cluster_firewall_rules = false
 
+  basic_auth_username        = random_id.username.hex
+  basic_auth_password        = random_password.password.result
+  kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
+
   # TODO: add var for user to disable/enable network policy (calico)
-  network_policy             = true
+  network_policy             = false
   remove_default_node_pool	 = true
 
   # TODO: logic to enable registy access if gcp enabled
   grant_registry_access      = true
 
   # TODO: add var for setting monitoring
-  monitoring_service         = "none"
+  # monitoring_service         = "none"
 
   # TODO cluster autscaler
   cluster_autoscaling        = { "enabled": true, "max_cpu_cores": 1, "max_memory_gb": 1, "min_cpu_cores": 1, "min_memory_gb": 1 }
 
   # TODO: 
-  # master_authorized_networks = [for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
-  #   display_name = cidr
-  #   cidr_block   = cidr
-  # }]
   master_authorized_networks = concat([
     for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
       display_name = cidr
@@ -367,11 +361,6 @@ module "gke" {
       display_name  = "VPC"
       cidr_block    = data.google_compute_subnetwork.subnetwork.ip_cidr_range
   }])
-
-  basic_auth_username        = random_id.username.hex
-  basic_auth_password        = random_password.password.result
-
-  kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
 
   node_pools = [
     for nodepool, settings in local.node_pools: {
