@@ -44,7 +44,6 @@ resource "google_compute_instance" "google_vm" {
   }
 }
 
-
 resource "google_compute_disk" "raid_disk" {
   count  = var.create_vm ? var.data_disk_count : 0
   zone   = var.location # TODO: test with region

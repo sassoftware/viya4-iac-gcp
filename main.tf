@@ -1,15 +1,39 @@
 terraform {
-  required_version = ">= 0.13.3"
+  required_version = ">= 0.13.6"
 
   required_providers {
-    google      = ">= 3.51.0"
-    google-beta = ">= 3.51.0"
-    kubernetes  = "~> 1.13.3"
-    local       = "~> 1.4.0"
-    random      = "~> 2.3.0"
-    template    = "~> 2.1.2"
-    null        = "~> 3.0.0"
-    external    = "~> 2.0.0"
+    google = {
+      source  = "hashicorp/google"
+      version = "3.58.0"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "3.58.0"
+    }
+    kubernetes  = {
+      source  = "hashicorp/kubernetes"
+      version ="1.13.0"
+    }
+    local       = {
+      source  = "hashicorp/local"
+      version = "2.1.0"
+    }
+    template    = {
+      source  = "hashicorp/template"
+      version = "2.2.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "2.2.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "2.1.0"
+    }
+    external = {
+      source  = "hashicorp/external"
+      version = "2.0.0"
+    }
   }
 }
 
@@ -24,14 +48,37 @@ provider "google-beta" {
 }
 
 provider "kubernetes" {
-  host                   = module.gke_cluster.public_endpoint
-  cluster_ca_certificate = module.gke_cluster.cluster_ca_certificate
+  host                   = module.gke.endpoint
+  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
   token                  = data.google_client_config.current.access_token
-  load_config_file       = false
+}
+
+resource "random_id" "username" {
+  byte_length = 14
+}
+
+resource "random_password" "password" {
+  length = 24
+  special = true
+  number = true
+  upper = true
+}
+
+data "template_file" "kubeconfig" {
+  template = file("${path.module}/files/kubeconfig.tmpl")
+
+  vars = {
+    cluster_name  = module.gke.name
+    endpoint      = module.gke.endpoint
+    user_name     = random_id.username.hex
+    user_password = random_password.password.result
+    cluster_ca    = module.gke.ca_certificate
+  }
+
 }
 
 resource "local_file" "kubeconfig" {
-  content              = module.gke_cluster.kubeconfig_raw
+  content              = data.template_file.kubeconfig.rendered
   filename             = local.kubeconfig_path
   file_permission      = "0644"
   directory_permission = "0755"
@@ -51,31 +98,42 @@ locals {
   # get the zone from "location", or else from the local config. If none is set, default to the first zone in the region
   is_region  = var.location != "" ? var.location == regex("^[a-z0-9]*-[a-z0-9]*", var.location) : false
   first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
-  zone = (var.location != ""
-    ? (local.is_region ? local.first_zone : var.location)
-    : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone)
-  )
-  location = var.location != "" ? var.location : local.zone
-
-  cluster_name = "${var.prefix}-gke"
-
-  pod_cidr_block = "10.2.0.0/16"
-  vm_cidr_block  = "10.5.0.0/16"
+  zone       = ( var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone) )
+  location   = var.location != "" ? var.location : local.zone
 
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
-  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
+  # cepac = var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs
+  cluster_endpoint_public_access_cidrs = [
+    for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
+      display_name = cidr
+      cidr_block   = cidr
+    }
+  ]
+
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
   ssh_public_key = file(var.ssh_public_key)
 
-  kubeconfig_filename = "${var.prefix}-gke-kubeconfig.conf"
-  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${local.kubeconfig_filename}" : local.kubeconfig_filename
+  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
 
+  authorized_networks = [
+    for cidr in var.postgres_public_access_cidrs: {
+      value = cidr
+    }
+  ]
+
+  additional_databases = [
+    for db in var.postgres_db_names: {
+      name = db
+      charset = var.postgres_db_charset
+      collation = var.postgres_db_collation
+    }
+  ]
 }
 
 data "external" "git_hash" {
-  program = ["git", "log", "-1", "--format=format:{ \"git-hash\": \"%H\" }"]
+  program = ["files/iac_git_info.sh"]
 }
 
 data "external" "iac_tooling_version" {
@@ -93,32 +151,81 @@ resource "kubernetes_config_map" "sas_iac_buildinfo" {
     timestamp   = chomp(timestamp())
     iac-tooling = var.iac_tooling
     terraform   = <<EOT
-      version: ${lookup(data.external.iac_tooling_version.result, "terraform_version")}
-      revision: ${lookup(data.external.iac_tooling_version.result, "terraform_revision")}
-      provider-selections: ${lookup(data.external.iac_tooling_version.result, "provider_selections")}
-      outdated: ${lookup(data.external.iac_tooling_version.result, "terraform_outdated")}
+version: ${lookup(data.external.iac_tooling_version.result, "terraform_version")}
+revision: ${lookup(data.external.iac_tooling_version.result, "terraform_revision")}
+provider-selections: ${lookup(data.external.iac_tooling_version.result, "provider_selections")}
+outdated: ${lookup(data.external.iac_tooling_version.result, "terraform_outdated")}
 EOT
   }
 }
 
-module "network" {
-  source            = "./modules/network"
-  name              = "${var.prefix}-vpc"
-  region            = local.region
-  project           = data.google_client_config.current.project
-  subnet_cidr_block = local.vm_cidr_block
+module "address" {
+  source       = "terraform-google-modules/address/google"
+  version      = "2.1.1"
+  project_id   = var.project
+  region       = local.region
+  address_type = "EXTERNAL"
+}
+
+module "vpc" {
+  source       = "terraform-google-modules/network/google"
+  version      = "3.1.2"
+  project_id   = var.project
+  network_name = "${var.prefix}-vpc"
+
+  subnets = [
+    {
+      subnet_name           = "${var.prefix}-gke-subnet"
+      subnet_ip             = var.gke_subnet_cidr // /23
+      subnet_region         = local.region
+      subnet_private_access = true
+    },
+    {
+      subnet_name           = "${var.prefix}-misc-subnet"
+      subnet_ip             = var.misc_subnet_cidr // /24
+      subnet_region         = local.region
+      subnet_private_access = false
+    },
+  ]
+
+  secondary_ranges = {
+    "${var.prefix}-gke-subnet" = [
+      {
+        range_name = "${var.prefix}-gke-pods"
+        ip_cidr_range = var.gke_pod_subnet_cidr // /17
+      },
+      {
+        range_name = "${var.prefix}-gke-services"
+        ip_cidr_range = var.gke_service_subnet_cidr // /22
+      }
+    ]
+  }
+}
+
+module "cloud_nat" {
+  source        = "terraform-google-modules/cloud-nat/google"
+  version       = "1.4.0"
+  project_id    = var.project
+  name          = "${var.prefix}-cloud-nat"
+  region        = local.region
+  create_router = true
+  router        = "${var.prefix}-router"
+  network       = module.vpc.network_self_link
+  nat_ips       = module.address.addresses
 }
 
 data "template_file" "nfs_cloudconfig" {
   # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
-  template = file("${path.module}/files/nfs-cloud-config")
+  template = file("${path.module}/cloud-init/nfs/cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
-    vm_cidr_block  = local.vm_cidr_block
-    pod_cidr_block = local.pod_cidr_block
+    misc_subnet_cidr  = var.misc_subnet_cidr
+    gke_pod_subnet_cidr = var.gke_pod_subnet_cidr
+    vm_admin = var.nfs_vm_admin
   }
 }
 
+# TODO - Again tf.reg module if needed
 module "nfs_server" {
   source           = "./modules/google_vm"
   create_vm        = var.storage_type == "standard" ? true : false
@@ -129,7 +236,7 @@ module "nfs_server" {
   location     = local.zone
   tags         = var.tags
 
-  subnet   = module.network.subnet
+  subnet   = "${var.prefix}-misc-subnet" // Name or self_link to subnet
   os_image = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin       = var.nfs_vm_admin
@@ -141,26 +248,26 @@ module "nfs_server" {
   data_disk_count = 4
   data_disk_size  = var.nfs_raid_disk_size
 
+  depends_on = [ module.vpc ]
 }
 
-data "template_file" "jump_bootstrap" {
+data "template_file" "jump_cloudconfig" {
 
-  template = file("${path.module}/files/jump-nfs-mount.sh")
+  template = file("${path.module}/cloud-init/jump/cloud-config")
   count    = var.create_jump_vm ? 1 : 0
 
   vars = {
-    rwx_filestore_endpoint = (var.storage_type == "standard"
-      ? module.nfs_server.private_ip
-    : module.rwx_filestore.ip)
-    rwx_filestore_path = (var.storage_type == "standard"
-      ? "/export"
-    : "/${module.rwx_filestore.mount_path}")
-    jump_rwx_filestore_path = var.jump_rwx_filestore_path
+    nfs_rwx_filestore_endpoint  = (var.storage_type == "ha" ? module.rwx_filestore.ip : module.nfs_server.private_ip )
+    nfs_rwx_filestore_path      = (var.storage_type == "ha" ? "/${module.rwx_filestore.mount_path}" : "/export")
+    vm_admin                    = var.jump_vm_admin
+    jump_rwx_filestore_path     = var.jump_rwx_filestore_path
   }
+
   depends_on = [module.nfs_server, module.rwx_filestore]
 
 }
 
+# TODO - Again tf.reg module if needed
 module "jump_server" {
 
   source           = "./modules/google_vm"
@@ -172,49 +279,19 @@ module "jump_server" {
   location     = local.zone
   tags         = var.tags
 
-  subnet   = module.network.subnet
-  os_image = "centos-cloud/centos-7"
+  subnet   = "${var.prefix}-misc-subnet" // Name or self_link to subnet
+  os_image = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin       = var.jump_vm_admin
   ssh_public_key = local.ssh_public_key
 
-  user_data      = length(data.template_file.jump_bootstrap) == 1 ? data.template_file.jump_bootstrap.0.rendered : null
-  user_data_type = "startup-script"
+  user_data      = length(data.template_file.jump_cloudconfig) == 1 ? data.template_file.jump_cloudconfig.0.rendered : null
+  user_data_type = "cloud-init"
 
   depends_on = [module.nfs_server]
 }
 
-# kubernetes cluster
-module "gke_cluster" {
-  source = "./modules/google_gke"
-
-  name               = local.cluster_name
-  location           = local.region
-  node_locations     = [local.zone]
-  kubernetes_version = var.kubernetes_version
-  kubernetes_channel = var.kubernetes_channel
-  labels             = var.tags
-  network            = module.network.id
-  subnet             = module.network.subnet
-  endpoint_access    = local.cluster_endpoint_public_access_cidrs
-  pod_cidr_block     = local.pod_cidr_block
-  cluster_networking = var.cluster_networking
-
-  default_nodepool_create          = var.nodepools_inline
-  default_nodepool_vm_type         = var.default_nodepool_vm_type
-  default_nodepool_os_disk_size    = var.default_nodepool_os_disk_size
-  default_nodepool_local_ssd_count = var.default_nodepool_local_ssd_count
-  default_nodepool_node_count      = var.default_nodepool_node_count
-  default_nodepool_max_nodes       = var.default_nodepool_max_nodes
-  default_nodepool_min_nodes       = var.default_nodepool_min_nodes
-  default_nodepool_taints          = var.default_nodepool_taints
-  default_nodepool_labels          = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
-
-  node_pools = var.nodepools_inline ? var.node_pools : {}
-
-  depends_on = [module.jump_server] # workaround to avoid jump server subnet error
-}
-
+# TODO - Again tf.reg module if needed
 module "rwx_filestore" {
   source           = "./modules/filestore"
   create_filestore = var.storage_type == "ha" ? true : false
@@ -223,76 +300,219 @@ module "rwx_filestore" {
   zone = local.zone
 
   labels  = var.tags
-  network = module.network.name
+  network = module.vpc.network_name
 }
 
-# postgres 
-module "postgresql" {
-  source          = "./modules/postgresql"
-  create_postgres = var.create_postgres
-
-  name                = "${var.prefix}-pgsql"
-  location            = local.zone
-  labels              = var.tags
-  network             = module.network.id
-  public_access_cidrs = local.postgres_public_access_cidrs
-
-  machine_type   = var.postgres_machine_type
-  disk_size_gb   = var.postgres_storage_gb
-  server_version = var.postgres_server_version
-
-  administrator_login     = var.postgres_administrator_login
-  administrator_password  = var.postgres_administrator_password
-  ssl_enforcement_enabled = var.postgres_ssl_enforcement_enabled
-
-  service_account_credentials = file(var.service_account_keyfile)
-
+data "google_container_engine_versions" "gke-version" {
+  provider = google-beta
+  location       = local.location
+  version_prefix = "${var.kubernetes_version}."
 }
 
-# nodepools
-module "default_node_pool" {
-  source = "./modules/gke_node_pool"
-  count  = var.nodepools_inline ? 0 : 1
+module "gke" {
+  source                     = "terraform-google-modules/kubernetes-engine/google"
+  version                    = "13.1.0"
+  project_id                 = var.project
+  name                       = "${var.prefix}-gke"
+  region                     = local.region
+  # TODO: add var for user to change cluster to zonal
+  regional                   = true
+  zones                      = [local.zone]
+  network                    = module.vpc.network_name
+  subnetwork                 = module.vpc.subnets_names[0]
+  ip_range_pods              = "${var.prefix}-gke-pods"
+  ip_range_services          = "${var.prefix}-gke-services"
+  http_load_balancing        = false
+  horizontal_pod_autoscaling = true
+  # TODO: add var for user to disable/enable network policy (calico)
+  network_policy             = true
+  remove_default_node_pool	 = true
 
-  node_pool_name = "default"
-  gke_cluster    = module.gke_cluster.cluster_name
-  node_locations = [local.zone]
+  # TODO: logic to enable registy access if gcp enabled
+  grant_registry_access      = true
 
-  machine_type       = var.default_nodepool_vm_type
-  os_disk_size       = var.default_nodepool_os_disk_size
-  local_ssd_count    = var.default_nodepool_local_ssd_count
-  initial_node_count = var.default_nodepool_node_count
-  max_nodes          = var.default_nodepool_max_nodes
-  min_nodes          = var.default_nodepool_min_nodes
-  node_taints        = var.default_nodepool_taints
-  node_labels        = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
+  # TODO: 
+  master_authorized_networks = local.cluster_endpoint_public_access_cidrs
+
+  basic_auth_username        = random_id.username.hex
+  basic_auth_password        = random_password.password.result
+
+  kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
+
+  node_pools = [
+    {
+      name               = "default-node-pool"
+      machine_type       = "e2-medium"
+      node_locations     = local.location
+      min_count          = 1
+      max_count          = 2
+      local_ssd_count    = 0
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      image_type         = "COS"
+      auto_repair        = true
+      auto_upgrade       = true
+      preemptible        = false
+      initial_node_count = 1
+    },
+    {
+      name               = "cas"
+      machine_type       = "e2-medium"
+      node_locations     = local.location
+      min_count          = 1
+      max_count          = 2
+      local_ssd_count    = 0
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      image_type         = "COS"
+      auto_repair        = true
+      auto_upgrade       = true
+      preemptible        = false
+      initial_node_count = 1
+    },
+  ]
+
+  node_pools_oauth_scopes = {
+    all = [   
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/servicecontrol",
+      "https://www.googleapis.com/auth/service.management.readonly",
+      "https://www.googleapis.com/auth/trace.append",
+    ]
+
+    default-node-pool = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
+
+  node_pools_labels = {
+    all = {}
+
+    default-node-pool = {
+      default-node-pool = true
+    }
+
+    cas = {
+      "workload.sas.com/class" = "cas"
+    }
+  }
+
+  node_pools_metadata = {
+    all = {}
+
+    default-node-pool = {
+      node-pool-metadata-custom-value = "my-node-pool"
+    }
+  }
+
+  node_pools_taints = {
+    all = []
+
+    default-node-pool = [
+      {
+        key    = "default-node-pool"
+        value  = true
+        effect = "PREFER_NO_SCHEDULE"
+      },
+    ]
+
+    cas = [
+      {
+        key    = "workload.sas.com/class"
+        value  = "cas"
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+
+  node_pools_tags = {
+    all = []
+
+    default-node-pool = [
+      "default-node-pool",
+    ]
+  }
 }
 
-module "node_pools" {
-  source = "./modules/gke_node_pool"
+module "sql_db_postgresql" {
+  providers = {
+    google-beta = google-beta
+  }
+  source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
+  version                          = "4.5.0"
+  project_id                       = var.project
+  
+  name                             = lower("${var.prefix}-pgsql") 
+  random_instance_name             = true // Need this because of this: https://cloud.google.com/sql/docs/mysql/delete-instance
+  count                            = var.create_postgres ? 1 : 0
+  zone                             = local.zone
 
-  for_each = var.nodepools_inline ? {} : var.node_pools
+  region                           = regex("^[a-z0-9]*-[a-z0-9]*", var.location)
+  availability_type                = var.postgres_availability_type
 
-  node_pool_name = each.key
-  gke_cluster    = module.gke_cluster.cluster_name
-  node_locations = [local.zone]
+  deletion_protection              = false
+  module_depends_on                = [google_service_networking_connection.private_vpc_connection]
 
-  machine_type       = each.value.vm_type
-  os_disk_size       = each.value.os_disk_size
-  local_ssd_count    = each.value.local_ssd_count
-  initial_node_count = each.value.min_nodes
-  min_nodes          = each.value.min_nodes
-  max_nodes          = each.value.max_nodes
-  node_taints        = each.value.node_taints
-  node_labels        = merge(var.tags, each.value.node_labels)
+  tier                             = var.postgres_machine_type 
+  disk_size                        = var.postgres_storage_gb
 
-  depends_on = [module.default_node_pool]
+  enable_default_db                = false
+  user_name                        = var.postgres_administrator_login
+  user_password                    = var.postgres_administrator_password
+  user_labels                      = var.tags
+
+  database_version                 = "POSTGRES_${var.postgres_server_version}"
+  database_flags                   = var.postgres_database_flags
+  db_charset                       = var.postgres_db_charset
+  db_collation                     = var.postgres_db_collation
+
+  backup_configuration = {
+    enabled                        = var.postgres_backups_enabled
+    start_time                     = var.postgres_backups_start_time
+    location                       = var.postgres_backups_location
+    point_in_time_recovery_enabled = var.postgres_backups_point_in_time_recovery_enabled
+  }
+
+  ip_configuration  = {
+    private_network = module.vpc.network_self_link
+    require_ssl     = var.postgres_ssl_enforcement_enabled
+
+    ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
+    authorized_networks = local.authorized_networks
+  }
+
+  additional_databases = local.additional_databases
+}
+
+
+# All about how to use "private ip" to configure access from gke to cloud sql:
+# https://cloud.google.com/sql/docs/postgres/private-ip
+
+resource "google_compute_global_address" "private_ip_address" {
+  name  = "${var.prefix}-private-ip-address"
+  count = var.create_postgres ? 1 : 0
+
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  address       = "192.168.4.0"
+  prefix_length = 22
+  network       = module.vpc.network_self_link
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  count = var.create_postgres ? 1 : 0
+
+  network                 = module.vpc.network_name
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
 }
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
   name    = "${var.prefix}-nfs-server-firewall"
   count   = var.storage_type == "standard" ? 1 : 0
-  network = module.network.id
+  network = module.vpc.network_name
 
   allow {
     protocol = "tcp"
@@ -304,16 +524,15 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
   target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the nfs server
 
   # the node group vms are tagged with the cluster name
-  source_tags = [module.gke_cluster.cluster_name,
-  "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([local.pod_cidr_block], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
+  source_tags = [module.gke.name,   "${var.prefix}-jump-server"]
+  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
 }
 
 resource "google_compute_firewall" "jump_vm_firewall" {
   name  = "${var.prefix}-jump-server-firewall"
   count = (var.create_jump_public_ip && var.create_jump_vm && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
 
-  network = module.network.id
+  network = module.vpc.network_name
 
   allow {
     protocol = "tcp"
