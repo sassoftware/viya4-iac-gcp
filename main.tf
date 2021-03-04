@@ -48,9 +48,10 @@ provider "google-beta" {
 }
 
 provider "kubernetes" {
-  host                   = module.gke.endpoint
+  host                   = "https://${module.gke.endpoint}"
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
   token                  = data.google_client_config.current.access_token
+  load_config_file       = false
 }
 
 resource "random_id" "username" {
@@ -333,7 +334,9 @@ module "gke" {
   enable_private_nodes       = true
   ## TODO add var to change master cidr block
   master_ipv4_cidr_block     = "10.2.0.0/28"
-  add_cluster_firewall_rules = false
+
+  ## TODO need to make this work to create firewall rule
+  add_cluster_firewall_rules = true
 
   basic_auth_username        = random_id.username.hex
   basic_auth_password        = random_password.password.result
@@ -408,6 +411,7 @@ module "gke" {
     ]
   }
 
+  depends_on = [data.google_compute_subnetwork.subnetwork]
 }
 
 module "sql_db_postgresql" {
@@ -509,7 +513,7 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
 
   # the node group vms are tagged with the cluster name
   source_tags = [module.gke.name,   "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
+  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
 }
 
 resource "google_compute_firewall" "jump_vm_firewall" {
