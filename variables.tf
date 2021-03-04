@@ -347,3 +347,12 @@ variable "gke_pod_subnet_cidr" {
 variable "gke_service_subnet_cidr" {
   default = "10.1.0.0/22"
 }
+
+## filstore
+variable filestore_size_in_gb {
+  default = 1024
+}
+
+variable filestore_tier {
+  default = "STANDARD"
+}

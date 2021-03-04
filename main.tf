@@ -1,42 +1,3 @@
-terraform {
-  required_version = ">= 0.13.6"
-
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "3.58.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "3.58.0"
-    }
-    kubernetes  = {
-      source  = "hashicorp/kubernetes"
-      version ="1.13.0"
-    }
-    local       = {
-      source  = "hashicorp/local"
-      version = "2.1.0"
-    }
-    template    = {
-      source  = "hashicorp/template"
-      version = "2.2.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "2.2.0"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "2.1.0"
-    }
-    external = {
-      source  = "hashicorp/external"
-      version = "2.0.0"
-    }
-  }
-}
-
 provider "google" {
   credentials = file(var.service_account_keyfile)
   project     = var.project
@@ -86,6 +47,7 @@ resource "local_file" "kubeconfig" {
 
 data "google_client_config" "current" {}
 
+# Used for locals below.
 data "google_compute_zones" "available" {
   region = local.region
 }
@@ -158,161 +120,28 @@ EOT
   depends_on = [ module.gke ]
 }
 
-module "address" {
-  source       = "terraform-google-modules/address/google"
-  version      = "2.1.1"
-  project_id   = var.project
-  region       = local.region
-  address_type = "EXTERNAL"
-}
+resource "google_filestore_instance" "rwx" {
+  name   = "${var.prefix}-rwx-filestore"
+  count  = var.storage_type == "ha" ? 1 : 0 
+  tier   = var.filestore_tier
+  zone   = local.zone
+  labels = var.tags
 
-module "vpc" {
-  source       = "terraform-google-modules/network/google"
-  version      = "3.1.2"
-  project_id   = var.project
-  network_name = "${var.prefix}-vpc"
-
-  subnets = [
-    {
-      subnet_name           = "${var.prefix}-gke-subnet"
-      subnet_ip             = var.gke_subnet_cidr // /23
-      subnet_region         = local.region
-      subnet_private_access = true
-    },
-    {
-      subnet_name           = "${var.prefix}-misc-subnet"
-      subnet_ip             = var.misc_subnet_cidr // /24
-      subnet_region         = local.region
-      subnet_private_access = false
-    },
-  ]
-
-  secondary_ranges = {
-    "${var.prefix}-gke-subnet" = [
-      {
-        range_name = "${var.prefix}-gke-pods"
-        ip_cidr_range = var.gke_pod_subnet_cidr // /17
-      },
-      {
-        range_name = "${var.prefix}-gke-services"
-        ip_cidr_range = var.gke_service_subnet_cidr // /22
-      }
-    ]
-  }
-}
-
-module "cloud_nat" {
-  source        = "terraform-google-modules/cloud-nat/google"
-  version       = "1.4.0"
-  project_id    = var.project
-  name          = "${var.prefix}-cloud-nat"
-  region        = local.region
-  create_router = true
-  router        = "${var.prefix}-router"
-  network       = module.vpc.network_self_link
-  nat_ips       = module.address.addresses
-}
-
-data "template_file" "nfs_cloudconfig" {
-  # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
-  template = file("${path.module}/cloud-init/nfs/cloud-config")
-  count    = var.storage_type == "standard" ? 1 : 0
-  vars = {
-    misc_subnet_cidr  = var.misc_subnet_cidr
-    gke_pod_subnet_cidr = var.gke_pod_subnet_cidr
-    vm_admin = var.nfs_vm_admin
-  }
-}
-
-# TODO - Again tf.reg module if needed
-module "nfs_server" {
-  source           = "./modules/google_vm"
-  create_vm        = var.storage_type == "standard" ? true : false
-  create_public_ip = var.create_nfs_public_ip
-
-  name         = "${var.prefix}-nfs-server"
-  machine_type = "n1-standard-1"
-  location     = local.zone
-  tags         = var.tags
-
-  subnet   = "${var.prefix}-misc-subnet" // Name or self_link to subnet
-  os_image = "ubuntu-os-cloud/ubuntu-1804-lts"
-
-  vm_admin       = var.nfs_vm_admin
-  ssh_public_key = local.ssh_public_key
-
-  user_data      = length(data.template_file.nfs_cloudconfig) == 1 ? data.template_file.nfs_cloudconfig.0.rendered : null
-  user_data_type = "cloud-init"
-
-  data_disk_count = 4
-  data_disk_size  = var.nfs_raid_disk_size
-
-  depends_on = [ module.vpc ]
-}
-
-data "template_file" "jump_cloudconfig" {
-
-  template = file("${path.module}/cloud-init/jump/cloud-config")
-  count    = var.create_jump_vm ? 1 : 0
-
-  vars = {
-    nfs_rwx_filestore_endpoint  = (var.storage_type == "ha" ? module.rwx_filestore.ip : module.nfs_server.private_ip )
-    nfs_rwx_filestore_path      = (var.storage_type == "ha" ? "/${module.rwx_filestore.mount_path}" : "/export")
-    vm_admin                    = var.jump_vm_admin
-    jump_rwx_filestore_path     = var.jump_rwx_filestore_path
+  file_shares {
+    capacity_gb = var.filestore_size_in_gb
+    name        = "volumes"
   }
 
-  depends_on = [module.nfs_server, module.rwx_filestore]
-
-}
-
-# TODO - Again tf.reg module if needed
-module "jump_server" {
-
-  source           = "./modules/google_vm"
-  create_vm        = var.create_jump_vm
-  create_public_ip = var.create_jump_public_ip
-
-  name         = "${var.prefix}-jump-server"
-  machine_type = "n1-standard-1"
-  location     = local.zone
-  tags         = var.tags
-
-  subnet   = "${var.prefix}-misc-subnet" // Name or self_link to subnet
-  os_image = "ubuntu-os-cloud/ubuntu-1804-lts"
-
-  vm_admin       = var.jump_vm_admin
-  ssh_public_key = local.ssh_public_key
-
-  user_data      = length(data.template_file.jump_cloudconfig) == 1 ? data.template_file.jump_cloudconfig.0.rendered : null
-  user_data_type = "cloud-init"
-
-  depends_on = [module.nfs_server]
-}
-
-# TODO - Again tf.reg module if needed
-module "rwx_filestore" {
-  source           = "./modules/filestore"
-  create_filestore = var.storage_type == "ha" ? true : false
-
-  name = "${var.prefix}-rwx-filestore"
-  zone = local.zone
-
-  labels  = var.tags
-  network = module.vpc.network_name
+  networks {
+    network = module.vpc.network_name
+    modes   = ["MODE_IPV4"]
+  }
 }
 
 data "google_container_engine_versions" "gke-version" {
   provider = google-beta
   location       = local.location
   version_prefix = "${var.kubernetes_version}."
-}
-
-data "google_compute_subnetwork" "subnetwork" {
-  name       = "${var.prefix}-gke-subnet"
-  project    = var.project
-  region     = local.region
-  depends_on = [module.vpc]
 }
 
 module "gke" {
@@ -350,7 +179,7 @@ module "gke" {
   grant_registry_access      = true
 
   # TODO: add var for setting monitoring
-  # monitoring_service         = "none"
+  monitoring_service         = "none"
 
   # TODO cluster autscaler
   cluster_autoscaling        = { "enabled": true, "max_cpu_cores": 1, "max_memory_gb": 1, "min_cpu_cores": 1, "min_memory_gb": 1 }
@@ -472,62 +301,4 @@ module "sql_db_postgresql" {
       collation = var.postgres_db_collation
     }
   ]
-}
-
-
-# All about how to use "private ip" to configure access from gke to cloud sql:
-# https://cloud.google.com/sql/docs/postgres/private-ip
-
-resource "google_compute_global_address" "private_ip_address" {
-  name  = "${var.prefix}-private-ip-address"
-  count = var.create_postgres ? 1 : 0
-
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  address       = "192.168.4.0"
-  prefix_length = 22
-  network       = module.vpc.network_self_link
-}
-
-resource "google_service_networking_connection" "private_vpc_connection" {
-  count = var.create_postgres ? 1 : 0
-
-  network                 = module.vpc.network_name
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
-}
-
-resource "google_compute_firewall" "nfs_vm_firewall" {
-  name    = "${var.prefix}-nfs-server-firewall"
-  count   = var.storage_type == "standard" ? 1 : 0
-  network = module.vpc.network_name
-
-  allow {
-    protocol = "tcp"
-  }
-  allow {
-    protocol = "udp"
-  }
-
-  target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the nfs server
-
-  # the node group vms are tagged with the cluster name
-  source_tags = [module.gke.name,   "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
-}
-
-resource "google_compute_firewall" "jump_vm_firewall" {
-  name  = "${var.prefix}-jump-server-firewall"
-  count = (var.create_jump_public_ip && var.create_jump_vm && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
-
-  network = module.vpc.network_name
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  target_tags = ["${var.prefix}-jump-server"] # matches the tag on the jump server
-
-  source_ranges = local.vm_public_access_cidrs
 }
