@@ -164,9 +164,9 @@ module "gke" {
   ## TODO add var to change master cidr block
   master_ipv4_cidr_block     = "10.2.0.0/28"
 
-  ## TODO need to make this work to create firewall rule
   add_cluster_firewall_rules = true
 
+  ## TODO remove basic auth
   basic_auth_username        = random_id.username.hex
   basic_auth_password        = random_password.password.result
   kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
@@ -184,7 +184,6 @@ module "gke" {
   # TODO cluster autscaler
   cluster_autoscaling        = { "enabled": true, "max_cpu_cores": 1, "max_memory_gb": 1, "min_cpu_cores": 1, "min_memory_gb": 1 }
 
-  # TODO: 
   master_authorized_networks = concat([
     for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
       display_name = cidr
