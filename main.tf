@@ -15,36 +15,6 @@ provider "kubernetes" {
   load_config_file       = false
 }
 
-resource "random_id" "username" {
-  byte_length = 14
-}
-
-resource "random_password" "password" {
-  length = 24
-  special = true
-  number = true
-  upper = true
-}
-
-data "template_file" "kubeconfig" {
-  template = file("${path.module}/files/kubeconfig.tmpl")
-
-  vars = {
-    cluster_name  = module.gke.name
-    endpoint      = module.gke.endpoint
-    user_name     = random_id.username.hex
-    user_password = random_password.password.result
-    cluster_ca    = module.gke.ca_certificate
-  }
-}
-
-resource "local_file" "kubeconfig" {
-  content              = data.template_file.kubeconfig.rendered
-  filename             = local.kubeconfig_path
-  file_permission      = "0644"
-  directory_permission = "0755"
-}
-
 data "google_client_config" "current" {}
 
 # Used for locals below.
@@ -150,8 +120,7 @@ module "gke" {
   project_id                 = var.project
   name                       = "${var.prefix}-gke"
   region                     = local.region
-  # TODO: add var for user to change cluster to zonal
-  regional                   = true
+  regional                   = local.is_region ? true : false
   zones                      = [local.zone]
   network                    = module.vpc.network_name
   subnetwork                 = module.vpc.subnets_names[0]
@@ -161,27 +130,19 @@ module "gke" {
   horizontal_pod_autoscaling = true
   enable_private_endpoint    = false
   enable_private_nodes       = true
-  ## TODO add var to change master cidr block
-  master_ipv4_cidr_block     = "10.2.0.0/28"
+  master_ipv4_cidr_block     = var.gke_control_plane_subnet_cidr
 
   add_cluster_firewall_rules = true
 
-  ## TODO remove basic auth
-  basic_auth_username        = random_id.username.hex
-  basic_auth_password        = random_password.password.result
   kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
 
-  # TODO: add var for user to disable/enable network policy (calico)
-  network_policy             = false
+  network_policy             = var.gke_network_policy
   remove_default_node_pool	 = true
 
-  # TODO: logic to enable registy access if gcp enabled
-  grant_registry_access      = true
+  grant_registry_access      = var.create_container_registry
 
-  # TODO: add var for setting monitoring
-  monitoring_service         = "none"
+  monitoring_service         = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  # TODO cluster autscaler
   cluster_autoscaling        = { "enabled": true, "max_cpu_cores": 1, "max_memory_gb": 1, "min_cpu_cores": 1, "min_memory_gb": 1 }
 
   master_authorized_networks = concat([
@@ -240,6 +201,20 @@ module "gke" {
   }
 
   depends_on = [data.google_compute_subnetwork.subnetwork]
+}
+
+module "kubeconfig" {
+  source                   = "./modules/kubeconfig"
+  prefix                   = var.prefix
+  create_static_kubeconfig = var.create_static_kubeconfig
+  path                     = local.kubeconfig_path
+  namespace                = "kube-system"
+
+  cluster_name             = module.gke.name
+  endpoint                 = module.gke.endpoint
+  ca_crt                   = module.gke.ca_certificate
+
+  depends_on = [ module.gke ]
 }
 
 module "sql_db_postgresql" {

@@ -348,6 +348,16 @@ variable "gke_service_subnet_cidr" {
   default = "10.1.0.0/22"
 }
 
+variable "gke_control_plane_subnet_cidr" {
+  default = "10.2.0.0/28"
+}
+
+variable "gke_network_policy" {
+  description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
+  type        = bool
+  default     = false
+}
+
 ## filstore
 variable filestore_size_in_gb {
   default = 1024
@@ -355,4 +365,29 @@ variable filestore_size_in_gb {
 
 variable filestore_tier {
   default = "STANDARD"
+}
+
+variable "create_container_registry" {
+  type        = bool
+  description = "Boolean flag to create container registry"
+  default     = false
+}
+
+# Azure Monitor
+variable "create_gke_monitoring_service" {
+  type        = bool
+  description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
+  default     = "false"
+}
+
+variable "gke_monitoring_service" {
+  type        = string
+  description = "Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none"
+  default     = "none"
+}
+
+variable "create_static_kubeconfig" {
+  description = "Allows the user to create a provider / service account based kube config file"
+  type        = bool
+  default     = false
 }
