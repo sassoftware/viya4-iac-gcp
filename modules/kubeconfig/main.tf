@@ -1,7 +1,7 @@
 locals {
-  service_account_name        = "${var.prefix}-sa-cluster-admin"
-  cluster_role_binding_name   = "${var.prefix}-crb-cluster-admin"
-  service_account_secret_name = "${var.prefix}-sa-secret-name"
+  service_account_name        = "${var.prefix}-cluster-admin-sa"
+  cluster_role_binding_name   = "${var.prefix}-cluster-admin-crb"
+  service_account_secret_name = "${var.prefix}-sa-secret"
 }
 
 # Provider based kube config data/template/resources
@@ -45,8 +45,6 @@ resource "kubernetes_service_account" "kubernetes_sa" {
     name      = local.service_account_name
     namespace = var.namespace
   }
-
-  # depends_on = [ kubernetes_cluster_role_binding.kubernetes_crb ]
 }
 
 resource "kubernetes_cluster_role_binding" "kubernetes_crb" {
