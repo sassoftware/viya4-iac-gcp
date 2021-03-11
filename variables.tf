@@ -11,6 +11,12 @@ variable "location" {
   EOF
 }
 
+variable "regional" {
+  description = "Should the GKE cluster have a regional or zonal control plane"
+  type        = bool
+  default     = true
+}
+
 variable "service_account_keyfile" {
   type = string
 }

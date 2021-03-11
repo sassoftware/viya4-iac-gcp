@@ -120,7 +120,7 @@ module "gke" {
   project_id                 = var.project
   name                       = "${var.prefix}-gke"
   region                     = local.region
-  regional                   = local.is_region ? true : false
+  regional                   = var.regional
   zones                      = [local.zone]
   network                    = module.vpc.network_name
   subnetwork                 = module.vpc.subnets_names[0]
