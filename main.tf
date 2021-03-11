@@ -30,6 +30,7 @@ locals {
   # get the zone from "location", or else from the local config. If none is set, default to the first zone in the region
   is_region  = var.location != "" ? var.location == regex("^[a-z0-9]*-[a-z0-9]*", var.location) : false
   first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
+  # all_zones  = length(data.google_compute_zones.available.names) > 0 ? join(",", [for item in data.google_compute_zones.available.names : format("%s", item)]) : ""
   zone       = ( var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone) )
   location   = var.location != "" ? var.location : local.zone
 
@@ -158,7 +159,7 @@ module "gke" {
     for nodepool, settings in local.node_pools: {
       name               = nodepool
       machine_type       = settings.vm_type
-      node_locations     = local.location
+      node_locations     = local.first_zone # This must be a zone not a region. So var.location may not always work. ;)
       min_count          = settings.min_nodes
       max_count          = settings.max_nodes
       local_ssd_count    = settings.local_ssd_count
