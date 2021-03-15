@@ -1,6 +1,6 @@
 data "template_file" "nfs_cloudconfig" {
   # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
-  template = file("${path.module}/cloud-init/nfs/cloud-config")
+  template = file("${path.module}/files/cloud-init/nfs/cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
     misc_subnet_cidr  = var.misc_subnet_cidr
@@ -10,7 +10,7 @@ data "template_file" "nfs_cloudconfig" {
 }
 
 data "template_file" "jump_cloudconfig" {
-  template = file("${path.module}/cloud-init/jump/cloud-config")
+  template = file("${path.module}/files/cloud-init/jump/cloud-config")
   count    = var.create_jump_vm ? 1 : 0
   vars = {
     nfs_rwx_filestore_endpoint  = (var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.private_ip )

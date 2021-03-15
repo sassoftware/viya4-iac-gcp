@@ -63,11 +63,11 @@ locals {
 }
 
 data "external" "git_hash" {
-  program = ["files/iac_git_info.sh"]
+  program = ["files/tools/iac_git_info.sh"]
 }
 
 data "external" "iac_tooling_version" {
-  program = ["files/iac_tooling_version.sh"]
+  program = ["files/tools/iac_tooling_version.sh"]
 }
 
 resource "kubernetes_config_map" "sas_iac_buildinfo" {
@@ -218,20 +218,20 @@ module "kubeconfig" {
   depends_on = [ module.gke ]
 }
 
-module "sql_db_postgresql" {
+module "postgresql" {
   providers = {
     google-beta = google-beta
   }
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
   version                          = "4.5.0"
   project_id                       = var.project
-  
+  count                            = var.create_postgres ? 1 : 0
+
   name                             = lower("${var.prefix}-pgsql") 
   random_instance_name             = true // Need this because of this: https://cloud.google.com/sql/docs/mysql/delete-instance
-  count                            = var.create_postgres ? 1 : 0
   zone                             = local.zone
 
-  region                           = regex("^[a-z0-9]*-[a-z0-9]*", var.location)
+  region                           = local.region // regex("^[a-z0-9]*-[a-z0-9]*", var.location)
   availability_type                = var.postgres_availability_type
 
   deletion_protection              = false
