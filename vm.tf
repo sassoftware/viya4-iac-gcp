@@ -3,9 +3,9 @@ data "template_file" "nfs_cloudconfig" {
   template = file("${path.module}/files/cloud-init/nfs/cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
-    misc_subnet_cidr  = var.misc_subnet_cidr
-    gke_pod_subnet_cidr = var.gke_pod_subnet_cidr
-    vm_admin = var.nfs_vm_admin
+    misc_subnet_cidr    = var.misc_subnet_cidr
+    gke_subnet_cidr     = var.gke_subnet_cidr
+    vm_admin            = var.nfs_vm_admin
   }
 }
 
