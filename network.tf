@@ -11,6 +11,9 @@ module "address" {
   project_id   = var.project
   region       = local.region
   address_type = "EXTERNAL"
+  names = [
+    "${var.prefix}-address"
+  ]
 }
 
 module "vpc" {
@@ -57,7 +60,7 @@ module "cloud_nat" {
   create_router = true
   router        = "${var.prefix}-router"
   network       = module.vpc.network_self_link
-  nat_ips       = module.address.addresses
+  nat_ips       = module.address.self_links
 }
 
 # All about how to use "private ip" to configure access from gke to cloud sql:
