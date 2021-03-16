@@ -1,4 +1,4 @@
-variable "prefix" {
+ variable "prefix" {
   description = "A prefix used for all Google Cloud resources created by this script"
 }
 

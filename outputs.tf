@@ -44,7 +44,7 @@ output "postgres_server_port" {
 
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
-  value       = var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.private_ip
+  value       = var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.0.private_ip
 }
 
 output "rwx_filestore_path" {
@@ -54,7 +54,7 @@ output "rwx_filestore_path" {
 
 output "nat_ip" {
   description = "Public IP of NAT for private network."
-  value       = length(module.address.addresses) > 0 ? element(module.address.addresses, 0) : null
+  value       = length(module.nat_address.addresses) > 0 ? element(module.nat_address.addresses, 0) : null
 }
 
 output "prefix" {
@@ -75,11 +75,11 @@ output "provider" {
 
 # # bastion server
 output "jump_private_ip" {
-  value = var.create_jump_vm ? module.jump_server.private_ip : null
+  value = var.create_jump_vm ? module.jump_server.0.private_ip : null
 }
 
 output "jump_public_ip" {
-  value = var.create_jump_vm ? module.jump_server.public_ip : null
+  value = var.create_jump_vm ? module.jump_server.0.public_ip : null
 }
 
 output "jump_rwx_filestore_path" {
@@ -87,20 +87,20 @@ output "jump_rwx_filestore_path" {
 }
 
 output "jump_admin_username" {
-  value = var.create_jump_vm ? module.jump_server.admin_username : null
+  value = var.create_jump_vm ? module.jump_server.0.admin_username : null
 }
 
 # NFS server
 output "nfs_private_ip" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.private_ip
+  value = var.storage_type == "ha" ? null : module.nfs_server.0.private_ip
 }
 
 output "nfs_public_ip" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.public_ip
+  value = var.storage_type == "ha" ? null : module.nfs_server.0.public_ip
 }
 
 output "nfs_admin_username" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.admin_username
+  value = var.storage_type == "ha" ? null : module.nfs_server.0.admin_username
 }
 
 # Container regsitry

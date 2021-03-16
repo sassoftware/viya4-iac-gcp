@@ -5,14 +5,14 @@ data "google_compute_subnetwork" "subnetwork" {
   depends_on = [module.vpc]
 }
 
-module "address" {
+module "nat_address" {
   source       = "terraform-google-modules/address/google"
   version      = "2.1.1"
   project_id   = var.project
   region       = local.region
   address_type = "EXTERNAL"
   names = [
-    "${var.prefix}-address"
+    "${var.prefix}-nat-address"
   ]
 }
 
@@ -60,7 +60,7 @@ module "cloud_nat" {
   create_router = true
   router        = "${var.prefix}-router"
   network       = module.vpc.network_self_link
-  nat_ips       = module.address.self_links
+  nat_ips       = module.nat_address.self_links
 }
 
 # All about how to use "private ip" to configure access from gke to cloud sql:
@@ -85,8 +85,8 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
 }
 
-resource "google_compute_firewall" "nfs_vm_firewall" {
-  name    = "${var.prefix}-nfs-server-firewall"
+resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
+  name    = "${var.prefix}-nfs-server-cluster-firewall"
   count   = var.storage_type == "standard" ? 1 : 0
   network = module.vpc.network_name
 
@@ -100,8 +100,23 @@ resource "google_compute_firewall" "nfs_vm_firewall" {
   target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the nfs server
 
   # the node group vms are tagged with the cluster name
-  source_tags = [module.gke.name,   "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr], var.create_nfs_public_ip ? local.vm_public_access_cidrs : [])) # allow the pods
+  source_tags = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
+  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr])) # allow the pods
+}
+
+resource "google_compute_firewall" "nfs_vm_firewall" {
+  name    = "${var.prefix}-nfs-server-firewall"
+  count   = (var.storage_type == "standard" && var.create_nfs_public_ip) ? 1 : 0
+  network = module.vpc.network_name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the jump server
+
+  source_ranges = local.vm_public_access_cidrs
 }
 
 resource "google_compute_firewall" "jump_vm_firewall" {
