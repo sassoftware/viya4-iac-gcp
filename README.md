@@ -33,8 +33,6 @@ Operational knowledge of
 
 ## Getting Started
 
-### TODO - https://cloud.google.com/sql/docs/mysql/delete-instance
-
 ### Clone this project
 
 Run these commands in a Terminal session:

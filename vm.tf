@@ -47,7 +47,6 @@ module "nfs_server" {
   depends_on       = [ module.vpc ]
 }
 
-# TODO - Again tf.reg module if needed
 module "jump_server" {
   source           = "./modules/google_vm"
   project          = var.project
