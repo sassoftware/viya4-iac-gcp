@@ -2,15 +2,20 @@ variable "name" {
   type = string
 }
 
-variable "location" {
+variable "project" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+variable "zone" {
   type = string
 }
 
 variable "subnet" {
-}
-
-variable "create_vm" {
-  default = true
+  type = string
 }
 
 variable "create_public_ip" {

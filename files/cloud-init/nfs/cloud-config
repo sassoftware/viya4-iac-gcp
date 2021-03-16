@@ -1,18 +1,19 @@
 #cloud-config
-
-# https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-18-04
-
+system_info:
+  default_user:
+    name: ${vm_admin}  
+    
 #
-# Wait for disks to be mounted then continue
+# Wait for azure disks to be mounted then continue
 #
 bootcmd:
   - while [ `find /dev/disk/by-id/google-*-nfs-server-disk-* -type l | wc -l` -lt 4 ]; do sleep 5; done
 
 #
-# First update the repo and then update the OS.
+# First we'll update the repo and then update the OS.
 #
 package_update: true
-package_ugrade: true
+package_upgrade: true
 
 #
 # Install packages
@@ -28,17 +29,14 @@ runcmd:
   # Create /export directory with the correct owner/permissions
   #
   - mkdir /export
-  - chown nobody:nogroup /export
-  - chmod 0755 /export
+
   #
   # Update systemctl services
   #
+  - systemctl enable nfs-kernel-server
+  - systemctl start nfs-kernel-server
   - systemctl enable rpc-statd
   - systemctl start rpc-statd
-  - systemctl enable rpcbind
-  - systemctl start rpcbind
-  - systemctl enable nfs-server
-  - systemctl start nfs-server
   #
   # Create Raid5 Array
   #
@@ -47,18 +45,20 @@ runcmd:
   - lvcreate --type raid5 --extents 100%FREE --stripes 3 --name data-lv01 data-vg01
   - mkfs -t ext4 /dev/data-vg01/data-lv01
   #
-  # Update /etc/fstab and mount /export
+  # Update /etc/fstab
   #
   - echo "/dev/data-vg01/data-lv01       /export        ext4        defaults,nofail,x-systemd.requires=cloud-init.service,barrier=0,discard        0  2" >>/etc/fstab
   - mount -a
   #
-  # Update /etc/exports 
+  # Update /etc/exports - NOTE: The CIDR provided works for the whole VPC
   #
-  - echo "/export         ${vm_cidr_block}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
-  - echo "/export         ${pod_cidr_block}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
-  
+  - echo "/export         ${misc_subnet_cidr}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
+  - echo "/export         ${gke_subnet_cidr}(rw,no_root_squash,async,insecure,fsid=0,crossmnt,no_subtree_check)" >> /etc/exports
   #
   # Restart nfs-server service
   #
-  - systemctl restart nfs-server
+  - exportfs -a
+  - systemctl restart nfs-kernel-server
 
+  - chown nobody:nogroup /export -R
+  - chmod -R 0777 /export

@@ -1,4 +1,4 @@
-variable "prefix" {
+ variable "prefix" {
   description = "A prefix used for all Google Cloud resources created by this script"
 }
 
@@ -9,6 +9,12 @@ variable "location" {
   If you aren't sure which to choose, go with a ZONE instead of a region. 
   If not set, it defaults to the google environment variables, as documented in https://www.terraform.io/docs/providers/google/guides/provider_reference.html"
   EOF
+}
+
+variable "regional" {
+  description = "Should the GKE cluster have a regional or zonal control plane"
+  type        = bool
+  default     = true
 }
 
 variable "service_account_keyfile" {
@@ -65,7 +71,7 @@ variable "vm_public_access_cidrs" {
 variable "postgres_public_access_cidrs" {
   description = "List of CIDRs to access PostgreSQL server"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "ssh_public_key" {
@@ -253,7 +259,7 @@ variable "postgres_administrator_login" {
 
 variable "postgres_administrator_password" {
   description = "The password for the postgres_administrator_login ID"
-  default     = null
+  default     = ""
 }
 
 variable "postgres_server_version" {
@@ -266,8 +272,62 @@ variable "postgres_ssl_enforcement_enabled" {
   default     = true
 }
 
-variable "nodepools_inline" {
+variable "postgres_db_charset" {
+  description = "Charset for the PostgreSQL Database. Needs to be a valid PostgreSQL Charset. Changing this forces a new resource to be created."
+  default     = "UTF8"
+}
+
+variable "postgres_db_collation" {
+  description = "Collation for the PostgreSQL Database. Needs to be a valid PostgreSQL Collation. Note that Microsoft uses different notation - en-US instead of en_US. Changing this forces a new resource to be created."
+  default     = "en_US.UTF8"
+}
+
+variable "postgres_backups_enabled" {
   default = true
+}
+
+variable "postgres_backups_start_time" {
+  default = "21:00"
+}
+
+variable "postgres_backups_location" {
+  default = null
+}
+
+variable "postgres_backups_point_in_time_recovery_enabled" {
+  default = false
+}
+
+variable "postgres_db_names" {
+  description = "The list of names of PostgreSQL database to create. Needs to be a valid PostgreSQL identifier. Changing this forces a new resource to be created."
+  default     = []
+}
+
+variable "postgres_availability_type" {
+  default = "ZONAL"
+}
+
+variable "postgres_database_flags" {
+  type = list(object({
+    name = string
+    value = string
+  }))
+
+  default = [
+    { 
+      # 30Gb RAM needed to get 600 max_connections (https://cloud.google.com/sql/docs/postgres/quotas#cloud-sql-for-postgresql-connection-limits)
+      name = "max_connections"
+      value = 600
+    },
+    { 
+      name = "max_prepared_transactions"
+      value = 1024
+    },
+  ]
+}
+
+variable "nodepools_inline" {
+  default = false
 }
 
 variable "cluster_networking" {
@@ -276,4 +336,64 @@ variable "cluster_networking" {
     condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
     error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
   }
+}
+
+variable "gke_subnet_cidr" {
+  default = "192.168.0.0/23"
+}
+
+variable "misc_subnet_cidr" {
+  default = "192.168.2.0/24"
+}
+
+variable "gke_pod_subnet_cidr" {
+  default = "10.0.0.0/17"
+}
+
+variable "gke_service_subnet_cidr" {
+  default = "10.1.0.0/22"
+}
+
+variable "gke_control_plane_subnet_cidr" {
+  default = "10.2.0.0/28"
+}
+
+variable "gke_network_policy" {
+  description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
+  type        = bool
+  default     = false
+}
+
+## filstore
+variable filestore_size_in_gb {
+  default = 1024
+}
+
+variable filestore_tier {
+  default = "STANDARD"
+}
+
+variable "create_container_registry" {
+  type        = bool
+  description = "Boolean flag to create container registry"
+  default     = false
+}
+
+# Azure Monitor
+variable "create_gke_monitoring_service" {
+  type        = bool
+  description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
+  default     = "false"
+}
+
+variable "gke_monitoring_service" {
+  type        = string
+  description = "Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none"
+  default     = "none"
+}
+
+variable "create_static_kubeconfig" {
+  description = "Allows the user to create a provider / service account based kube config file"
+  type        = bool
+  default     = false
 }

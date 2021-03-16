@@ -1,9 +1,16 @@
+module "address" {
+  source       = "terraform-google-modules/address/google"
+  version      = "2.1.1"
+  project_id   = var.project
+  region       = var.region
+  address_type = "EXTERNAL"
+  names = var.create_public_ip ? [ "${var.name}-address" ] : []
+}
+
 resource "google_compute_instance" "google_vm" {
-  count        = var.create_vm ? 1 : 0
   name         = var.name
   machine_type = var.machine_type
-  zone         = var.location
-  ### TODO: check if it works with region
+  zone         = var.zone
   labels = var.tags
 
   tags = [var.name] # to match the firewall rule
@@ -18,17 +25,17 @@ resource "google_compute_instance" "google_vm" {
     subnetwork = var.subnet
 
     dynamic "access_config" {
-      for_each = var.create_public_ip == true ? [1] : []
-      content {}
+      for_each = module.address.addresses
+      content {
+        nat_ip = access_config.value
+      }
     }
   }
 
   metadata = {
     ssh-keys       = "${var.vm_admin}:${var.ssh_public_key}"
-    user-data      = var.user_data_type == "cloud-init" ? var.user_data : null     # cloud-init for ubuntu
-    startup-script = var.user_data_type == "startup-script" ? var.user_data : null # no cloud-init for centos
+    user-data      = var.user_data // cloud-init
   }
-
 
   dynamic "attached_disk" {
     for_each = google_compute_disk.raid_disk
@@ -44,10 +51,9 @@ resource "google_compute_instance" "google_vm" {
   }
 }
 
-
 resource "google_compute_disk" "raid_disk" {
-  count  = var.create_vm ? var.data_disk_count : 0
-  zone   = var.location # TODO: test with region
+  count  = var.data_disk_count
+  zone   = var.zone
   name   = "${var.name}-disk-${count.index}"
   labels = var.tags
   type   = var.data_disk_type
