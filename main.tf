@@ -131,8 +131,10 @@ module "gke" {
   enable_private_endpoint    = false
   enable_private_nodes       = true
   master_ipv4_cidr_block     = var.gke_control_plane_subnet_cidr
-    
+  
+  node_pools_metadata        = {"all": var.tags}
   cluster_resource_labels    = var.tags
+
   add_cluster_firewall_rules = true
 
   kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
