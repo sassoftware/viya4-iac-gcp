@@ -1,28 +1,31 @@
-# SAS Viya 4 IaC for Google GCP
+# SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)
+
 ## Overview
 
-This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 products. Here is a list of resources this project can create :
+This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 products. Here is a list of resources this project can create -
 
-  - VPC Network and Network Firewalls
-  - Managed Google Kubernetes Engine (GKE) cluster
-  - System and User GKE Node pools with required Labels and Taints
-  - Infrastructure to deploy SAS Viya CAS in SMP or MPP mode
-  - Shared Storage options for SAS Viya -  Google Filestore (ha) or NFS Server (standard)
-  - Google Cloud SQL for PostgreSQL instance, optional
+  >- VPC Network and Network Firewalls
+  >- Managed Google Kubernetes Engine (GKE) cluster
+  >- System and User GKE Node pools with required Labels and Taints
+  >- Infrastructure to deploy SAS Viya CAS in SMP or MPP mode
+  >- Shared Storage options for SAS Viya -  Google Filestore (ha) or NFS Server (standard)
+  >- Google Cloud SQL for PostgreSQL instance, optional
+
+[<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)
 
 ## Prerequisites
 
 Operational knowledge of 
 - [Terraform](https://www.terraform.io/intro/index.html)
 - [Docker](https://www.docker.com/)
-- [Google Cloud Platform](https://https://cloud.google.com/)
-- [Kubernetes](https://kubernetes.io/docs/concepts/).
+- [Google Cloud Platform](https://cloud.google.com/)
+- [Kubernetes](https://kubernetes.io/docs/concepts/)
 
 ### Required
 
 - Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
-- A [Google CLoud Service Account](./docs/user/TerraformGCPAuthentication.md).
-- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
+- A [Google Cloud Service Account](./docs/user/TerraformGCPAuthentication.md).
+- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google Cloud Platform Portal
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
