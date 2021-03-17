@@ -11,9 +11,9 @@ resource "google_compute_instance" "google_vm" {
   name         = var.name
   machine_type = var.machine_type
   zone         = var.zone
-  labels = var.tags
+  labels       = var.tags
 
-  tags = [var.name] # to match the firewall rule
+  tags         = [var.name] # to match the firewall rule
 
   boot_disk {
     initialize_params {
