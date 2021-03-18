@@ -46,9 +46,6 @@ resource "google_compute_instance" "google_vm" {
   }
 
   allow_stopping_for_update = true
-  service_account {
-    scopes = ["logging-write"]
-  }
 }
 
 resource "google_compute_disk" "raid_disk" {
