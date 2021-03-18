@@ -214,7 +214,7 @@ module "kubeconfig" {
   namespace                = "kube-system"
 
   cluster_name             = module.gke.name
-  endpoint                 = module.gke.endpoint
+  endpoint                 = "https://${module.gke.endpoint}"
   ca_crt                   = module.gke.ca_certificate
 
   depends_on = [ module.gke ]
