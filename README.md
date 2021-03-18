@@ -25,12 +25,12 @@ Operational knowledge of
 
 - Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
 - A [Google Cloud Service Account](./docs/user/TerraformGCPAuthentication.md).
-- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google Cloud Platform Portal
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
     - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
     - [jq](https://stedolan.github.io/jq/) - v1.6Docker
+    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google Cloud Platform Portal
   - #### Docker
     - [Docker](https://docs.docker.com/get-docker/)
 
@@ -50,7 +50,7 @@ cd viya4-iac-gcp
 
 ### Authenticating Terraform to access GCP
 
-See [Authenticating Terraform to access GCP](./docs/user/TerraformGCPAuthentication.md) for details.
+See [Terraform GCP Authentication](./docs/user/TerraformGCPAuthentication.md) for details.
 
 ### Customize Input Values
 
