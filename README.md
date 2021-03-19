@@ -22,7 +22,7 @@ Operational knowledge of
 
 - Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
 - A [Google CLoud Service Account](./docs/user/TerraformGCPAuthentication.md).
-- [GCLOUD CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
+- [gcloud CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google CLoud Platform Portal
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
