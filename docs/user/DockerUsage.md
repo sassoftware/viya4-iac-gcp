@@ -2,36 +2,50 @@
 
 ## Prereqs
 
-- Make sure you have Docker [installed on your workstation](../../README.md#docker).
-- Prepare a file with authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md)
+- Docker [installed on your workstation](../../README.md#docker).
+
 - Prepare your `terraform.tfvars` file, as described in [Customize Input Values](../../README.md#customize-input-values).
 
+## Preparation
 
-## Build the docker image
+### Docker image
 
-Run the following command to create the `viya4-iac-gcp` docker image that will be used in subsequent steps:
+Run the following command to create the `viya4-iac-gcp` Docker image using the provided [Dockerfile](../../Dockerfile)
 
 ```bash
 docker build -t viya4-iac-gcp .
 ```
 
-NOTE: The Dockerfile for the container can be found [here](../../Dockerfile).
+The Docker image `viya4-iac-gcp` will contain Terraform and 'kubectl' executables. The Docker entrypoint for the image is `terraform` that will be run with sub-commands in the subsequent steps.
 
+### Service Account Keyfile for GCP Authentication 
 
-##### Preparation
+Prepare a file with GCP authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md) and store it outside of this repo in a secuire file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
+
+### Docker Volume Mounts
 
 Add volume mounts to the `docker run` command for all files and directories that must be accessible from inside the container.
+- `--volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json` Service Account Key file for GCP authentication
+- `--volume=$HOME/.ssh:/.ssh` for [`ssh_public_key`](../CONFIG-VARS.md#required-variables) variable in the `terraform.tfvars` file
+- `--volume=$(pwd):/workspace` for local directory where `terraform.tfvars` file resides and where `terraform.tfstate` file will be written. To grant Docker, permission to write to the local directory use [`--user` option](https://docs.docker.com/engine/reference/run/#user)
 
 The most common filre references are the values of the [`service_account_keyfile`](./CONFIG-VARS.md#required-variables) and [`ssh_public_key`](./CONFIG-VARS.md#required-variables) variables in the `terraform.tfvars` file.
 
-Note that local references to `$HOME` (or "`~`") need to map to the root directory `/` in the container.
+**Note** that local references to `$HOME` (or "`~`") need to map to the root directory `/` in the container.
 
-## Preview Cloud Resources (optional)
+### Variable Definitions (.tfvars) File
 
-To preview which resources will be created, run
+Prepare your `terraform.tfvars` file, as described in [Customize Input Values](../../README.md#customize-input-values).
+
+## Running Terraform Commands
+
+### Preview Cloud Resources (optional)
+
+To preview the cloud resources before creating, run the Docker image `viya4-iac-gcp` with the `plan` command
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" \
+docker run --rm --group-add root \
+  --user "$(id -u):$(id -g)" \
   --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
   --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
@@ -40,12 +54,13 @@ docker run --rm --user "$(id -u):$(id -g)" \
        -state=/workspace/terraform.tfstate  
 ```
 
-## Create Cloud Resources
+### Create Cloud Resources
 
-To create the cloud resources, run
+To create the cloud resources, run the Docker image `viya4-iac-gcp` with the `apply` command and `-auto-approve` option
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)"  --group-add root \
+docker run --rm --group-add root \
+  --user "$(id -u):$(id -g)" \
   --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
   --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
@@ -54,28 +69,30 @@ docker run --rm --user "$(id -u):$(id -g)"  --group-add root \
         -var-file=/workspace/terraform.tfvars \
         -state=/workspace/terraform.tfstate 
 ```
-This command can take a few minutes to complete. Once complete, output values are written to the console.
 
-The kubeconfig file for the cluster is being written to `[prefix]-gke-kubeconfig.conf` in the current directory `$(pwd)`.
+This command can take a few minutes to complete. Once complete, Terraform output values are written to the console. The 'KUBECONFIG' file for the cluster is written to `[prefix]-gke-kubeconfig.conf` in the current directory `$(pwd)`.
 
-## Display Outputs
+### Display Outputs
 
-The output values can be displayed anytime again by running
+Once the cloud resources have been created with `apply` command, to display Terraform output values, run the Docker image `viya4-iac-gcp` with `output` command
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+docker run --rm --group-add root \
+  --user "$(id -u):$(id -g)" \
+  --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+  --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
   viya4-iac-gcp \
   output -state=/workspace/terraform.tfstate 
- 
 ```
 
-## Modify Cloud Resources
+### Modify Cloud Resources
 
-After provisioning the infrastructure if further changes were to be made then add the variable and desired value to `terraform.tfvars` and run again:
+After provisioning the infrastructure if further changes were to be made then update corresponding variables with desired values in `terraform.tfvars` and run the Docker image `viya4-iac-gcp` with the `apply` command and `-auto-approve` option again
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+docker run --rm --group-add root \
+  --user "$(id -u):$(id -g)" \
   --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
   --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
@@ -85,13 +102,13 @@ docker run --rm --user "$(id -u):$(id -g)" --group-add root \
         -state=/workspace/terraform.tfstate 
 ```
 
+### Tear Down Cloud Resources 
 
-## Tear Down Resources 
-
-To destroy the cloud resources created with the previous commands, run
+To destroy all the cloud resources created with the previous commands, run the Docker image `viya4-iac-gcp` with the `destroy` command and `-auto-approve` option
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" --group-add root \
+docker run --rm --group-add root \
+  --user "$(id -u):$(id -g)" \
   --volume $HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
   --volume $HOME/.ssh:/.ssh \
   --volume $(pwd):/workspace \
@@ -100,7 +117,7 @@ docker run --rm --user "$(id -u):$(id -g)" --group-add root \
           -var-file=/workspace/terraform.tfvars \
           -state=/workspace/terraform.tfstate
 ```
-NOTE: The "destroy" action is irreversible.
+**NOTE:** The 'destroy' action is irreversible.
 
 ## Interacting with Kubernetes cluster
 
