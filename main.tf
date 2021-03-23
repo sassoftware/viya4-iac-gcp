@@ -110,7 +110,7 @@ resource "google_filestore_instance" "rwx" {
 
 data "google_container_engine_versions" "gke-version" {
   provider = google-beta
-  location       = local.location
+  location       = var.regional ? local.region : local.zone
   version_prefix = "${var.kubernetes_version}."
 }
 

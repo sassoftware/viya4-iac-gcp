@@ -24,7 +24,9 @@ Operational knowledge of
 ### Required
 
 - Access to a [**Google Cloud "Project"**](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [these API Services](docs/user/APIServices.md) enabled. 
+
 - A [Google Cloud Service Account](./docs/user/TerraformGCPAuthentication.md).
+
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
