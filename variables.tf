@@ -31,6 +31,11 @@ variable "project" {
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
   default = "1.18"
+
+  validation {
+    condition     = can(regex("^\\d.\\d.$", var.kubernetes_version))
+    error_message = "The `kubernetes_version` variable must be in the form of X.YY describing the MAJOR.minor kubernetes version you wish to use. For example:\n\nkubernetes_version = \"1.18\"\n\nwould be valid."
+  }
 }
 
 variable "iac_tooling" {
