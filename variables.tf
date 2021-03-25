@@ -283,7 +283,7 @@ variable "postgres_db_charset" {
 }
 
 variable "postgres_db_collation" {
-  description = "Collation for the PostgreSQL Database. Needs to be a valid PostgreSQL Collation. Note that Microsoft uses different notation - en-US instead of en_US. Changing this forces a new resource to be created."
+  description = "Collation for the PostgreSQL Database."
   default     = "en_US.UTF8"
 }
 
@@ -329,18 +329,6 @@ variable "postgres_database_flags" {
       value = 1024
     },
   ]
-}
-
-variable "nodepools_inline" {
-  default = false
-}
-
-variable "cluster_networking" {
-  default = "route-based"
-  validation {
-    condition     = contains(["route-based", "vpc-native"], lower(var.cluster_networking))
-    error_message = "ERROR: Supported value for `cluster_networking` are - route-based, vpc-native."
-  }
 }
 
 variable "gke_subnet_cidr" {

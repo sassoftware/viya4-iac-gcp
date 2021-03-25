@@ -4,7 +4,7 @@ system_info:
     name: ${vm_admin}  
     
 #
-# Wait for azure disks to be mounted then continue
+# Wait for gcp disks to be mounted then continue
 #
 bootcmd:
   - while [ `find /dev/disk/by-id/google-*-nfs-server-disk-* -type l | wc -l` -lt 4 ]; do sleep 5; done

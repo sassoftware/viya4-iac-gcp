@@ -27,6 +27,12 @@ Terraform input variables can be set in the following ways:
 | service_account_keyfile | Filename of the Service Account JSON file | string | |
 | ssh_public_key | Public ssh key for VMs | string | "" | Name of file with public ssh to use for jump resp. nfs VM.  |
 
+## GCP Authentication
+
+The Terraform process manages GCP resources on your behalf. In order to do so, it needs to know the credentials for a GCP identity with the required permissons.
+
+For more detailed information on what is needed see [Authenticating Terraform to access GCP](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/user/TerraformGCPAuthentication.md)
+
 ## Admin Access
 
 By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.) 
@@ -41,7 +47,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Use to to set a default for all Resources |
 | cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl` |
 | vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |
-| postgres_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
+| postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
 
 
 ## General 
@@ -49,6 +55,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | :--- | ---: | ---: | ---: | ---: | 
 | kubernetes_version | The GKE cluster K8S version | string | "1.18" | Valid values depend on the kubernetes_channel, see https://cloud.google.com/kubernetes-engine/docs/release-notes|
 | kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
+| create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | false | A value of `false` will default to using the cloud providers mechanism for genering the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials.
+| regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 
@@ -145,10 +153,13 @@ stateful = {
 ```
 
 ## Storage
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
-### For `storage_type=standard` only (NFS server VM):
+
+### For `storage_type=standard` only (NFS server VM)
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | create_nfs_public_ip | Add public ip to the NFS server VM | bool | false | The NFS server VM is only created when storage_type="standard" |
@@ -156,6 +167,7 @@ stateful = {
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 128 | The NFS server VM is only created when storage_type="standard" |
 
 ## Postgres
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | create_postgres | Create a PostgreSQL server instance | bool | false | |
@@ -166,8 +178,12 @@ stateful = {
 | postgres_administrator_password | The Password associated with the postgres_administrator_login for the PostgreSQL Server | string | |  |
 | postgres_server_version | The version of the  PostgreSQL server instance | string | "11" | Valid values are 9.6, 10, 11, and 12 |
 | postgres_ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | false | |
-
-
-
-
-
+| postgres_db_charset | Charset for the PostgreSQL Database | string | "UTF8" | Needs to be a valid PostgreSQL Charset. |
+| postgres_db_collation | Collation for the PostgreSQL Database | string | "en_US.UTF8" | Needs to be a valid PostgreSQL Collation. |
+| postgres_backups_enabled | Enables postgres backups | bool | true | |
+| postgres_backups_start_time | Start time for postgres backups | string | "21:00" | |
+| postgres_backups_location | TODO | string | null | |
+| postgres_backups_point_in_time_recovery_enabled | Enable point-in-time recovery | bool | false | |
+| postgres_db_names | The list of names of PostgreSQL database to create | list | [] | |
+| postgres_availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`."
+| postgres_database_flags | Database flags for the master instance. | list of objects |  | More details: https://cloud.google.com/sql/docs/postgres/flags |
