@@ -25,19 +25,6 @@ variable "project" {
   type = string
 }
 
-# Google Cloud will utilize the current default value for the given channel.
-# A specific version can be provided to override the default.
-# Available Versions: gcloud container get-server-config
-#                     https://cloud.google.com/kubernetes-engine/docs/release-notes
-variable "kubernetes_version" {
-  default = "1.18"
-
-  validation {
-    condition     = can(regex("^\\d.\\d.$", var.kubernetes_version))
-    error_message = "The `kubernetes_version` variable must be in the form of X.YY describing the MAJOR.minor kubernetes version you wish to use. For example:\n\nkubernetes_version = \"1.18\"\n\nwould be valid."
-  }
-}
-
 variable "iac_tooling" {
   description = "Value used to identify the tooling used to generate this providers infrastructure."
   type        = string
@@ -47,6 +34,19 @@ variable "iac_tooling" {
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID - RAPID is currently the only channel that supports k8s v1.18
 variable "kubernetes_channel" {
   default = "UNSPECIFIED"
+}
+
+# Google Cloud will utilize the current default value for the given channel.
+# A specific version can be provided to override the default.
+# Available Versions: gcloud container get-server-config
+#                     https://cloud.google.com/kubernetes-engine/docs/release-notes
+variable "kubernetes_version" {
+  default = "latest"
+
+  validation {
+    condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest")
+    error_message = "The format for kuberentes version is: x.yy-gke.zzzz or 'latest'."
+  }
 }
 
 variable "tags" {

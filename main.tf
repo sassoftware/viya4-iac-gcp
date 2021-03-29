@@ -137,7 +137,8 @@ module "gke" {
 
   add_cluster_firewall_rules = true
 
-  kubernetes_version         = data.google_container_engine_versions.gke-version.latest_master_version
+  release_channel            = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
+  kubernetes_version         = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
 
   network_policy             = var.gke_network_policy
   remove_default_node_pool	 = true
@@ -161,14 +162,14 @@ module "gke" {
     for nodepool, settings in local.node_pools: {
       name               = nodepool
       machine_type       = settings.vm_type
-      node_locations     = local.first_zone # This must be a zone not a region. So var.location may not always work. ;)
+      node_locations     = local.zone # This must be a zone not a region. So var.location may not always work. ;)
       min_count          = settings.min_nodes
       max_count          = settings.max_nodes
       autoscaling        = (settings.min_nodes == settings.max_nodes) ? false : true
       local_ssd_count    = settings.local_ssd_count
       disk_size_gb       = settings.os_disk_size
-      auto_repair        = false
-      auto_upgrade       = false
+      auto_repair        = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
+      auto_upgrade       = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
       preemptible        = false
       disk_type          = "pd-standard"
       image_type         = "COS"
