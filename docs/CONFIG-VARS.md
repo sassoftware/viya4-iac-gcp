@@ -59,8 +59,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 ### Default Nodepool
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| default_nodepool_vm_type | Type of the default nodepool VMs | string | "n1-standard-1" | |
-| default_nodepool_node_count | Number of nodes in the default nodepool | number | 2 | The value must be between `default_nodepool_min_nodes` and `default_nodepool_max_nodes`|
+| default_nodepool_vm_type | Type of the default nodepool VMs | string | "e2-standard-8" | |
 | default_nodepool_max_nodes | Maximum number of nodes for the default nodepool | number | 5 | |
 | default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
 | default_nodepool_os_disk_size | Disk size for default nodepool VMs in GB | number | 128 ||
