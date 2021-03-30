@@ -267,7 +267,7 @@ module "postgresql" {
 
     ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
     authorized_networks = [
-      for cidr in var.postgres_public_access_cidrs: {
+      for cidr in local.postgres_public_access_cidrs: {
         value = cidr
       }
     ]
