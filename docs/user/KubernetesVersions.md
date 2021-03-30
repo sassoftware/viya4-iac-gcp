@@ -18,7 +18,7 @@ Setting a specific version of your kubernetes cluster is derived by finding the 
 To do this run the following command:
 
 ```bash
-export LOCATION="<your current working zone">
+export LOCATION="<your desired location>"
 gcloud container get-server-config --format "yaml(validMasterVersions)" --zone $LOCATION
 ```
 
@@ -57,7 +57,7 @@ validMasterVersions:
 - 1.15.12-gke.6002
 ```
 
-**NOTE**: This value will also be the value applied to the compute nodes of your cluster.
+**NOTE**: This value will also be the value applied to the compute nodes of your custer.
 
 From here you would take one of these values and set the `kubernets_version` variable in your tfvars files like this:
 
@@ -76,7 +76,7 @@ Setting a specific channel for  your kubernetes cluster will use the `defaultVer
 To find out what versions are supported by which channel you first run this command:
 
 ```bash
-export LOCATION="us-east1-b"
+export LOCATION="<your desired location>"
 gcloud container get-server-config --format "yaml(channels)" --zone $LOCATION
 ```
 
