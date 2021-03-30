@@ -57,7 +57,7 @@ validMasterVersions:
 - 1.15.12-gke.6002
 ```
 
-**NOTE**: This value will also be the value applied to the compute nodes of your custer.
+**NOTE**: This value will also be the value applied to the compute nodes of your cluster.
 
 From here you would take one of these values and set the `kubernets_version` variable in your tfvars files like this:
 
