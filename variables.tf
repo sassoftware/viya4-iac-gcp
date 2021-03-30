@@ -76,7 +76,7 @@ variable "vm_public_access_cidrs" {
 variable "postgres_public_access_cidrs" {
   description = "List of CIDRs to access PostgreSQL server"
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 variable "ssh_public_key" {
