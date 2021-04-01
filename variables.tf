@@ -231,6 +231,14 @@ variable "node_pools" {
   }
 }
 
+variable "cluster_autoscaling_max_cpu_cores" {
+  default = 500
+}
+
+variable "cluster_autoscaling_max_memory_gb" {
+  default = 10000
+}
+
 ## PostgresSQL inputs
 variable "create_postgres" {
   description = "Create a PostgreSQL Server instance"
