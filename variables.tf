@@ -41,7 +41,7 @@ variable "kubernetes_channel" {
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  default = "1.18.16-gke.1200"
+  default = "latest"
 
   validation {
     condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest")
