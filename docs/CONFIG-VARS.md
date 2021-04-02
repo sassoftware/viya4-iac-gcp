@@ -54,7 +54,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: | 
-| kubernetes_version | The GKE cluster K8S version | string | "1.18.16-gke.1200" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
+| kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
 | kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
