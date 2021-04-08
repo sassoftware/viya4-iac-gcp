@@ -57,6 +57,8 @@ locals {
       "node_taints"  = var.default_nodepool_taints
       "node_labels" = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
       "local_ssd_count" = var.default_nodepool_local_ssd_count
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     }
   })
 
@@ -173,6 +175,8 @@ module "gke" {
       preemptible        = false
       disk_type          = "pd-standard"
       image_type         = "COS"
+      accelerator_count  = settings.gpu_accelerator_count
+      accelerator_type   = settings.gpu_accelerator_type
     }
   ]
 

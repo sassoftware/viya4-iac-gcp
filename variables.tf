@@ -169,6 +169,8 @@ variable "node_pools" {
     node_taints     = list(string)
     node_labels     = map(string)
     local_ssd_count = number
+    gpu_accelerator_count = number
+    gpu_accelerator_type = string
   }))
   default = {
     cas = {
@@ -181,6 +183,8 @@ variable "node_pools" {
         "workload.sas.com/class" = "cas"
       }
       "local_ssd_count" = 0
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     },
     compute = {
       "vm_type"      = "n1-highmem-16"
@@ -193,6 +197,8 @@ variable "node_pools" {
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
       }
       "local_ssd_count" = 0
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     },
     connect = {
       "vm_type"      = "n1-highmem-16"
@@ -205,6 +211,8 @@ variable "node_pools" {
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
       }
       "local_ssd_count" = 0
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     },
     stateless = {
       "vm_type"      = "e2-standard-16"
@@ -216,6 +224,8 @@ variable "node_pools" {
         "workload.sas.com/class" = "stateless"
       }
       "local_ssd_count" = 0
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     },
     stateful = {
       "vm_type"      = "e2-standard-8"
@@ -227,6 +237,8 @@ variable "node_pools" {
         "workload.sas.com/class" = "stateful"
       }
       "local_ssd_count" = 0
+      "gpu_accelerator_count" = 0
+      "gpu_accelerator_type" = ""
     }
   }
 }
