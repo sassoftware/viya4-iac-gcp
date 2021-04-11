@@ -6,3 +6,5 @@
 *.tfstate.backup
 terraform.tfvars
 .terraform.tfstate.lock.info
+*.lock.hcl
+*.swp

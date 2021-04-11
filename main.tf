@@ -48,7 +48,21 @@ locals {
     NoExecute        = "NO_EXECUTE"
   }
 
-  node_pools = merge(var.node_pools, {
+  node_pools_and_accelerator_taints = {
+    for node_pool, settings in var.node_pools: node_pool => {
+      accelerator_count = settings.accelerator_count
+      accelerator_type  = settings.accelerator_type
+      local_ssd_count   = settings.local_ssd_count
+      max_nodes         = settings.max_nodes
+      min_nodes         = settings.min_nodes
+      node_labels       = settings.node_labels
+      os_disk_size      = settings.os_disk_size
+      vm_type           = settings.vm_type
+      node_taints       = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
+    }
+  }
+
+  node_pools = merge(local.node_pools_and_accelerator_taints, {
     default = {
       "vm_type"      = var.default_nodepool_vm_type
       "os_disk_size" = var.default_nodepool_os_disk_size
@@ -57,8 +71,8 @@ locals {
       "node_taints"  = var.default_nodepool_taints
       "node_labels" = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
       "local_ssd_count" = var.default_nodepool_local_ssd_count
-      "gpu_accelerator_count" = 0
-      "gpu_accelerator_type" = ""
+      "accelerator_count" = 0
+      "accelerator_type" = ""
     }
   })
 
@@ -175,8 +189,8 @@ module "gke" {
       preemptible        = false
       disk_type          = "pd-standard"
       image_type         = "COS"
-      accelerator_count  = settings.gpu_accelerator_count
-      accelerator_type   = settings.gpu_accelerator_type
+      accelerator_count  = settings.accelerator_count
+      accelerator_type   = settings.accelerator_type
     }
   ]
 
