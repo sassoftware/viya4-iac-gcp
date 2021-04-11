@@ -38,9 +38,9 @@ node_pools = {
     "node_labels" = {
       "workload.sas.com/class" = "cas"
     }
-    "local_ssd_count" = 0
+    "local_ssd_count"   = 0
     "accelerator_count" = 0
-    "accelerator_type" = ""
+    "accelerator_type"  = ""
   },
   compute = {
     "vm_type"      = "n1-highmem-16"
@@ -52,9 +52,9 @@ node_pools = {
       "workload.sas.com/class"       = "compute"
       "launcher.sas.comprepullImage" = "sas-programming-environment"
     }
-    "local_ssd_count" = 0
+    "local_ssd_count"   = 0
     "accelerator_count" = 0
-    "accelerator_type" = ""
+    "accelerator_type"  = ""
   },
   connect = {
     "vm_type"      = "n1-highmem-16"
@@ -66,9 +66,9 @@ node_pools = {
       "workload.sas.com/class"        = "connect"
       "launcher.sas.com/prepullImage" = "sas-programming-environment"
     }
-    "local_ssd_count" = 0
+    "local_ssd_count"   = 0
     "accelerator_count" = 0
-    "accelerator_type" = ""
+    "accelerator_type"  = ""
   },
   stateless = {
     "vm_type"      = "e2-standard-16"
@@ -79,9 +79,9 @@ node_pools = {
     "node_labels" = {
       "workload.sas.com/class" = "stateless"
     }
-    "local_ssd_count" = 0
+    "local_ssd_count"   = 0
     "accelerator_count" = 0
-    "accelerator_type" = ""
+    "accelerator_type"  = ""
   },
   stateful = {
     "vm_type"      = "e2-standard-8"
@@ -92,9 +92,9 @@ node_pools = {
     "node_labels" = {
       "workload.sas.com/class" = "stateful"
     }
-    "local_ssd_count" = 0
+    "local_ssd_count"   = 0
     "accelerator_count" = 0
-    "accelerator_type" = ""
+    "accelerator_type"  = ""
   }
 }
 # Jump Box
