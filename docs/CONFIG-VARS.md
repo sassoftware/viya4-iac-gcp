@@ -20,7 +20,7 @@ Terraform input variables can be set in the following ways:
 ## Required Variables
 
 | Name | Description | Type | Notes |
-| :--- | ---: | ---: | ---: | 
+| :--- | ---: | ---: | ---: |
 | prefix | A prefix used in the name of all the GCP resources created by this script. | string |  The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
 | location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script.  | string | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
 | project | The GCP Project to use | string | |
@@ -35,7 +35,7 @@ For more detailed information on what is needed see [Authenticating Terraform to
 
 ## Admin Access
 
-By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.) 
+By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.
 To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the GCP firewall to allow access from your source IPs.
 To do this, specify ranges of IP in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
 Contact your Network System Administrator to find the public CIDR range of your network.
@@ -43,17 +43,16 @@ Contact your Network System Administrator to find the public CIDR range of your 
 You can use `default_public_access_cidrs` to set a default range for all created resources. To set different ranges for other resources, define the appropriate variable. Use and empty list `[]` to disallow access explicitly.
 
 | Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: | 
+| :--- | ---: | ---: | ---: | ---: |
 | default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Use to to set a default for all Resources |
 | cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl` |
 | vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |
 | postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
 
-
-## General 
+## General
 
 | Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: | 
+| :--- | ---: | ---: | ---: | ---: |
 | kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
 | kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
@@ -67,7 +66,9 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
 
 ## Nodepools
+
 ### Default Nodepool
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | default_nodepool_vm_type | Type of the default nodepool VMs | string | "e2-standard-8" | |
@@ -90,7 +91,9 @@ Additional node pools can be created separate from the default nodepool. This is
 | max_nodes | Maximum number of nodes for the nodepool | number | Value must be >= `min_nodes`. Setting min and max node counts the same disables autoscaling |
 | node_taints | Taints for the nodepool VMs | list of strings | |
 | node_labels | Labels to add to the nodepool VMs | map | |
-| local_ssd_count | Number of 375 GB local ssd disks to provision  | number ||
+| local_ssd_count | Number of 375 GB local ssd disks to provision  | number | |
+| accelerator_count | Number of GPU accelerators associated with this nodepool | number | |
+| accelerator_type | Type of GPU accelerator associated with this nodepool | string | To list the available accelerators in your zone use the following command `gcloud compute accelerator-types list --filter="zone:( <your zone> )"` |
 
 The default values for the `node_pools` variable are:
 
@@ -104,7 +107,9 @@ cas = {
   "node_labels" = {
     "workload.sas.com/class" = "cas"
   }
-  "local_ssd_count" = 0
+  "local_ssd_count"   = 0
+  "accelerator_count" = 0
+  "accelerator_type" = ""
 },
 compute = {
   "vm_type"      = "n1-highmem-16"
@@ -116,7 +121,9 @@ compute = {
     "workload.sas.com/class"        = "compute"
     "launcher.sas.com/prepullImage" = "sas-programming-environment"
   }
-  "local_ssd_count" = 0
+  "local_ssd_count"   = 0
+  "accelerator_count" = 0
+  "accelerator_type"  = ""
 },
 connect = {
   "vm_type"      = "n1-highmem-16"
@@ -128,7 +135,9 @@ connect = {
     "workload.sas.com/class"        = "connect"
     "launcher.sas.com/prepullImage" = "sas-programming-environment"
   }
-  "local_ssd_count" = 0
+  "local_ssd_count"   = 0
+  "accelerator_count" = 0
+  "accelerator_type"  = ""
 },
 stateless = {
   "vm_type"      = "e2-standard-16"
@@ -139,7 +148,9 @@ stateless = {
   "node_labels" = {
     "workload.sas.com/class" = "stateless"
   }
-  "local_ssd_count" = 0
+  "local_ssd_count"   = 0
+  "accelerator_count" = 0
+  "accelerator_type"  = ""
 },
 stateful = {
   "vm_type"      = "e2-standard-8"
@@ -150,7 +161,9 @@ stateful = {
   "node_labels" = {
     "workload.sas.com/class" = "stateful"
   }
-  "local_ssd_count" = 0
+  "local_ssd_count"   = 0
+  "accelerator_count" = 0
+  "accelerator_type"  = ""
 }
 ```
 
@@ -173,7 +186,7 @@ stateful = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | create_postgres | Create a PostgreSQL server instance | bool | false | |
-| postgres_name | The name of the PostgreSQL Server | string | <computed > | Once used, a name cannot be reused for up to [one week](https://cloud.google.com/sql/docs/mysql/delete-instance) |
+| postgres_name | The name of the PostgreSQL Server | string | <computed> | Once used, a name cannot be reused for up to [one week](https://cloud.google.com/sql/docs/mysql/delete-instance) |
 | postgres_machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. 
 | postgres_storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
 | postgres_administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
