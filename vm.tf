@@ -33,7 +33,7 @@ module "nfs_server" {
   zone             = local.zone
   tags             = var.tags
 
-  subnet           = "${var.prefix}-misc-subnet" // Name or self_link to subnet
+  subnet           = module.vpc.subnet_names["misc"] // Name or self_link to subnet
   os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin         = var.nfs_vm_admin
@@ -59,7 +59,7 @@ module "jump_server" {
   zone             = local.zone
   tags             = var.tags
 
-  subnet           = "${var.prefix}-misc-subnet" // Name or self_link to subnet
+  subnet           = module.vpc.subnet_names["misc"] // Name or self_link to subnet
   os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin         = var.jump_vm_admin

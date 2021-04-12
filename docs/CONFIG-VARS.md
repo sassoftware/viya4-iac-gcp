@@ -5,6 +5,8 @@ Supported configuration variables are listed in the table below.  All variables 
 
   - [Required Variables](#required-variables)
   - [Admin Access](#admin-access)
+  - [Networking](#networking)
+      - [Use Existing](#use-existing)
   - [General](#general)
   - [Nodepools](#nodepools)
     - [Default Nodepool](#default-nodepool)
@@ -49,6 +51,39 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |
 | postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
 
+## Networking
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| gke_subnet_cidr | Address space for the subnet for the GKE resources | string | "192.168.0.0/23" | This variable is ignored when `vpc_name` is set (aka bring your own vnet) |
+| gke_pod_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Pods | string | "10.0.0.0/17" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
+| gke_services_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.0.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
+| gke_control_plane_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Control Plane | string | "10.2.0.0/28" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
+| misc_subnet_cidr | Address space for the subnet the auxiliary resources (jump and optionally nfs VM) | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
+
+
+
+### Use Existing
+
+When desiring to deploy into and existing VPC, and/or subnets, and/or using an existing firewall rule the variables below can be used to point to the exiting resources.
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| vpc_name | Name of pre-existing vpc | string | null | Only required if deploying into existing vnet |
+| nsg_name | Name of pre-existing network security group | string | null | Only required if deploying into existing nsg |
+| subnet_names | Existing subnets mapped to desired usage | map(string) | null | Only required if deploying into existing subnets. See example below |
+| nat_address_name | Existing IP address for existing Cloud NAT | string | null | If not given, a Cloud NAT and associated external IP will be created |
+
+Example subnet_names variable:
+
+```yaml
+subnet_names = {
+  ## Required subnet/range names
+  "gke"                     = "my_gke_subnet_name"
+  "gke_pods_range_name"     = "my_secondary_range_for_pods"
+  "gke_services_range_name" = "my_secondary_range_for_services" 
+  "misc"                    = "my_misc_subnet_name"
+}
+```
 ## General
 
 | Name | Description | Type | Default | Notes |

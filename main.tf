@@ -139,9 +139,9 @@ module "gke" {
   regional                   = var.regional
   zones                      = [local.zone]
   network                    = module.vpc.network_name
-  subnetwork                 = module.vpc.subnets_names[0]
-  ip_range_pods              = "${var.prefix}-gke-pods"
-  ip_range_services          = "${var.prefix}-gke-services"
+  subnetwork                 = module.vpc.subnet_names["gke"]
+  ip_range_pods              = module.vpc.subnet_names["gke_pods_range_name"]
+  ip_range_services          = module.vpc.subnet_names["gke_services_range_name"]
   http_load_balancing        = false
   horizontal_pod_autoscaling = true
   enable_private_endpoint    = false
@@ -170,8 +170,8 @@ module "gke" {
       display_name = cidr
       cidr_block   = cidr
     }], [{
-      display_name  = "VPC"
-      cidr_block    = data.google_compute_subnetwork.subnetwork.ip_cidr_range
+      display_name = "VPC"
+      cidr_block   = module.vpc.subnets["gke"].ip_cidr_range
   }])
 
   node_pools = [
@@ -223,7 +223,7 @@ module "gke" {
     ]
   }
 
-  depends_on = [data.google_compute_subnetwork.subnetwork]
+  depends_on = [module.vpc]
 }
 
 module "kubeconfig" {
