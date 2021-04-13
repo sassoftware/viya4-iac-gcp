@@ -243,6 +243,12 @@ variable "node_pools" {
   }
 }
 
+variable enable_cluster_autoscaling {
+  description = "Setting this value will enable cluster_autoscaling"
+  type        = bool
+  default     = false
+}
+
 variable "cluster_autoscaling_max_cpu_cores" {
   default = 500
 }

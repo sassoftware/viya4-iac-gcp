@@ -163,7 +163,7 @@ module "gke" {
 
   monitoring_service         = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  cluster_autoscaling        = { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 }
+  cluster_autoscaling        = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
 
   master_authorized_networks = concat([
     for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
