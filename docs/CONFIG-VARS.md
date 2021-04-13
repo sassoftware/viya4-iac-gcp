@@ -55,6 +55,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | :--- | ---: | ---: | ---: | ---: |
 | kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
 | kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
+| enable_cluster_autoscaling | Enable cluster autoscaling | bool | false | |
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
 | create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | false | A value of `false` will default to using the cloud providers mechanism for generating the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials. |
