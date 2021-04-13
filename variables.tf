@@ -1,4 +1,4 @@
- variable "prefix" {
+variable "prefix" {
   description = "A prefix used for all Google Cloud resources created by this script"
 }
 
@@ -162,15 +162,15 @@ variable "default_nodepool_labels" {
 variable "node_pools" {
   description = "Node pool definitions"
   type = map(object({
-    vm_type         = string
-    os_disk_size    = number
-    min_nodes       = string
-    max_nodes       = string
-    node_taints     = list(string)
-    node_labels     = map(string)
-    local_ssd_count = number
+    vm_type           = string
+    os_disk_size      = number
+    min_nodes         = string
+    max_nodes         = string
+    node_taints       = list(string)
+    node_labels       = map(string)
+    local_ssd_count   = number
     accelerator_count = number
-    accelerator_type = string
+    accelerator_type  = string
   }))
   default = {
     cas = {
@@ -336,18 +336,18 @@ variable "postgres_availability_type" {
 
 variable "postgres_database_flags" {
   type = list(object({
-    name = string
+    name  = string
     value = string
   }))
 
   default = [
-    { 
+    {
       # 30Gb RAM needed to get 600 max_connections (https://cloud.google.com/sql/docs/postgres/quotas#cloud-sql-for-postgresql-connection-limits)
-      name = "max_connections"
+      name  = "max_connections"
       value = 600
     },
-    { 
-      name = "max_prepared_transactions"
+    {
+      name  = "max_prepared_transactions"
       value = 1024
     },
   ]

@@ -40,11 +40,11 @@ module "vpc" {
   secondary_ranges = {
     "${var.prefix}-gke-subnet" = [
       {
-        range_name = "${var.prefix}-gke-pods"
+        range_name    = "${var.prefix}-gke-pods"
         ip_cidr_range = var.gke_pod_subnet_cidr // /17
       },
       {
-        range_name = "${var.prefix}-gke-services"
+        range_name    = "${var.prefix}-gke-services"
         ip_cidr_range = var.gke_service_subnet_cidr // /22
       }
     ]
@@ -100,7 +100,7 @@ resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
   target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the nfs server
 
   # the node group vms are tagged with the cluster name
-  source_tags = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
+  source_tags   = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
   source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr])) # allow the pods
 }
 

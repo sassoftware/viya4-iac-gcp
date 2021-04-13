@@ -10,15 +10,15 @@ terraform {
       source  = "hashicorp/google-beta"
       version = "3.58.0"
     }
-    kubernetes  = {
+    kubernetes = {
       source  = "hashicorp/kubernetes"
-      version ="1.13.0"
+      version = "1.13.0"
     }
-    local       = {
+    local = {
       source  = "hashicorp/local"
       version = "2.1.0"
     }
-    template    = {
+    template = {
       source  = "hashicorp/template"
       version = "2.2.0"
     }
