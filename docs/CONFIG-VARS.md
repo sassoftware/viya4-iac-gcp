@@ -56,8 +56,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | :--- | ---: | ---: | ---: | ---: |
 | gke_subnet_cidr | Address space for the subnet for the GKE resources | string | "192.168.0.0/23" | This variable is ignored when `vpc_name` is set (aka bring your own vnet) |
 | gke_pod_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Pods | string | "10.0.0.0/17" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
-| gke_services_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.0.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
-| gke_control_plane_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Control Plane | string | "10.2.0.0/28" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
+| gke_services_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
+| gke_control_plane_subnet_cidr |  Address space for the hosted master network | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the subnet the auxiliary resources (Jump VM and optionally NFS VM) | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 
 
@@ -65,6 +65,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 ### Use Existing
 
 If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need private subnet for the GKE nodes and a public subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing). 
+
+The existing subnets need match the same region given in the `var.location` variable.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |

@@ -16,7 +16,7 @@ ssh_public_key          = "~/.ssh/id_rsa.pub"
 default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
 
 # Bring your own existing resources
-vpc_name        = "existing-vpc-namec"
+vpc_name        = "existing-vpc-name"
 subnet_names    = { 
   gke                     = "<existing-subnet-name-for-gke>"
   gke_pods_range_name     = "<existing-secondary-ip-range-for-pods-in-gke-subnet>"
