@@ -51,6 +51,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 
 ## General
 
+The application of a Kubernetes version in GCP has some limitations when assigning channels and versions to the cluster. The doc outlining on these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
