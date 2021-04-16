@@ -82,25 +82,24 @@ locals {
     gke_pods_range_name     = "${var.prefix}-gke-pods"
     gke_services_range_name = "${var.prefix}-gke-services"
   }
-  subnet_names         = ( var.subnet_names == null 
-    ? local.subnet_names_defaults 
+  subnet_names         = ( length(var.subnet_names) < 1
+    ? local.subnet_names_defaults
     : var.subnet_names
   )
 
-  gke_subnet_cidr = (var.subnet_names == null 
-    ? var.gke_subnet_cidr 
+  gke_subnet_cidr = ( length(var.subnet_names) < 1
+    ? var.gke_subnet_cidr
     : module.vpc.subnets["gke"].ip_cidr_range
   )
-  misc_subnet_cidr = (var.subnet_names == null 
-    ? var.misc_subnet_cidr 
+  misc_subnet_cidr = ( length(var.subnet_names) < 1
+    ? var.misc_subnet_cidr
     : module.vpc.subnets["misc"].ip_cidr_range
-  )  
+  )
   gke_pod_range_index = index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"])
-  gke_pod_subnet_cidr = (var.subnet_names == null 
-    ? var.gke_pod_subnet_cidr 
+  gke_pod_subnet_cidr = ( length(var.subnet_names) < 1
+    ? var.gke_pod_subnet_cidr
     : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range
   )
-
 
 }
 

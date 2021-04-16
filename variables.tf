@@ -385,25 +385,25 @@ variable "gke_monitoring_service" {
 # Network
 variable "vpc_name" {
   type        = string
-  default     = null
+  default     = ""
   description = "Name of exising VPC. Leave blank to have one created"
 }
 
 variable "nat_address_name" {
   type        = string
-  default     = null
+  default     = ""
   description = "Name of existing ip address for Cloud NAT"
 }
 
 variable "subnet_names" {
   type        = map(string)
-  default     = null
+  default     = {}
   description = "Map subnet usage roles to existing subnet and secondary range names. Required when vpc_name is set."
   # Example:
   # subnet_names = {
   # gke = "my_gke_subnet"
   # gke_pods_range_name = "my_secondary_range_for_pods"
-  # gke_services_range_name = "my_secondary_range_for_services" 
+  # gke_services_range_name = "my_secondary_range_for_services"
   # misc = "my_misc_subnet"}
   # }
 }

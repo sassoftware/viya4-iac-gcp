@@ -17,26 +17,20 @@ variable "tags" {
   default     = {}
 }
 
-
-
-
 # Network
 variable "vpc_name" {
   type        = string
-  default     = null
+  default     = ""
   description = "Name of pre-exising VPC. Leave blank to have one created"
 }
-
-variable "firewall_rule_name" {
-  type        = string
-  default     = null
-  description = "Name of pre-exising firewall rul. Leave blank to have one created"
-}
-
 variable "subnet_names" {
   type        = map(string)
-  default     = null
+  default     = {}
   description = "Map subnet usage roles to existing subnet names"
+}
+
+variable "create_subnets" {
+   type = bool
 }
 
 variable "gke_subnet_cidr" {

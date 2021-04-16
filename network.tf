@@ -1,37 +1,12 @@
-# locals {
-#   subnet_names_defaults = {
-#     gke                     = "${var.prefix}-gke-subnet"
-#     misc                    = "${var.prefix}-misc-subnet"
-#     gke_pods_range_name     = "${var.prefix}-gke-pods"
-#     gke_services_range_name = "${var.prefix}-gke-services"
-#   }
-#   subnet_names         = ( var.subnet_names == null 
-#     ? local.subnet_names_defaults 
-#     : var.subnet_names
-#   )
-
-#   gke_pod_range_index = index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"])
-#   gke_pod_subnet_cidr = (var.subnet_names == null 
-#     ? var.gke_pod_subnet_cidr 
-#     : module.vpc.subnets[local.gke_pod_range_index].ip_cidr_range
-#   )
-#   gke_subnet_cidr = (var.subnet_names == null 
-#     ? var.gke_subnet_cidr 
-#     : module.vpc.subnets["gke"].ip_cidr_range
-#   )
-
-# }
-
-
 data "google_compute_address" "nat_address" {
-  count   = var.nat_address_name == null ? 0 : 1
+  count   = length(var.nat_address_name) < 1 ? 0 : 1
   name    = var.nat_address_name
   project = var.project
   region  = local.region
 }
 
 module "nat_address" {
-  count        = var.nat_address_name == null ? 1 : 0
+  count        = length(var.nat_address_name) < 1 ? 1 : 0
   source       = "terraform-google-modules/address/google"
   version      = "2.1.1"
   project_id   = var.project
@@ -43,7 +18,7 @@ module "nat_address" {
 }
 
 module "cloud_nat" {
-  count        = var.nat_address_name == null ? 1 : 0
+  count         = length(var.nat_address_name) < 1 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
   version       = "1.4.0"
   project_id    = var.project
@@ -58,11 +33,12 @@ module "cloud_nat" {
 
 module "vpc" {
   source                  = "./modules/network"
-  vpc_name                = var.vpc_name
+  vpc_name                = trimspace(var.vpc_name)
   project                 = var.project
   prefix                  = var.prefix
   region                  = local.region
   subnet_names            = local.subnet_names
+  create_subnets          = length(var.subnet_names) < 1? true : false
   gke_subnet_cidr         = var.gke_subnet_cidr
   misc_subnet_cidr        = var.misc_subnet_cidr
   gke_pod_subnet_cidr     = var.gke_pod_subnet_cidr
