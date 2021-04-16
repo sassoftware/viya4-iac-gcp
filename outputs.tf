@@ -54,7 +54,7 @@ output "rwx_filestore_path" {
 
 output "nat_ip" {
   description = "Public IP of NAT for private network."
-  value       = var.nat_address_name == 0 ? (length(module.nat_address.0.addresses) > 0 ? element(module.nat_address.0.addresses, 0) : null) : data.google_compute_address.nat_address.0.address
+  value       = var.nat_address_name == null ? (length(module.nat_address.0.addresses) > 0 ? element(module.nat_address.0.addresses, 0) : null) : data.google_compute_address.nat_address.0.address
 }
 
 output "prefix" {

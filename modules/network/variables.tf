@@ -11,7 +11,6 @@ variable "region" {
   type = string
 }
 
-
 variable "tags" {
   description = "Map of tags to be placed on the Resources"
   type        = map

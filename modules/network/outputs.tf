@@ -6,10 +6,6 @@ output "network_self_link" {
   value = var.vpc_name == null ? google_compute_network.vpc.0.self_link : data.google_compute_network.vpc.0.self_link
 }
 
-output "subnet_names" {
-  value = local.subnet_names
-}
-
 output subnets {
   value = {
     gke : var.subnet_names == null ? google_compute_subnetwork.gke_subnet.0 : data.google_compute_subnetwork.gke_subnet.0

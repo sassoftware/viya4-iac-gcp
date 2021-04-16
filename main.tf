@@ -76,6 +76,32 @@ locals {
     }
   })
 
+  subnet_names_defaults = {
+    gke                     = "${var.prefix}-gke-subnet"
+    misc                    = "${var.prefix}-misc-subnet"
+    gke_pods_range_name     = "${var.prefix}-gke-pods"
+    gke_services_range_name = "${var.prefix}-gke-services"
+  }
+  subnet_names         = ( var.subnet_names == null 
+    ? local.subnet_names_defaults 
+    : var.subnet_names
+  )
+
+  gke_subnet_cidr = (var.subnet_names == null 
+    ? var.gke_subnet_cidr 
+    : module.vpc.subnets["gke"].ip_cidr_range
+  )
+  misc_subnet_cidr = (var.subnet_names == null 
+    ? var.misc_subnet_cidr 
+    : module.vpc.subnets["misc"].ip_cidr_range
+  )  
+  gke_pod_range_index = index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"])
+  gke_pod_subnet_cidr = (var.subnet_names == null 
+    ? var.gke_pod_subnet_cidr 
+    : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range
+  )
+
+
 }
 
 data "external" "git_hash" {
@@ -139,9 +165,9 @@ module "gke" {
   regional                   = var.regional
   zones                      = [local.zone]
   network                    = module.vpc.network_name
-  subnetwork                 = module.vpc.subnet_names["gke"]
-  ip_range_pods              = module.vpc.subnet_names["gke_pods_range_name"]
-  ip_range_services          = module.vpc.subnet_names["gke_services_range_name"]
+  subnetwork                 = local.subnet_names["gke"]
+  ip_range_pods              = local.subnet_names["gke_pods_range_name"]
+  ip_range_services          = local.subnet_names["gke_services_range_name"]
   http_load_balancing        = false
   horizontal_pod_autoscaling = true
   enable_private_endpoint    = false

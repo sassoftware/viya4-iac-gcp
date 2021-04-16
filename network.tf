@@ -1,11 +1,34 @@
+# locals {
+#   subnet_names_defaults = {
+#     gke                     = "${var.prefix}-gke-subnet"
+#     misc                    = "${var.prefix}-misc-subnet"
+#     gke_pods_range_name     = "${var.prefix}-gke-pods"
+#     gke_services_range_name = "${var.prefix}-gke-services"
+#   }
+#   subnet_names         = ( var.subnet_names == null 
+#     ? local.subnet_names_defaults 
+#     : var.subnet_names
+#   )
+
+#   gke_pod_range_index = index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"])
+#   gke_pod_subnet_cidr = (var.subnet_names == null 
+#     ? var.gke_pod_subnet_cidr 
+#     : module.vpc.subnets[local.gke_pod_range_index].ip_cidr_range
+#   )
+#   gke_subnet_cidr = (var.subnet_names == null 
+#     ? var.gke_subnet_cidr 
+#     : module.vpc.subnets["gke"].ip_cidr_range
+#   )
+
+# }
+
+
 data "google_compute_address" "nat_address" {
   count   = var.nat_address_name == null ? 0 : 1
   name    = var.nat_address_name
   project = var.project
   region  = local.region
 }
-
-
 
 module "nat_address" {
   count        = var.nat_address_name == null ? 1 : 0
@@ -28,7 +51,7 @@ module "cloud_nat" {
   region        = local.region
   create_router = true
   router        = "${var.prefix}-router"
-  network       = module.vpc.0.self_link
+  network       = module.vpc.network_self_link
   nat_ips       = module.nat_address.0.self_links
 }
 
@@ -39,7 +62,7 @@ module "vpc" {
   project                 = var.project
   prefix                  = var.prefix
   region                  = local.region
-  subnet_names            = var.subnet_names
+  subnet_names            = local.subnet_names
   gke_subnet_cidr         = var.gke_subnet_cidr
   misc_subnet_cidr        = var.misc_subnet_cidr
   gke_pod_subnet_cidr     = var.gke_pod_subnet_cidr
@@ -85,7 +108,7 @@ resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
 
   # the node group vms are tagged with the cluster name
   source_tags = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr])) # allow the pods
+  source_ranges = distinct(concat([local.gke_pod_subnet_cidr], [local.gke_subnet_cidr])) # allow the pods
 }
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
