@@ -1,12 +1,12 @@
 data "google_compute_address" "nat_address" {
-  count   = length(var.nat_address_name) < 1 ? 0 : 1
+  count   = length(var.nat_address_name) == 0 ? 0 : 1
   name    = var.nat_address_name
   project = var.project
   region  = local.region
 }
 
 module "nat_address" {
-  count        = length(var.nat_address_name) < 1 ? 1 : 0
+  count        = length(var.nat_address_name) == 0 ? 1 : 0
   source       = "terraform-google-modules/address/google"
   version      = "2.1.1"
   project_id   = var.project
@@ -18,7 +18,7 @@ module "nat_address" {
 }
 
 module "cloud_nat" {
-  count         = length(var.nat_address_name) < 1 ? 1 : 0
+  count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
   version       = "1.4.0"
   project_id    = var.project
@@ -38,7 +38,7 @@ module "vpc" {
   prefix                  = var.prefix
   region                  = local.region
   subnet_names            = local.subnet_names
-  create_subnets          = length(var.subnet_names) < 1? true : false
+  create_subnets          = length(var.subnet_names) == 0 ? true : false
   gke_subnet_cidr         = var.gke_subnet_cidr
   misc_subnet_cidr        = var.misc_subnet_cidr
   gke_pod_subnet_cidr     = var.gke_pod_subnet_cidr

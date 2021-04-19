@@ -6,6 +6,7 @@ output "cluster_name" {
 output "cluster_endpoint" {
   description = "GKE Cluster public IP"
   value       = module.gke.endpoint
+  sensitive   = true
 }
 
 output "kube_config" {
@@ -54,7 +55,7 @@ output "rwx_filestore_path" {
 
 output "nat_ip" {
   description = "Public IP of NAT for private network."
-  value       = length(var.nat_address_name) < 1 ? (length(module.nat_address.0.addresses) > 0 ? element(module.nat_address.0.addresses, 0) : null) : data.google_compute_address.nat_address.0.address
+  value       = length(var.nat_address_name) == 0 ? (length(module.nat_address.0.addresses) > 0 ? element(module.nat_address.0.addresses, 0) : null) : data.google_compute_address.nat_address.0.address
 }
 
 output "prefix" {

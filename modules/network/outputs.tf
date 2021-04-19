@@ -1,9 +1,9 @@
 output "network_name" {
-  value = length(var.vpc_name) < 1 ? google_compute_network.vpc.0.name : var.vpc_name
+  value = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.name : var.vpc_name
 }
 
 output "network_self_link" {
-  value = length(var.vpc_name) < 1 ? google_compute_network.vpc.0.self_link : data.google_compute_network.vpc.0.self_link
+  value = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.self_link : data.google_compute_network.vpc.0.self_link
 }
 
 output subnets {
