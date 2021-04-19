@@ -1,5 +1,5 @@
 data "google_compute_network" "vpc" {
-  count = length(var.vpc_name) < 1 ? 0 : 1
+  count = length(var.vpc_name) == 0 ? 0 : 1
   name  = var.vpc_name
 }
 resource "google_compute_network" "vpc" {
