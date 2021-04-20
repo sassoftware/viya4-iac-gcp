@@ -66,7 +66,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 
 If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need private subnet for the GKE nodes and a public subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing). 
 
-The existing subnets need match the same region given in the `var.location` variable.
+The existing subnets need match the same region given in the `location` variable defined [here](#required-variables)
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
