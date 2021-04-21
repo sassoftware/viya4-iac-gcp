@@ -21,17 +21,17 @@ Terraform input variables can be set in the following ways:
 
 ## Required Variables
 
-| Name | Description | Type | Notes |
-| :--- | ---: | ---: | ---: |
-| prefix | A prefix used in the name of all the GCP resources created by this script. | string |  The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
-| location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script.  | string | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
-| project | The GCP Project to use | string | |
+| Name | Description | Type | Default | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
+| location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
+| project | The GCP Project to use | string | | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | |
-| ssh_public_key | Public ssh key for VMs | string | "" | Name of file with public ssh to use for jump resp. nfs VM.  |
+| ssh_public_key | Public ssh key for VMs | string | "~/.ssh/id_rsa.pub" | Value is required in order to access your VMs |
 
 ## GCP Authentication
 
-The Terraform process manages GCP resources on your behalf. In order to do so, it needs to know the credentials for a GCP identity with the required permissons.
+The Terraform process manages GCP resources on your behalf. In order to do so, it needs to know the credentials for a GCP identity with the required permissions.
 
 For more detailed information on what is needed see [Authenticating Terraform to access GCP](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/user/TerraformGCPAuthentication.md)
 
@@ -60,8 +60,6 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_control_plane_subnet_cidr |  Address space for the hosted master network | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the subnet the auxiliary resources (Jump VM and optionally NFS VM) | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 
-
-
 ### Use Existing
 
 If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need private subnet for the GKE nodes and a public subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing). 
@@ -85,7 +83,10 @@ subnet_names = {
   "misc"                    = "my_misc_subnet_name"
 }
 ```
+
 ## General
+
+The application of a Kubernetes version in GCP has some limitations when assigning channels and versions to the cluster. The doc outlining on these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
@@ -109,9 +110,9 @@ subnet_names = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | default_nodepool_vm_type | Type of the default nodepool VMs | string | "e2-standard-8" | |
-| default_nodepool_max_nodes | Maximum number of nodes for the default nodepool | number | 5 | |
-| default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
 | default_nodepool_os_disk_size | Disk size for default nodepool VMs in GB | number | 128 ||
+| default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
+| default_nodepool_max_nodes | Maximum number of nodes for the default nodepool | number | 5 | |
 | default_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
 | default_nodepool_taints | Taints for the default nodepool VMs | list of strings | [] | |
 | default_nodepool_labels | Labels to add to the default nodepool VMs | map | {} | |
@@ -224,7 +225,7 @@ stateful = {
 | :--- | ---: | ---: | ---: | ---: |
 | create_postgres | Create a PostgreSQL server instance | bool | false | |
 | postgres_name | The name of the PostgreSQL Server | string | <computed> | Once used, a name cannot be reused for up to [one week](https://cloud.google.com/sql/docs/mysql/delete-instance) |
-| postgres_machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. 
+| postgres_machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312.
 | postgres_storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
 | postgres_administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | postgres_administrator_password | The Password associated with the postgres_administrator_login for the PostgreSQL Server | string | |  |
