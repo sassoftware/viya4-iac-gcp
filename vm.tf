@@ -3,8 +3,8 @@ data "template_file" "nfs_cloudconfig" {
   template = file("${path.module}/files/cloud-init/nfs/cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
-    misc_subnet_cidr    = var.misc_subnet_cidr
-    gke_subnet_cidr     = var.gke_subnet_cidr
+    misc_subnet_cidr    = local.misc_subnet_cidr
+    gke_subnet_cidr     = local.gke_subnet_cidr
     vm_admin            = var.nfs_vm_admin
   }
 }
@@ -33,7 +33,7 @@ module "nfs_server" {
   zone             = local.zone
   tags             = var.tags
 
-  subnet           = "${var.prefix}-misc-subnet" // Name or self_link to subnet
+  subnet           = local.subnet_names["misc"] // Name or self_link to subnet
   os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin         = var.nfs_vm_admin
@@ -59,7 +59,7 @@ module "jump_server" {
   zone             = local.zone
   tags             = var.tags
 
-  subnet           = "${var.prefix}-misc-subnet" // Name or self_link to subnet
+  subnet           = local.subnet_names["misc"] // Name or self_link to subnet
   os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
 
   vm_admin         = var.jump_vm_admin

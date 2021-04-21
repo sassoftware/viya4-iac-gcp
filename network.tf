@@ -1,11 +1,12 @@
-data "google_compute_subnetwork" "subnetwork" {
-  name       = "${var.prefix}-gke-subnet"
-  project    = var.project
-  region     = local.region
-  depends_on = [module.vpc]
+data "google_compute_address" "nat_address" {
+  count   = length(var.nat_address_name) == 0 ? 0 : 1
+  name    = var.nat_address_name
+  project = var.project
+  region  = local.region
 }
 
 module "nat_address" {
+  count        = length(var.nat_address_name) == 0 ? 1 : 0
   source       = "terraform-google-modules/address/google"
   version      = "2.1.1"
   project_id   = var.project
@@ -16,42 +17,8 @@ module "nat_address" {
   ]
 }
 
-module "vpc" {
-  source       = "terraform-google-modules/network/google"
-  version      = "3.1.2"
-  project_id   = var.project
-  network_name = "${var.prefix}-vpc"
-
-  subnets = [
-    {
-      subnet_name           = "${var.prefix}-gke-subnet"
-      subnet_ip             = var.gke_subnet_cidr // /23
-      subnet_region         = local.region
-      subnet_private_access = true
-    },
-    {
-      subnet_name           = "${var.prefix}-misc-subnet"
-      subnet_ip             = var.misc_subnet_cidr // /24
-      subnet_region         = local.region
-      subnet_private_access = false
-    },
-  ]
-
-  secondary_ranges = {
-    "${var.prefix}-gke-subnet" = [
-      {
-        range_name = "${var.prefix}-gke-pods"
-        ip_cidr_range = var.gke_pod_subnet_cidr // /17
-      },
-      {
-        range_name = "${var.prefix}-gke-services"
-        ip_cidr_range = var.gke_service_subnet_cidr // /22
-      }
-    ]
-  }
-}
-
 module "cloud_nat" {
+  count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
   version       = "1.4.0"
   project_id    = var.project
@@ -60,8 +27,24 @@ module "cloud_nat" {
   create_router = true
   router        = "${var.prefix}-router"
   network       = module.vpc.network_self_link
-  nat_ips       = module.nat_address.self_links
+  nat_ips       = module.nat_address.0.self_links
 }
+
+
+module "vpc" {
+  source                  = "./modules/network"
+  vpc_name                = trimspace(var.vpc_name)
+  project                 = var.project
+  prefix                  = var.prefix
+  region                  = local.region
+  subnet_names            = local.subnet_names
+  create_subnets          = length(var.subnet_names) == 0 ? true : false
+  gke_subnet_cidr         = var.gke_subnet_cidr
+  misc_subnet_cidr        = var.misc_subnet_cidr
+  gke_pod_subnet_cidr     = var.gke_pod_subnet_cidr
+  gke_service_subnet_cidr = var.gke_service_subnet_cidr
+}
+
 
 # All about how to use "private ip" to configure access from gke to cloud sql:
 # https://cloud.google.com/sql/docs/postgres/private-ip
@@ -101,7 +84,7 @@ resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
 
   # the node group vms are tagged with the cluster name
   source_tags = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
-  source_ranges = distinct(concat([var.gke_pod_subnet_cidr], [var.gke_subnet_cidr])) # allow the pods
+  source_ranges = distinct(concat([local.gke_pod_subnet_cidr], [local.gke_subnet_cidr])) # allow the pods
 }
 
 resource "google_compute_firewall" "nfs_vm_firewall" {

@@ -353,31 +353,6 @@ variable "postgres_database_flags" {
   ]
 }
 
-variable "gke_subnet_cidr" {
-  default = "192.168.0.0/23"
-}
-
-variable "misc_subnet_cidr" {
-  default = "192.168.2.0/24"
-}
-
-variable "gke_pod_subnet_cidr" {
-  default = "10.0.0.0/17"
-}
-
-variable "gke_service_subnet_cidr" {
-  default = "10.1.0.0/22"
-}
-
-variable "gke_control_plane_subnet_cidr" {
-  default = "10.2.0.0/28"
-}
-
-variable "gke_network_policy" {
-  description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
-  type        = bool
-  default     = false
-}
 
 ## filstore
 variable filestore_size_in_gb {
@@ -406,6 +381,59 @@ variable "gke_monitoring_service" {
   description = "Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none"
   default     = "none"
 }
+
+# Network
+variable "vpc_name" {
+  type        = string
+  default     = ""
+  description = "Name of exising VPC. Leave blank to have one created"
+}
+
+variable "nat_address_name" {
+  type        = string
+  default     = ""
+  description = "Name of existing ip address for Cloud NAT"
+}
+
+variable "subnet_names" {
+  type        = map(string)
+  default     = {}
+  description = "Map subnet usage roles to existing subnet and secondary range names. Required when vpc_name is set."
+  # Example:
+  # subnet_names = {
+  # gke = "my_gke_subnet"
+  # gke_pods_range_name = "my_secondary_range_for_pods"
+  # gke_services_range_name = "my_secondary_range_for_services"
+  # misc = "my_misc_subnet"}
+  # }
+}
+
+variable "gke_subnet_cidr" {
+  default = "192.168.0.0/23"
+}
+
+variable "misc_subnet_cidr" {
+  default = "192.168.2.0/24"
+}
+
+variable "gke_pod_subnet_cidr" {
+  default = "10.0.0.0/17"
+}
+
+variable "gke_service_subnet_cidr" {
+  default = "10.1.0.0/22"
+}
+
+variable "gke_control_plane_subnet_cidr" {
+  default = "10.2.0.0/28"
+}
+
+variable "gke_network_policy" {
+  description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
+  type        = bool
+  default     = false
+}
+
 
 variable "create_static_kubeconfig" {
   description = "Allows the user to create a provider / service account based kube config file"
