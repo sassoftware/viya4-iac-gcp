@@ -314,3 +314,13 @@ module "postgresql" {
     }
   ]
 }
+
+module "sql_proxy_sa" {
+  source  = "terraform-google-modules/service-accounts/google"
+  version = "4.0.0"
+  project_id = var.project
+  prefix = var.prefix
+  names = ["sql-proxy-sa"]
+  project_roles = ["${var.project}=>roles/cloudsql.admin"]
+  display_name = "IAC-managed service account for cluster ${var.prefix} and sql-proxy integration."
+}

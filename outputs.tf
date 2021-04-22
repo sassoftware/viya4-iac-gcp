@@ -46,6 +46,10 @@ output "postgres_server_cert" {
   value = var.create_postgres ? module.postgresql.0.instance_server_ca_cert.0.cert : null
 }
 
+output "sql_proxy_sa_email" {
+  value = var.create_postgres ? module.sql_proxy_sa.service_account.email : null
+}
+
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
   value       = var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.0.private_ip
