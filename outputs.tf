@@ -25,6 +25,10 @@ output "postgres_server_public_ip" {
 output "postgres_server_name" {
   value = var.create_postgres ? module.postgresql.0.instance_name : null
 }
+  
+output "postgres_connection_name" {
+  value = var.create_postgres ? modile.postgresql.0.instance_connection_name : null
+}
 
 output "postgres_admin" {
   value = var.create_postgres ? var.postgres_administrator_login : null
