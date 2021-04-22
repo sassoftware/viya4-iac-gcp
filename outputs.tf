@@ -27,7 +27,7 @@ output "postgres_server_name" {
 }
   
 output "postgres_connection_name" {
-  value = var.create_postgres ? modile.postgresql.0.instance_connection_name : null
+  value = var.create_postgres ? module.postgresql.0.instance_connection_name : null
 }
 
 output "postgres_admin" {
