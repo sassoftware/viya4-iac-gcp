@@ -47,7 +47,7 @@ output "postgres_server_cert" {
 }
 
 output "sql_proxy_sa_email" {
-  value = var.create_postgres ? module.sql_proxy_sa.service_account.email : null
+  value = var.create_postgres ? module.sql_proxy_sa.0.service_account.email : null
 }
 
 output "rwx_filestore_endpoint" {

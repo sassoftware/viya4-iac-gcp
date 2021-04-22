@@ -318,6 +318,7 @@ module "postgresql" {
 module "sql_proxy_sa" {
   source  = "terraform-google-modules/service-accounts/google"
   version = "4.0.0"
+  count = var.create_postgres ? 1 : 0
   project_id = var.project
   prefix = var.prefix
   names = ["sql-proxy-sa"]
