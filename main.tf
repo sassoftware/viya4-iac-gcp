@@ -196,6 +196,7 @@ module "gke" {
       node_locations     = local.zone # This must be a zone not a region. So var.location may not always work. ;)
       min_count          = settings.min_nodes
       max_count          = settings.max_nodes
+      node_count         = (settings.min_nodes == settings.max_nodes) ? settings.min_nodes : null
       autoscaling        = (settings.min_nodes == settings.max_nodes) ? false : true
       local_ssd_count    = settings.local_ssd_count
       disk_size_gb       = settings.os_disk_size
