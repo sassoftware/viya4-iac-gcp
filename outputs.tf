@@ -25,6 +25,10 @@ output "postgres_server_public_ip" {
 output "postgres_server_name" {
   value = var.create_postgres ? module.postgresql.0.instance_name : null
 }
+  
+output "postgres_connection_name" {
+  value = var.create_postgres ? module.postgresql.0.instance_connection_name : null
+}
 
 output "postgres_admin" {
   value = var.create_postgres ? var.postgres_administrator_login : null
@@ -44,6 +48,10 @@ output "postgres_server_port" {
 
 output "postgres_server_cert" {
   value = var.create_postgres ? module.postgresql.0.instance_server_ca_cert.0.cert : null
+}
+
+output "sql_proxy_sa_email" {
+  value = var.create_postgres ? module.sql_proxy_sa.0.service_account.email : null
 }
 
 output "rwx_filestore_endpoint" {
