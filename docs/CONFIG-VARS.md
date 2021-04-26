@@ -229,7 +229,7 @@ stateful = {
 | postgres_storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
 | postgres_administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | postgres_administrator_password | The Password associated with the postgres_administrator_login for the PostgreSQL Server | string | |  |
-| postgres_server_version | The version of the  PostgreSQL server instance | string | "11" | Valid values are 9.6, 10, 11, and 12 |
+| postgres_server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
 | postgres_ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | false | |
 | postgres_db_charset | Charset for the PostgreSQL Database | string | "UTF8" | Needs to be a valid PostgreSQL Charset. |
 | postgres_db_collation | Collation for the PostgreSQL Database | string | "en_US.UTF8" | Needs to be a valid PostgreSQL Collation. |

@@ -290,7 +290,7 @@ variable "postgres_administrator_password" {
 }
 
 variable "postgres_server_version" {
-  description = "The version of PostgreSQL to use. Valid values are 9.6, 10, 11, and 12."
+  description = "The version of PostgreSQL to use. Supported values are 11 and 12"
   default     = "11"
 }
 
