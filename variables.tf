@@ -1,5 +1,9 @@
- variable "prefix" {
-  description = "A prefix used for all Google Cloud resources created by this script"
+variable "prefix" {
+  description = "A prefix used in the name for all cloud resources created by this script. The prefix string must start with lowercase letter and contain only alphanumeric characters and hyphen or dash(-), but can not start or end with '-'."
+  validation {
+    condition     = can(regex("^[a-z][-0-9a-z]*[0-9a-z]$", var.prefix))
+    error_message = "ERROR: Value of 'prefix'\n * must start with lowercase letter\n * can only contain lowercase letters, numbers, and hyphen or dash(-), but can't start or end with '-'."
+  }
 }
 
 variable "location" {
