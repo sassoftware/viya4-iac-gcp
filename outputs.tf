@@ -6,6 +6,7 @@ output "cluster_name" {
 output "cluster_endpoint" {
   description = "GKE Cluster public IP"
   value       = module.gke.endpoint
+  sensitive   = true
 }
 
 output "kube_config" {
