@@ -51,7 +51,7 @@ variable "ssh_public_key" {
 }
 
 variable "os_image" {
-  default = "ubuntu-os-cloud/ubuntu-1804-lts" # FAMILY/PROJECT glcoud compute images list
+  default = "ubuntu-os-cloud/ubuntu-2004-lts" # FAMILY/PROJECT glcoud compute images list
 }
 
 
