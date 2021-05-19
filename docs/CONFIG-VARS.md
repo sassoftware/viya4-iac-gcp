@@ -23,7 +23,7 @@ Terraform input variables can be set in the following ways:
 
 | Name | Description | Type | Default | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only lowercase alphanumeric characters and dashes (-), but cannot end with a dash. |
+| prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only alphanumeric characters and dashes (-), but cannot end with a dash. |
 | location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
 | project | The GCP Project to use | string | | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | |
@@ -77,10 +77,10 @@ Example `subnet_names` variable:
 ```yaml
 subnet_names = {
   ## Required subnet/range names
-  "gke"                     = "my_gke_subnet_name"
-  "gke_pods_range_name"     = "my_secondary_range_for_pods"
-  "gke_services_range_name" = "my_secondary_range_for_services" 
-  "misc"                    = "my_misc_subnet_name"
+  "gke"                     = "name_of_my_gke_subnet"
+  "gke_pods_range_name"     = "name_of_my_secondary_range_for_pods"
+  "gke_services_range_name" = "name_of_my_secondary_range_for_services"
+  "misc"                    = "name_of_my_misc_subnet"
 }
 ```
 
