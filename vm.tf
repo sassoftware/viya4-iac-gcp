@@ -34,7 +34,7 @@ module "nfs_server" {
   tags             = var.tags
 
   subnet           = local.subnet_names["misc"] // Name or self_link to subnet
-  os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
+  os_image         = "ubuntu-os-cloud/ubuntu-2004-lts"
 
   vm_admin         = var.nfs_vm_admin
   ssh_public_key   = local.ssh_public_key
@@ -60,7 +60,7 @@ module "jump_server" {
   tags             = var.tags
 
   subnet           = local.subnet_names["misc"] // Name or self_link to subnet
-  os_image         = "ubuntu-os-cloud/ubuntu-1804-lts"
+  os_image         = "ubuntu-os-cloud/ubuntu-2004-lts"
 
   vm_admin         = var.jump_vm_admin
   ssh_public_key   = local.ssh_public_key
