@@ -3,7 +3,7 @@ ARG GCP_CLI_VERSION=341.0.0
 FROM hashicorp/terraform:$TERRAFORM_VERSION as terraform
 
 FROM google/cloud-sdk:$GCP_CLI_VERSION
-ARG KUBECTL_VERSION=1.19.9
+ARG KUBECTL_VERSION=0.19.9
 
 WORKDIR /viya4-iac-gcp
 
@@ -15,7 +15,7 @@ RUN apt-get install -y jq \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \
   && chmod g=u -R /etc/passwd /etc/group /viya4-iac-gcp \
-  && terraform init /viya4-iac-gcp
+  && cd /viya4-iac-gcp ; terraform init
 
 ENV TF_VAR_iac_tooling=docker
 ENTRYPOINT ["/viya4-iac-gcp/docker-entrypoint.sh"]
