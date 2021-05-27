@@ -77,10 +77,10 @@ Example `subnet_names` variable:
 ```yaml
 subnet_names = {
   ## Required subnet/range names
-  "gke"                     = "my_gke_subnet_name"
-  "gke_pods_range_name"     = "my_secondary_range_for_pods"
-  "gke_services_range_name" = "my_secondary_range_for_services" 
-  "misc"                    = "my_misc_subnet_name"
+  "gke"                     = "name_of_my_gke_subnet"
+  "gke_pods_range_name"     = "name_of_my_secondary_range_for_pods"
+  "gke_services_range_name" = "name_of_my_secondary_range_for_services"
+  "misc"                    = "name_of_my_misc_subnet"
 }
 ```
 
