@@ -257,11 +257,8 @@ module "kubeconfig" {
 }
 
 module "postgresql" {
-  # providers = {
-  #   google-beta = google-beta
-  # }
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "5.0.1"
+  version                          = "5.1.0"
   project_id                       = var.project
   count                            = var.create_postgres ? 1 : 0
 
