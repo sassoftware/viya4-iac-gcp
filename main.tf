@@ -124,7 +124,7 @@ EOT
 resource "google_filestore_instance" "rwx" {
   name   = "${var.prefix}-rwx-filestore"
   count  = var.storage_type == "ha" ? 1 : 0 
-  tier   = var.filestore_tier
+  tier   = upper(var.filestore_tier)
   zone   = local.zone
   labels = var.tags
 

@@ -49,7 +49,7 @@ variable "kubernetes_version" {
 
   validation {
     condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest")
-    error_message = "The format for kuberentes version is: x.yy-gke.zzzz or 'latest'."
+    error_message = "The format for kubernetes version is: x.yy-gke.zzzz or 'latest'."
   }
 }
 
@@ -360,11 +360,17 @@ variable "postgres_database_flags" {
 
 ## filstore
 variable filestore_size_in_gb {
-  default = 1024
+  default = 2560
 }
 
 variable filestore_tier {
-  default = "STANDARD"
+  default = "BASIC_HDD"
+  type = string
+  validation {
+      # we allow the old values "STANDARD" and "PREMIUM" but do not document them
+      condition     = (contains(["STANDARD", "PREMIUM", "BASIC_HDD", "BASIC_SSD"], upper(var.filestore_tier)))
+      error_message = "Filestore tier must be one of BASIC_HDD, BASIC_SSD."
+    }
 }
 
 variable "create_container_registry" {
