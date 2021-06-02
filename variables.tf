@@ -360,7 +360,7 @@ variable "postgres_database_flags" {
 
 ## filstore
 variable filestore_size_in_gb {
-  default = 2560
+  default = null
 }
 
 variable filestore_tier {

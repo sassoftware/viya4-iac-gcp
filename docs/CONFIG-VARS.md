@@ -224,7 +224,7 @@ stateful = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
-| filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 2560 | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minum size of 1024 GB. |
+| filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
 
 
 ## Postgres
