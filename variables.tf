@@ -22,7 +22,8 @@ variable "regional" {
 }
 
 variable "service_account_keyfile" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "project" {

@@ -5,7 +5,14 @@ In order to do so, it needs to authenticate itself to GCP with the appropriate p
 
 This project uses a GCP Service Account to authenticate with GCP. You will need a Service Account with the appropriate permissions. You can use an existing Service Account, or preferably create a dedicated Service Account.
 
-You then create a keyfile in JSON format with the Service Account information. Terraform uses that keyfile to authenticate to GCP
+## Running Terraform outside Google Cloud
+
+If you are running terraform outside of Google Cloud, generate a service account keyfile in JSON format and specify that keyfile either with the `GOOGLE_APPLICATION_CREDENTIALS` environment variable or with the [`service_account_keyfile` terraform variable](#Terraform-project-variables-to-authenticate-with-GCP).
+
+## Running Terraform on Google Cloud
+
+If you are running terraform on a VM in Google Cloud, you can [configure that VM instance to use your Service Account](https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#using). This will allow Terraform to authenticate to Google Cloud without having to bake in a separate credential/authentication file. Ensure that the scope of the VM is set to or includes https://www.googleapis.com/auth/cloud-platform.
+
 
 ## Create a GCP Service Account
 
@@ -15,7 +22,7 @@ gcloud CLI Example:
 
 ```bash
 SA_NAME="<my-service-account>"  #  <=== CHANGE
-gcloud iam service-accounts create $SA_NAME  --description "Service Account used Terraform Viya4 Infrastructure" --display-name "$SA_NAME"
+gcloud iam service-accounts create $SA_NAME  --description "Service Account for Terraform Viya4 Infrastructure" --display-name "$SA_NAME"
 ```
 
 ## Apply the necessary Roles to the Service Account
@@ -37,7 +44,7 @@ The Service Account will need the following [IAM roles](https://cloud.google.com
 | `roles/iam.serviceAccountUser` | Service Account User | Terraform Kubernetes Engine Module |
 | `roles/resourcemanager.projectIamAdmin` | Project IAM Admin | Terraform Kubernetes Engine Module |
 
-How modify IAM access to GCP resources:  https://cloud.google.com/iam/docs/granting-changing-revoking-access
+How to modify IAM access to GCP resources:  https://cloud.google.com/iam/docs/granting-changing-revoking-access
 
 gcloud CLI Example:
 ```bash
@@ -89,7 +96,9 @@ roles/resourcemanager.projectIamAdmin
 
 ## Create the Service Account Keyfile
 
-Manage key files using the Cloud Console: https://console.cloud.google.com/apis/credentials/serviceaccountkey
+When running terraform on a workstation outside of the Google Cloud Platform, you persist the Service Account information to a JSON file, and then [specify that file when running terraform](#Terraform-project-variables-to-authenticate-with-GCP).
+
+Managing key files using the Cloud Console: https://console.cloud.google.com/apis/credentials/serviceaccountkey
 
 gcloud CLI Example:
 
@@ -108,4 +117,4 @@ As part of your [Terraform input variables](../../README.md#customize-input-valu
 | Name | Description |
 | :--- | :--- |
 | project | The GCP Project to use |
-| service_account_keyfile | Filename of the Service Account JSON file |
+| service_account_keyfile | Filename of the Service Account JSON file. Alternatively, you can set the `GOOGLE_APPLICATION_CREDENTIAL` environment variable. Note that you do not need to set this variable when running on a GCP VM that is associated with the Service Account.  |
