@@ -91,6 +91,12 @@ locals {
   gke_pod_range_index = length(var.subnet_names) == 0 ? index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"]) : 0
   gke_pod_subnet_cidr = length(var.subnet_names) == 0 ? var.gke_pod_subnet_cidr : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range
 
+  filestore_size_in_gb = (
+    var.filestore_size_in_gb == null
+      ? ( contains(["BASIC_HDD","STANDARD"], upper(var.filestore_tier)) ? 1024 : 2560 )
+      : var.filestore_size_in_gb
+  )
+
 }
 
 data "external" "git_hash" {
@@ -124,12 +130,12 @@ EOT
 resource "google_filestore_instance" "rwx" {
   name   = "${var.prefix}-rwx-filestore"
   count  = var.storage_type == "ha" ? 1 : 0 
-  tier   = var.filestore_tier
+  tier   = upper(var.filestore_tier)
   zone   = local.zone
   labels = var.tags
 
   file_shares {
-    capacity_gb = var.filestore_size_in_gb
+    capacity_gb = local.filestore_size_in_gb
     name        = "volumes"
   }
 
