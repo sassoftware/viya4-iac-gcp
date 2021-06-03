@@ -60,6 +60,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "use_private_endpoint" {
+  description = "Use Private IP address for cluster API endpoint"
+  type        = bool
+  default     = false
+}
+
 variable "default_public_access_cidrs" {
   description = "List of CIDRs to access created resources"
   type        = list(string)
