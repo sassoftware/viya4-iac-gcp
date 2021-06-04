@@ -1,10 +1,10 @@
 provider "google" {
-  credentials = file(var.service_account_keyfile)
+  credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
   project     = var.project
 }
 
 provider "google-beta" {
-  credentials = file(var.service_account_keyfile)
+  credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
   project     = var.project
 }
 
