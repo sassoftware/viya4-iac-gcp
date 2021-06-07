@@ -31,10 +31,10 @@ Operational knowledge of
 
 - Terraform or Docker
   - #### Terraform
-    - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
-    - [jq](https://stedolan.github.io/jq/) - v1.6Docker
-    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google Cloud Platform Portal
+    - [Terraform](https://www.terraform.io/downloads.html) - v0.15.5
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.19.9
+    - [jq](https://stedolan.github.io/jq/) - v1.6
+    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v342.0.0
   - #### Docker
     - [Docker](https://docs.docker.com/get-docker/)
 
