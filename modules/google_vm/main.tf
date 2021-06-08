@@ -1,6 +1,6 @@
 module "address" {
   source       = "terraform-google-modules/address/google"
-  version      = "2.1.1"
+  version      = "3.0.0"
   project_id   = var.project
   region       = var.region
   address_type = "EXTERNAL"

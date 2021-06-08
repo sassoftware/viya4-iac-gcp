@@ -31,10 +31,10 @@ Operational knowledge of
 
 - Terraform or Docker
   - #### Terraform
-    - [Terraform](https://www.terraform.io/downloads.html) - v0.13.6
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.18.8
-    - [jq](https://stedolan.github.io/jq/) - v1.6Docker
-    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - useful as an alternative to the Google Cloud Platform Portal
+    - [Terraform](https://www.terraform.io/downloads.html) - v1.0.0
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.19.9
+    - [jq](https://stedolan.github.io/jq/) - v1.6
+    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v342.0.0
   - #### Docker
     - [Docker](https://docs.docker.com/get-docker/)
 
@@ -58,7 +58,7 @@ See [Terraform GCP Authentication](./docs/user/TerraformGCPAuthentication.md) fo
 
 ### Customize Input Values
 
-Create a file named `terraform.tfvars` to customize any input variable value. For starters, you can copy one of the provided example variable definition files in `./examples` folder. For more details on the variables declared in [variables.tf](variables.tf) refer to [CONFIG-VARS.md](docs/CONFIG-VARS.md).
+Create a file named `terraform.tfvars` to customize any input variable value documented in the [CONFIG-VARS.md](docs/CONFIG-VARS.md) file. For starters, you can copy one of the provided example variable definition files in `./examples` folder. For more details on the variables declared refer to the [CONFIG-VARS.md](docs/CONFIG-VARS.md) file.
 
 **NOTE:** You will need to update the `cidr_blocks` in the [variables.tf](variables.tf) file to allow traffic from your current network. Without these rules, access to the cluster will only be allowed via the GCP Console.
 

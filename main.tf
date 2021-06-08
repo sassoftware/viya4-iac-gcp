@@ -153,7 +153,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                    = "13.1.0"
+  version                    = "14.3.0"
   project_id                 = var.project
   name                       = "${var.prefix}-gke"
   region                     = local.region
@@ -263,11 +263,8 @@ module "kubeconfig" {
 }
 
 module "postgresql" {
-  providers = {
-    google-beta = google-beta
-  }
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "4.5.0"
+  version                          = "5.1.0"
   project_id                       = var.project
   count                            = var.create_postgres ? 1 : 0
 

@@ -8,7 +8,7 @@ data "google_compute_address" "nat_address" {
 module "nat_address" {
   count        = length(var.nat_address_name) == 0 ? 1 : 0
   source       = "terraform-google-modules/address/google"
-  version      = "2.1.1"
+  version      = "3.0.0"
   project_id   = var.project
   region       = local.region
   address_type = "EXTERNAL"
@@ -20,7 +20,7 @@ module "nat_address" {
 module "cloud_nat" {
   count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
-  version       = "1.4.0"
+  version       = "2.0.0"
   project_id    = var.project
   name          = "${var.prefix}-cloud-nat"
   region        = local.region
@@ -29,7 +29,6 @@ module "cloud_nat" {
   network       = module.vpc.network_self_link
   nat_ips       = module.nat_address.0.self_links
 }
-
 
 module "vpc" {
   source                  = "./modules/network"
@@ -44,7 +43,6 @@ module "vpc" {
   gke_pod_subnet_cidr     = var.gke_pod_subnet_cidr
   gke_service_subnet_cidr = var.gke_service_subnet_cidr
 }
-
 
 # All about how to use "private ip" to configure access from gke to cloud sql:
 # https://cloud.google.com/sql/docs/postgres/private-ip
