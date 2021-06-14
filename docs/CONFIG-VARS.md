@@ -46,7 +46,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| use_private_endpoint | Creates a cluster api endpoint with a private ip address instead of a public ip address | bool | | When "true", all "*_public_access_cidrs" options may not use public ip addresses. Access to the cluster is only allowed from restricted IP ranges. |
+| private_cluster | Creates a cluster api endpoint with a private ip address instead of a public ip address | bool | | When "true", all "*_public_access_cidrs" options may not use public ip addresses. Access to the cluster is only allowed from restricted IP ranges. |
 | default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Use to to set a default for all Resources |
 | cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl` |
 | vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |

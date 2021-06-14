@@ -60,7 +60,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "use_private_endpoint" {
+variable "private_cluster" {
   description = "Use Private IP address for cluster API endpoint"
   type        = bool
   default     = false
