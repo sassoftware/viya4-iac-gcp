@@ -152,41 +152,42 @@ data "google_container_engine_versions" "gke-version" {
 }
 
 module "gke" {
-  source                     = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                    = "14.3.0"
-  project_id                 = var.project
-  name                       = "${var.prefix}-gke"
-  region                     = local.region
-  regional                   = var.regional
-  zones                      = [local.zone]
-  network                    = module.vpc.network_name
-  subnetwork                 = local.subnet_names["gke"]
-  ip_range_pods              = local.subnet_names["gke_pods_range_name"]
-  ip_range_services          = local.subnet_names["gke_services_range_name"]
-  http_load_balancing        = false
-  horizontal_pod_autoscaling = true
-  enable_private_endpoint    = false
-  enable_private_nodes       = true
-  master_ipv4_cidr_block     = var.gke_control_plane_subnet_cidr
+  source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
+  version                       = "14.3.0"
+  project_id                    = var.project
+  name                          = "${var.prefix}-gke"
+  region                        = local.region
+  regional                      = var.regional
+  zones                         = [local.zone]
+  network                       = module.vpc.network_name
+  subnetwork                    = local.subnet_names["gke"]
+  ip_range_pods                 = local.subnet_names["gke_pods_range_name"]
+  ip_range_services             = local.subnet_names["gke_services_range_name"]
+  http_load_balancing           = false
+  horizontal_pod_autoscaling    = true
+  deploy_using_private_endpoint = var.private_cluster
+  enable_private_endpoint       = var.private_cluster
+  enable_private_nodes          = true
+  master_ipv4_cidr_block        = var.gke_control_plane_subnet_cidr
   
-  node_pools_metadata        = {"all": var.tags}
-  cluster_resource_labels    = var.tags
+  node_pools_metadata           = {"all": var.tags}
+  cluster_resource_labels       = var.tags
 
-  add_cluster_firewall_rules = true
+  add_cluster_firewall_rules    = true
 
-  release_channel            = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
-  kubernetes_version         = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
+  release_channel               = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
+  kubernetes_version            = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
 
-  network_policy             = var.gke_network_policy
-  remove_default_node_pool	 = true
+  network_policy                = var.gke_network_policy
+  remove_default_node_pool	    = true
 
-  grant_registry_access      = var.create_container_registry
+  grant_registry_access         = var.create_container_registry
 
-  monitoring_service         = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
+  monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  cluster_autoscaling        = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
+  cluster_autoscaling           = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
 
-  master_authorized_networks = concat([
+  master_authorized_networks    = concat([
     for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
       display_name = cidr
       cidr_block   = cidr
