@@ -120,3 +120,7 @@ output "nfs_admin_username" {
 output "cr_endpoint" {
   value = var.create_container_registry ? "https://gcr.io/${var.project}" : null
 }
+
+output "cluster_node_pool_mode" {
+  value = var.cluster_node_pool_mode
+}
