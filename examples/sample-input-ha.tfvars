@@ -5,7 +5,7 @@
 # ****************  REQUIRED VARIABLES  ****************
 # These required variables' values MUST be provided by the User
 prefix                  = "<prefix-value>"
-location                = "<gcp-zone-or-region>" # e.g., "us-east1-b""
+location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
 project                 = "<gcp-project>"
 service_account_keyfile = "<service-account-json-file>"
 ssh_public_key          = "~/.ssh/id_rsa.pub"
