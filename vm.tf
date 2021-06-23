@@ -28,7 +28,7 @@ module "nfs_server" {
   create_public_ip = var.create_nfs_public_ip
 
   name             = "${var.prefix}-nfs-server"
-  machine_type     = "n1-standard-1"
+  machine_type     = var.nfs_vm_type
   region           = local.region
   zone             = local.zone
   tags             = var.tags
@@ -54,7 +54,7 @@ module "jump_server" {
   create_public_ip = var.create_jump_public_ip
 
   name             = "${var.prefix}-jump-server"
-  machine_type     = "n1-standard-1"
+  machine_type     = var.jump_vm_type
   region           = local.region
   zone             = local.zone
   tags             = var.tags

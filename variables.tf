@@ -105,6 +105,11 @@ variable "jump_vm_admin" {
   default     = "jumpuser"
 }
 
+variable "jump_vm_type" {
+  description = "Jump VM type"
+  default     = "n2-standard-4"
+}
+
 variable "create_jump_public_ip" {
   default = true
 }
@@ -118,6 +123,11 @@ variable "jump_rwx_filestore_path" {
 variable "nfs_vm_admin" {
   description = "OS Admin User for NFS VM"
   default     = "nfsuser"
+}
+
+variable "nfs_vm_type" {
+  description = "NFS VM type"
+  default     = "n2-standard-4"
 }
 
 variable "nfs_raid_disk_size" {
@@ -456,4 +466,10 @@ variable "create_static_kubeconfig" {
   description = "Allows the user to create a provider / service account based kube config file"
   type        = bool
   default     = true
+}
+
+variable "cluster_node_pool_mode" {
+  description = "Flag for predefined cluster node configurations - Values : default, minimal"
+  type        = string
+  default     = "default"
 }

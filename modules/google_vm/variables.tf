@@ -29,7 +29,7 @@ variable "tags" {
 }
 
 variable "machine_type" {
-  default = "m5.4xlarge"
+  default = "n2-standard-4"
 }
 
 variable "user_data" {
