@@ -53,8 +53,8 @@ resource "google_compute_global_address" "private_ip_address" {
 
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  address       = "192.168.4.0"
-  prefix_length = 22
+  address       = split("/",var.database_subnet_cidr)[0]
+  prefix_length = split("/",var.database_subnet_cidr)[1]
   network       = module.vpc.network_self_link
 }
 
