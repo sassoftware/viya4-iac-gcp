@@ -278,102 +278,56 @@ variable "cluster_autoscaling_max_memory_gb" {
   default = 10000
 }
 
-## PostgresSQL inputs
-variable "create_postgres" {
-  description = "Create a PostgreSQL Server instance"
-  type        = bool
-  default     = false
+# PostgreSQL
+
+# Defaults
+variable "postgres_server_defaults" {
+  description = ""
+  type        = any
+  default = {
+    machine_type                           = "db-custom-8-30720"
+    storage_gb                             = 10
+    backups_enabled                        = true
+    backups_start_time                     = "21:00"
+    backups_location                       = null
+    backups_point_in_time_recovery_enabled = false
+    administrator_login                    = "pgadmin"
+    administrator_password                 = "my$up3rS3cretPassw0rd"
+    server_version                         = "11"
+    availability_type                      = "ZONAL"
+    ssl_enforcement_enabled                = true
+    database_flags                         = []
+  }
 }
 
-variable "postgres_name" {
-  description = "The name of the PostgreSQL Server. Changing this forces a new resource to be created."
-  default     = ""
+# User inputs
+variable "postgres_servers" {
+  description = "Map of PostgreSQL server objects"
+  type        = any
+  default     = null
+
+  # Checking for user provided "default" server
+  validation {
+    condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
+    error_message = "The provided map of PostgreSQL server objects does not contain the required 'default' key."
+  }
+
+  # Checking server name
+  validation {
+    condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? alltrue([
+      for k,v in var.postgres_servers : alltrue([
+        length(k) > 0,
+        length(k) < 88,
+        can(regex("^[a-z]+[a-z0-9-]*[a-zA-Z0-9]$", k)),
+      ])
+    ]) : false : true
+    error_message = "ERROR: The database name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphends, letters, and numbers."
+  }
+
+  # Checking user provided login
+
+  # Checking user provided password
 }
-
-variable "postgres_machine_type" {
-  description = "The machine type to use. Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312."
-  default     = "db-custom-8-30720"
-}
-
-variable "postgres_storage_gb" {
-  description = "Min storage for the PostgreSQL Server instance."
-  default     = 10
-}
-
-variable "postgres_administrator_login" {
-  description = "The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created."
-  default     = "pgadmin"
-}
-
-variable "postgres_administrator_password" {
-  description = "The password for the postgres_administrator_login ID"
-  default     = ""
-}
-
-variable "postgres_server_version" {
-  description = "The version of PostgreSQL to use. Supported values are 11 and 12"
-  default     = "11"
-}
-
-variable "postgres_ssl_enforcement_enabled" {
-  description = "Enforce SSL on connections."
-  default     = true
-}
-
-variable "postgres_db_charset" {
-  description = "Charset for the PostgreSQL Database. Needs to be a valid PostgreSQL Charset. Changing this forces a new resource to be created."
-  default     = "UTF8"
-}
-
-variable "postgres_db_collation" {
-  description = "Collation for the PostgreSQL Database."
-  default     = "en_US.UTF8"
-}
-
-variable "postgres_backups_enabled" {
-  default = true
-}
-
-variable "postgres_backups_start_time" {
-  default = "21:00"
-}
-
-variable "postgres_backups_location" {
-  default = null
-}
-
-variable "postgres_backups_point_in_time_recovery_enabled" {
-  default = false
-}
-
-variable "postgres_db_names" {
-  description = "The list of names of PostgreSQL database to create. Needs to be a valid PostgreSQL identifier. Changing this forces a new resource to be created."
-  default     = []
-}
-
-variable "postgres_availability_type" {
-  default = "ZONAL"
-}
-
-variable "postgres_database_flags" {
-  type = list(object({
-    name = string
-    value = string
-  }))
-
-  default = [
-    { 
-      # 30Gb RAM needed to get 600 max_connections (https://cloud.google.com/sql/docs/postgres/quotas#cloud-sql-for-postgresql-connection-limits)
-      name = "max_connections"
-      value = 600
-    },
-    { 
-      name = "max_prepared_transactions"
-      value = 1024
-    },
-  ]
-}
-
 
 ## filstore
 variable filestore_size_in_gb {

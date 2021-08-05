@@ -11,48 +11,17 @@ output "cluster_endpoint" {
 
 output "kube_config" {
   value = module.kubeconfig.kube_config
+  sensitive = true
 }
 
-output "postgres_fqdn" {
-  description = "Private IP of the PostgreSQL server. Use this value to set DATABASE_HOST in your Viya deployment."
-  value       = var.create_postgres ? module.postgresql.0.private_ip_address : null
-}
-
-output "postgres_server_public_ip" {
-  description = "Public IP of the PostgreSQL server. Use this value to connect database clients."
-  value       = (var.create_postgres && (length(local.postgres_public_access_cidrs) > 0)) ? module.postgresql.0.public_ip_address : null
-}
-
-output "postgres_server_name" {
-  value = var.create_postgres ? module.postgresql.0.instance_name : null
-}
-  
-output "postgres_connection_name" {
-  value = var.create_postgres ? module.postgresql.0.instance_connection_name : null
-}
-
-output "postgres_admin" {
-  value = var.create_postgres ? var.postgres_administrator_login : null
-}
-
-output "postgres_password" {
-  value = var.create_postgres ? var.postgres_administrator_password : null
-}
-
-output "postgres_server_id" {
-  value = var.create_postgres ? module.postgresql.0.instance_name : null
-}
-
-output "postgres_server_port" {
-  value = var.create_postgres ? "5432" : null
-}
-
-output "postgres_server_cert" {
-  value = var.create_postgres ? module.postgresql.0.instance_server_ca_cert.0.cert : null
+#postgres
+output "postgres_servers" {
+  value = length(module.postgresql) != 0 ? local.postgres_outputs : null
+  sensitive = true
 }
 
 output "sql_proxy_sa_email" {
-  value = var.create_postgres ? module.sql_proxy_sa.0.service_account.email : null
+  value = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? module.sql_proxy_sa.0.service_account.email : null : null
 }
 
 output "rwx_filestore_endpoint" {
