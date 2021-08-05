@@ -28,10 +28,10 @@ nat_address_name = "<name-of-existing-nat-ip-address>"
 # add labels to the created resources
 tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
-# Postgres config
-create_postgres                  = true # set this to "false" when using internal Crunchy Postgres
-postgres_ssl_enforcement_enabled = false
-postgres_administrator_password  = "mySup3rS3cretPassw0rd"
+# Posgres Servers
+postgres_servers = {
+  default = {},
+}
 
 # GKE config
 default_nodepool_min_nodes = 2
