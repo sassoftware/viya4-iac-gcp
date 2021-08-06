@@ -227,25 +227,63 @@ stateful = {
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
 | filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
 
+## Postgres Servers
 
-## Postgres
+When setting up ***external database servers***, you must provide information about those servers in the `postgres_servers` variable block. Each entry in the variable block represents a ***single database server***.
+
+This code only configures database servers. No databases are created during the infrastructure setup.
+
+The variable has the following format:
+
+```terraform
+postgres_servers = {
+  default = {},
+  ...
+}
+```
+
+**NOTE**: The `default = {}` elements is always required when creating external databases. This is the systems default database server.
+
+Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below:
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| create_postgres | Create a PostgreSQL server instance | bool | false | |
-| postgres_name | The name of the PostgreSQL Server | string | <computed> | Once used, a name cannot be reused for up to [one week](https://cloud.google.com/sql/docs/mysql/delete-instance) |
-| postgres_machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312.
-| postgres_storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
-| postgres_administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
-| postgres_administrator_password | The Password associated with the postgres_administrator_login for the PostgreSQL Server | string | |  |
-| postgres_server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
-| postgres_ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | false | |
-| postgres_db_charset | Charset for the PostgreSQL Database | string | "UTF8" | Needs to be a valid PostgreSQL Charset. |
-| postgres_db_collation | Collation for the PostgreSQL Database | string | "en_US.UTF8" | Needs to be a valid PostgreSQL Collation. |
-| postgres_backups_enabled | Enables postgres backups | bool | true | |
-| postgres_backups_start_time | Start time for postgres backups | string | "21:00" | |
-| postgres_backups_location | TODO | string | null | |
-| postgres_backups_point_in_time_recovery_enabled | Enable point-in-time recovery | bool | false | |
-| postgres_db_names | The list of names of PostgreSQL database to create | list | [] | |
-| postgres_availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`."
-| postgres_database_flags | Database flags for the master instance. | list of objects |  | More details: https://cloud.google.com/sql/docs/postgres/flags |
+| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312.
+| storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
+| backups_enabled | Enables postgres backups | bool | true | |
+| backups_start_time | Start time for postgres backups | string | "21:00" | |
+| backups_location | TODO | string | null | |
+| backups_point_in_time_recovery_enabled | Enable point-in-time recovery | bool | false | |
+| administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
+| administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
+| server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
+| ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | false | |
+| availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`." |
+| postgres_database_flags | Database flags for the master instance. | list of objects | [] | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
+
+| database_flags | Database flags for the master instance. | list of objects |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
+
+Here is a sample of the `postgres_servers` variable with the `default` entry only overriding the `administrator_password` parameter and the `cps` entry overriding all of the parameters:
+
+```terraform
+database_servers = {
+  default = {
+    administrator_password       = "D0ntL00kTh1sWay"
+  },
+  cps = {
+    default = {
+      machine_type                           = "db-custom-8-30720"
+      storage_gb                             = 10
+      backups_enabled                        = true
+      backups_start_time                     = "21:00"
+      backups_location                       = null
+      backups_point_in_time_recovery_enabled = false
+      administrator_login                    = "pgadmin"
+      administrator_password                 = "my$up3rS3cretPassw0rd"
+      server_version                         = "11"
+      availability_type                      = "ZONAL"
+      ssl_enforcement_enabled                = true
+      database_flags                         = []
+    }
+}
+```
