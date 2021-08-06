@@ -20,10 +20,6 @@ output "postgres_servers" {
   sensitive = true
 }
 
-output "sql_proxy_sa_email" {
-  value = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? module.sql_proxy_sa.0.service_account.email : null : null
-}
-
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
   value       = var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.0.private_ip

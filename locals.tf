@@ -88,7 +88,8 @@ locals {
       "ssl_enforcement_enabled" : local.postgres_servers[k].ssl_enforcement_enabled,
       "connection_name" : module.postgresql[k].instance_connection_name,
       "server_public_ip" : length(local.postgres_public_access_cidrs) > 0 ? module.postgresql[k].public_ip_address : null,
-      "server_cert" : module.postgresql[k].instance_server_ca_cert.0.cert
+      "server_cert" : module.postgresql[k].instance_server_ca_cert.0.cert,
+      "service_account" : module.sql_proxy_sa.0.service_account.email,
       "internal" : false,
     }
   } : {}
