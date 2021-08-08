@@ -15,7 +15,7 @@ RUN apt-get install -y jq \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \
   && chmod g=u -R /etc/passwd /etc/group /viya4-iac-gcp \
-  && cd /viya4-iac-gcp ; terraform init
+  && terraform init
 
 ENV TF_VAR_iac_tooling=docker
 ENTRYPOINT ["/viya4-iac-gcp/docker-entrypoint.sh"]
