@@ -68,7 +68,7 @@ resource "google_filestore_instance" "rwx" {
 }
 
 data "google_container_engine_versions" "gke-version" {
-  provider = google-beta
+  provider       = google-beta
   location       = var.regional ? local.region : local.zone
   version_prefix = "${var.kubernetes_version}."
 }
@@ -87,8 +87,8 @@ module "gke" {
   ip_range_services             = local.subnet_names["gke_services_range_name"]
   http_load_balancing           = false
   horizontal_pod_autoscaling    = true
-  deploy_using_private_endpoint = var.private_cluster
-  enable_private_endpoint       = var.private_cluster
+  deploy_using_private_endpoint = local.is_private
+  enable_private_endpoint       = local.is_private
   enable_private_nodes          = true
   master_ipv4_cidr_block        = var.gke_control_plane_subnet_cidr
   

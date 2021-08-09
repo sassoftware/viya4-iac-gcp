@@ -60,10 +60,15 @@ variable "tags" {
   default     = {}
 }
 
-variable "private_cluster" {
+variable "infra_mode" {
   description = "Use Private IP address for cluster API endpoint"
-  type        = bool
-  default     = false
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "private"], lower(var.infra_mode))
+    error_message = "ERROR: Supported values for `infra_mode` are - standard, private."
+  }
 }
 
 variable "default_public_access_cidrs" {
