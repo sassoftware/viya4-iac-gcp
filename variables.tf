@@ -309,7 +309,7 @@ variable "postgres_servers" {
   # Checking for user provided "default" server
   validation {
     condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
-    error_message = "The provided map of PostgreSQL server objects does not contain the required 'default' key."
+    error_message = "ERROR: The provided map of PostgreSQL server objects does not contain the required 'default' key."
   }
 
   # Checking server name
@@ -321,7 +321,7 @@ variable "postgres_servers" {
         can(regex("^[a-z]+[a-z0-9-]*[a-zA-Z0-9]$", k)),
       ])
     ]) : false : true
-    error_message = "ERROR: The database name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphends, letters, and numbers."
+    error_message = "ERROR: The database server name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphends, letters, and numbers."
   }
 
   # Checking user provided login
