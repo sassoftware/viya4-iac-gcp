@@ -269,19 +269,18 @@ postgres_servers = {
     administrator_password       = "D0ntL00kTh1sWay"
   },
   cps = {
-    default = {
-      machine_type                           = "db-custom-8-30720"
-      storage_gb                             = 10
-      backups_enabled                        = true
-      backups_start_time                     = "21:00"
-      backups_location                       = null
-      backups_point_in_time_recovery_enabled = false
-      administrator_login                    = "pgadmin"
-      administrator_password                 = "my$up3rS3cretPassw0rd"
-      server_version                         = "11"
-      availability_type                      = "ZONAL"
-      ssl_enforcement_enabled                = true
-      database_flags                         = []
-    }
+    machine_type                           = "db-custom-8-30720"
+    storage_gb                             = 10
+    backups_enabled                        = true
+    backups_start_time                     = "21:00"
+    backups_location                       = null
+    backups_point_in_time_recovery_enabled = false
+    administrator_login                    = "pgadmin"
+    administrator_password                 = "my$up3rS3cretPassw0rd"
+    server_version                         = "11"
+    availability_type                      = "ZONAL"
+    ssl_enforcement_enabled                = true
+    database_flags                         = []
+  }
 }
 ```
