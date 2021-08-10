@@ -258,7 +258,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
 | server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
-| availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`." |
+| availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
 | database_flags | Database flags for the master instance. | list of objects |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
 Here is a sample of the `postgres_servers` variable with the `default` entry only overriding the `administrator_password` parameter and the `cps` entry overriding all of the parameters:
