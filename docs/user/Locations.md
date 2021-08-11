@@ -11,7 +11,7 @@ All other resources will be zonal.
 
 If you choose a Region:
 
-| Resouuce | Location |
+| Resource | Location |
 | :--- | :--- |
 | Cluster Control Plane | Regional in the specified Region |
 | Default Node VMs | 1st Zone of the specified Region |
@@ -22,7 +22,7 @@ If you choose a Region:
 
 If you chose a Zone:
 
-| Resouuce | Location |
+| Resource | Location |
 | :--- | :--- |
 | Cluster Control Plane | Regional in the Region of the specified Zone |
 | Default Node VMs | In the specified Zone |
