@@ -1,7 +1,7 @@
 ## GCP-GKE
 #
 # Terraform Registry : https://registry.terraform.io/namespaces/terraform-google-modules
-# GitHub Repository  :https://github.com/terraform-google-modules
+# GitHub Repository  : https://github.com/terraform-google-modules
 
 provider "google" {
   credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
