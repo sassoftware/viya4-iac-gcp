@@ -259,7 +259,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
 | availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
-| database_flags | Database flags for the master instance. | list of objects |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
+| database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
 Here is a sample of the `postgres_servers` variable with the `default` entry only overriding the `administrator_password` parameter and the `cps` entry overriding all of the parameters:
 
@@ -268,7 +268,7 @@ postgres_servers = {
   default = {
     administrator_password       = "D0ntL00kTh1sWay"
   },
-  cps = {
+  another_server = {
     machine_type                           = "db-custom-8-30720"
     storage_gb                             = 10
     backups_enabled                        = true
@@ -280,7 +280,7 @@ postgres_servers = {
     server_version                         = "11"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
-    database_flags                         = []
+    database_flags                         = [{ name = "foo" value = "true"}, { name = "bar", value = "false"}]
   }
 }
 ```
