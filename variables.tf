@@ -291,6 +291,7 @@ variable "postgres_server_defaults" {
     backups_start_time                     = "21:00"
     backups_location                       = null
     backups_point_in_time_recovery_enabled = false
+    backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
     server_version                         = "11"

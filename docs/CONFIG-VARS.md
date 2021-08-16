@@ -254,6 +254,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
 | backups_location | TODO | string | null | |
 | backups_point_in_time_recovery_enabled | Enable point-in-time recovery | bool | false | |
+| backup_count | The number of automated backups to retain, from 1 to 365 | string | "7" | Take note this is a **COUNT** not number of days |
 | administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
 | server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
@@ -275,6 +276,7 @@ postgres_servers = {
     backups_start_time                     = "21:00"
     backups_location                       = null
     backups_point_in_time_recovery_enabled = false
+    backup_count                           = 7 # Number of backups to retain, not in days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
     server_version                         = "11"

@@ -24,11 +24,11 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "2.3.1" # Constrained by Google
+      version = "3.1.0" # Constrained by Google
     }
     null = {
       source  = "hashicorp/null"
-      version = "2.1.2" # Constrained by Google
+      version = "3.1.0" # Constrained by Google
     }
     external = {
       source  = "hashicorp/external"

@@ -188,7 +188,7 @@ module "kubeconfig" {
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
 module "postgresql" {
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "5.1.0"
+  version                          = "6.0.0"
   project_id                       = var.project
 
   for_each                         = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
@@ -219,6 +219,9 @@ module "postgresql" {
     start_time                     = each.value.backups_start_time
     location                       = each.value.backups_location
     point_in_time_recovery_enabled = each.value.backups_point_in_time_recovery_enabled
+    retained_backups               = each.value.backup_count
+    retention_unit                 = "COUNT"
+    transaction_log_retention_days = 1 # Range is 1-7 and should always be at most backup_count - 1 Can never be more than backup_count
   }
 
   ip_configuration  = {
