@@ -185,6 +185,7 @@ module "kubeconfig" {
   depends_on = [ module.gke ]
 }
 
+# Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
 module "postgresql" {
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
   version                          = "5.1.0"
