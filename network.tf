@@ -49,7 +49,7 @@ module "vpc" {
 
 resource "google_compute_global_address" "private_ip_address" {
   name  = "${var.prefix}-private-ip-address"
-  count = var.create_postgres ? 1 : 0
+  count = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
 
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
@@ -59,7 +59,7 @@ resource "google_compute_global_address" "private_ip_address" {
 }
 
 resource "google_service_networking_connection" "private_vpc_connection" {
-  count = var.create_postgres ? 1 : 0
+  count = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
 
   network                 = module.vpc.network_name
   service                 = "servicenetworking.googleapis.com"

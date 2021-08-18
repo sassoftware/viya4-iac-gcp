@@ -1,0 +1,97 @@
+locals {
+
+  # get the region from "location", or else from the local config
+  region = var.location != "" ? regex("^[a-z0-9]*-[a-z0-9]*", var.location) : data.google_client_config.current.region
+
+  # get the zone from "location", or else from the local config. If none is set, default to the first zone in the region
+  is_region  = var.location != "" ? var.location == regex("^[a-z0-9]*-[a-z0-9]*", var.location) : false
+  first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
+  # all_zones  = length(data.google_compute_zones.available.names) > 0 ? join(",", [for item in data.google_compute_zones.available.names : format("%s", item)]) : ""
+  zone       = ( var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone) )
+  location   = var.location != "" ? var.location : local.zone
+
+  # CIDR/Network
+  default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
+  vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
+  postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
+
+  ssh_public_key = file(var.ssh_public_key)
+
+  # Kubernetes
+  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
+
+  taint_effects = { 
+    NoSchedule       = "NO_SCHEDULE"
+    PreferNoSchedule = "PREFER_NO_SCHEDULE"
+    NoExecute        = "NO_EXECUTE"
+  }
+
+  node_pools_and_accelerator_taints = {
+    for node_pool, settings in var.node_pools: node_pool => {
+      accelerator_count = settings.accelerator_count
+      accelerator_type  = settings.accelerator_type
+      local_ssd_count   = settings.local_ssd_count
+      max_nodes         = settings.max_nodes
+      min_nodes         = settings.min_nodes
+      node_labels       = settings.node_labels
+      os_disk_size      = settings.os_disk_size
+      vm_type           = settings.vm_type
+      node_taints       = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
+    }
+  }
+
+  node_pools = merge(local.node_pools_and_accelerator_taints, {
+    default = {
+      "vm_type"      = var.default_nodepool_vm_type
+      "os_disk_size" = var.default_nodepool_os_disk_size
+      "min_nodes"    = var.default_nodepool_min_nodes
+      "max_nodes"    = var.default_nodepool_max_nodes
+      "node_taints"  = var.default_nodepool_taints
+      "node_labels" = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
+      "local_ssd_count" = var.default_nodepool_local_ssd_count
+      "accelerator_count" = 0
+      "accelerator_type" = ""
+    }
+  })
+
+  subnet_names_defaults = {
+    gke                     = "${var.prefix}-gke-subnet"
+    misc                    = "${var.prefix}-misc-subnet"
+    gke_pods_range_name     = "${var.prefix}-gke-pods"
+    gke_services_range_name = "${var.prefix}-gke-services"
+  }
+
+  subnet_names        = length(var.subnet_names) == 0 ? local.subnet_names_defaults : var.subnet_names
+
+  gke_subnet_cidr     = length(var.subnet_names) == 0 ? var.gke_subnet_cidr : module.vpc.subnets["gke"].ip_cidr_range
+  misc_subnet_cidr    = length(var.subnet_names) == 0 ? var.misc_subnet_cidr : module.vpc.subnets["misc"].ip_cidr_range
+
+  gke_pod_range_index = length(var.subnet_names) == 0 ? index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"]) : 0
+  gke_pod_subnet_cidr = length(var.subnet_names) == 0 ? var.gke_pod_subnet_cidr : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range
+
+  filestore_size_in_gb = (
+    var.filestore_size_in_gb == null
+      ? ( contains(["BASIC_HDD","STANDARD"], upper(var.filestore_tier)) ? 1024 : 2560 )
+      : var.filestore_size_in_gb
+  )
+
+  # PostgreSQL
+  postgres_servers = var.postgres_servers == null ? {} : { for k, v in var.postgres_servers : k => merge( var.postgres_server_defaults, v, )}
+
+  postgres_outputs = length(module.postgresql) != 0 ? { for k,v in module.postgresql :
+    k => {
+      "server_name" : module.postgresql[k].instance_name,
+      "fqdn" : module.postgresql[k].private_ip_address,
+      "admin" : local.postgres_servers[k].administrator_login,
+      "password" : local.postgres_servers[k].administrator_password,
+      "server_port" : "5432", # TODO - Create a var when supported
+      "ssl_enforcement_enabled" : local.postgres_servers[k].ssl_enforcement_enabled,
+      "connection_name" : module.postgresql[k].instance_connection_name,
+      "server_public_ip" : length(local.postgres_public_access_cidrs) > 0 ? module.postgresql[k].public_ip_address : null,
+      "server_cert" : module.postgresql[k].instance_server_ca_cert.0.cert,
+      "service_account" : module.sql_proxy_sa.0.service_account.email,
+      "internal" : false,
+    }
+  } : {}
+
+}
