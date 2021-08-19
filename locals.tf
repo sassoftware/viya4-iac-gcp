@@ -20,6 +20,9 @@ locals {
   # Kubernetes
   kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
 
+  # rough calculation to get to 6 initial nodes - in order to overcome the Ingress quota limit of 100
+  minimum_node_count = ceil((var.minimum_initial_nodes - tonumber(var.default_nodepool_min_nodes)) / length(var.node_pools))
+
   taint_effects = { 
     NoSchedule       = "NO_SCHEDULE"
     PreferNoSchedule = "PREFER_NO_SCHEDULE"
@@ -28,15 +31,16 @@ locals {
 
   node_pools_and_accelerator_taints = {
     for node_pool, settings in var.node_pools: node_pool => {
-      accelerator_count = settings.accelerator_count
-      accelerator_type  = settings.accelerator_type
-      local_ssd_count   = settings.local_ssd_count
-      max_nodes         = settings.max_nodes
-      min_nodes         = settings.min_nodes
-      node_labels       = settings.node_labels
-      os_disk_size      = settings.os_disk_size
-      vm_type           = settings.vm_type
-      node_taints       = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
+      accelerator_count  = settings.accelerator_count
+      accelerator_type   = settings.accelerator_type
+      local_ssd_count    = settings.local_ssd_count
+      max_nodes          = settings.max_nodes
+      min_nodes          = settings.min_nodes
+      node_labels        = settings.node_labels
+      os_disk_size       = settings.os_disk_size
+      vm_type            = settings.vm_type
+      node_taints        = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
+      initial_node_count = max(local.minimum_node_count,settings.min_nodes)
     }
   }
 
@@ -51,6 +55,7 @@ locals {
       "local_ssd_count" = var.default_nodepool_local_ssd_count
       "accelerator_count" = 0
       "accelerator_type" = ""
+      "initial_node_count" = var.default_nodepool_min_nodes
     }
   })
 
