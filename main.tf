@@ -108,7 +108,7 @@ module "gke" {
   network_policy                = var.gke_network_policy
   remove_default_node_pool	    = true
 
-  grant_registry_access         = var.create_container_registry
+  grant_registry_access         = var.enable_registry_access
 
   monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
