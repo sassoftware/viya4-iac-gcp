@@ -410,6 +410,15 @@ variable "gke_control_plane_subnet_cidr" {
   default = "10.2.0.0/28"
 }
 
+variable "filestore_subnet_cidr" {
+  default = "192.168.3.0/29"
+}
+
+variable "database_subnet_cidr" {
+  default = "192.168.4.0/24"
+}
+
+
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
   type        = bool

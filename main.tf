@@ -67,8 +67,9 @@ resource "google_filestore_instance" "rwx" {
   }
 
   networks {
-    network = module.vpc.network_name
-    modes   = ["MODE_IPV4"]
+    network           = module.vpc.network_name
+    modes             = ["MODE_IPV4"]
+    reserved_ip_range = var.filestore_subnet_cidr
   }
 }
 
