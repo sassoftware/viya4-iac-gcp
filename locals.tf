@@ -21,7 +21,7 @@ locals {
   kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
 
   # rough calculation to get to 6 initial nodes - in order to overcome the Ingress quota limit of 100
-  minimum_node_count = ceil((var.minimum_initial_nodes - tonumber(var.default_nodepool_min_nodes)) / length(var.node_pools))
+  initial_node_count = ceil((var.minimum_initial_nodes - tonumber(var.default_nodepool_min_nodes)) / length(var.node_pools))
 
   taint_effects = { 
     NoSchedule       = "NO_SCHEDULE"
@@ -40,7 +40,7 @@ locals {
       os_disk_size       = settings.os_disk_size
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
-      initial_node_count = max(local.minimum_node_count,settings.min_nodes)
+      initial_node_count = max(local.initial_node_count,settings.min_nodes)
     }
   }
 
