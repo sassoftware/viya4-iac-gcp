@@ -142,6 +142,7 @@ module "gke" {
       image_type         = "COS"
       accelerator_count  = settings.accelerator_count
       accelerator_type   = settings.accelerator_type
+      initial_node_count = settings.initial_node_count
     }
   ]
 

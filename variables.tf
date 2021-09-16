@@ -149,6 +149,10 @@ variable "storage_type" {
   }
 }
 
+variable "minimum_initial_nodes" {
+  description = "Number of initital nodes to aim for to overcome the Ingress quota limit of 100"
+  default = 6
+}
 # Default Node pool config
 variable "default_nodepool_vm_type" {
   default = "e2-standard-8"
