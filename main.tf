@@ -1,3 +1,8 @@
+## GCP-GKE
+#
+# Terraform Registry : https://registry.terraform.io/namespaces/terraform-google-modules
+# GitHub Repository  : https://github.com/terraform-google-modules
+
 provider "google" {
   credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
   project     = var.project
@@ -62,8 +67,9 @@ resource "google_filestore_instance" "rwx" {
   }
 
   networks {
-    network = module.vpc.network_name
-    modes   = ["MODE_IPV4"]
+    network           = module.vpc.network_name
+    modes             = ["MODE_IPV4"]
+    reserved_ip_range = var.filestore_subnet_cidr
   }
 }
 
@@ -136,6 +142,7 @@ module "gke" {
       image_type         = "COS"
       accelerator_count  = settings.accelerator_count
       accelerator_type   = settings.accelerator_type
+      initial_node_count = settings.initial_node_count
     }
   ]
 
@@ -185,9 +192,10 @@ module "kubeconfig" {
   depends_on = [ module.gke ]
 }
 
+# Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
 module "postgresql" {
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "5.1.0"
+  version                          = "6.0.0"
   project_id                       = var.project
 
   for_each                         = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
@@ -218,6 +226,9 @@ module "postgresql" {
     start_time                     = each.value.backups_start_time
     location                       = each.value.backups_location
     point_in_time_recovery_enabled = each.value.backups_point_in_time_recovery_enabled
+    retained_backups               = each.value.backup_count
+    retention_unit                 = "COUNT"
+    transaction_log_retention_days = 1 # Range is 1-7 and should always be at most backup_count - 1 Can never be more than backup_count
   }
 
   ip_configuration  = {

@@ -154,6 +154,10 @@ variable "storage_type" {
   }
 }
 
+variable "minimum_initial_nodes" {
+  description = "Number of initital nodes to aim for to overcome the Ingress quota limit of 100"
+  default = 6
+}
 # Default Node pool config
 variable "default_nodepool_vm_type" {
   default = "e2-standard-8"
@@ -296,6 +300,7 @@ variable "postgres_server_defaults" {
     backups_start_time                     = "21:00"
     backups_location                       = null
     backups_point_in_time_recovery_enabled = false
+    backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
     server_version                         = "11"
@@ -413,6 +418,15 @@ variable "gke_service_subnet_cidr" {
 variable "gke_control_plane_subnet_cidr" {
   default = "10.2.0.0/28"
 }
+
+variable "filestore_subnet_cidr" {
+  default = "192.168.3.0/29"
+}
+
+variable "database_subnet_cidr" {
+  default = "192.168.4.0/24"
+}
+
 
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
