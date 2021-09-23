@@ -349,10 +349,10 @@ variable filestore_tier {
     }
 }
 
-variable "create_container_registry" {
+variable "enable_registry_access" {
   type        = bool
-  description = "Boolean flag to create container registry"
-  default     = false
+  description = "Enable access from GKE to the Project Container Registry."
+  default     = true
 }
 
 # Azure Monitor

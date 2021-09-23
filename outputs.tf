@@ -83,7 +83,7 @@ output "nfs_admin_username" {
 
 # Container regsitry
 output "cr_endpoint" {
-  value = var.create_container_registry ? "https://gcr.io/${var.project}" : null
+  value = var.enable_registry_access ? "https://gcr.io/${var.project}" : null
 }
 
 output "cluster_node_pool_mode" {
