@@ -216,8 +216,8 @@ stateful = {
 ## Storage
 
 | Name | Description | Type | Default | Notes |
-| :--- | ---: | ---: | ---: | ---: |
-| storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
+| :--- | ---: | ---: | ---: | :--- |
+| storage_type | Type of Storage. Valid Values: "standard", "ha", "none"  | string | "standard" | <li>`"standard"` creates NFS server VM<li>`"ha"` creates Google Filestore instance<li>`"none"` skips storage creation |
 
 ### For `storage_type=standard` only (NFS server VM)
 

@@ -13,10 +13,16 @@ data "template_file" "jump_cloudconfig" {
   template = file("${path.module}/files/cloud-init/jump/cloud-config")
   count    = var.create_jump_vm ? 1 : 0
   vars = {
-    nfs_rwx_filestore_endpoint  = (var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.0.private_ip)
-    nfs_rwx_filestore_path      = (var.storage_type == "ha" ? "/${element(coalescelist(google_filestore_instance.rwx.*.file_shares.0.name,[""]),0)}" : "/export")
-    vm_admin                    = var.jump_vm_admin
-    jump_rwx_filestore_path     = var.jump_rwx_filestore_path
+    rwx_filestore_endpoint  = ( var.storage_type == "none"
+                                ? ""
+                                : var.storage_type == "ha" ? google_filestore_instance.rwx.0.networks.0.ip_addresses.0 : module.nfs_server.0.private_ip
+                              )
+    rwx_filestore_path      = ( var.storage_type == "none"
+                                ? ""
+                                : var.storage_type == "ha" ? "/${google_filestore_instance.rwx.0.file_shares.0.name}" : "/export"
+                              )
+    vm_admin                = var.jump_vm_admin
+    jump_rwx_filestore_path = var.jump_rwx_filestore_path
   }
   depends_on = [module.nfs_server, google_filestore_instance.rwx ]
 }
