@@ -139,6 +139,7 @@ variable "create_nfs_public_ip" {
   default = false
 }
 
+/* NOTE: storage_type="none" is for internal use only */
 variable "storage_type" {
   type    = string
   default = "standard"
