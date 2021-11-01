@@ -11,8 +11,10 @@ service_account_keyfile = "<service-account-json-file>"
 #
 # ****************  REQUIRED VARIABLES  ****************
 
-# Source address ranges to allow client admin access to the cloud resources
+# ****************  RECOMMENDED VARIABLES  ****************
 default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
+ssh_public_key              = "~/.ssh/id_rsa.pub"
+# ****************  RECOMMENDED VARIABLES  ****************
 
 # Bring your own existing resources
 vpc_name        = "name-of-existing-vpc"
