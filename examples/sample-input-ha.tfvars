@@ -8,12 +8,13 @@ prefix                  = "<prefix-value>"
 location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
 project                 = "<gcp-project>"
 service_account_keyfile = "<service-account-json-file>"
-ssh_public_key          = "~/.ssh/id_rsa.pub"
 #
 # ****************  REQUIRED VARIABLES  ****************
 
-# Source address ranges to allow client admin access to the cloud resources
+# ****************  RECOMMENDED VARIABLES  ****************
 default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
+ssh_public_key              = "~/.ssh/id_rsa.pub"
+# ****************  RECOMMENDED VARIABLES  ****************
 
 # add labels to the created resources
 tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }

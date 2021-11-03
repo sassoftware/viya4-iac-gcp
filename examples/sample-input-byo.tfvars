@@ -8,12 +8,13 @@ prefix                  = "<prefix-value>"
 location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
 project                 = "<gcp-project>"
 service_account_keyfile = "<service-account-json-file>"
-ssh_public_key          = "~/.ssh/id_rsa.pub"
 #
 # ****************  REQUIRED VARIABLES  ****************
 
-# Source address ranges to allow client admin access to the cloud resources
+# ****************  RECOMMENDED VARIABLES  ****************
 default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
+ssh_public_key              = "~/.ssh/id_rsa.pub"
+# ****************  RECOMMENDED VARIABLES  ****************
 
 # Bring your own existing resources
 vpc_name        = "name-of-existing-vpc"
@@ -116,6 +117,7 @@ jump_vm_admin         = "jumpuser"
 
 # Storage for SAS Viya CAS/Compute
 storage_type = "standard"
+
 # required ONLY when storage_type is "standard" to create NFS Server VM
 create_nfs_public_ip = false
 nfs_vm_admin         = "nfsuser"
