@@ -147,10 +147,10 @@ variable "create_nfs_public_ip" {
 variable "storage_type" {
   type    = string
   default = "standard"
-
+  # NOTE: storage_type="none" is for internal use only 
   validation {
-    condition     = contains(["standard", "ha"], lower(var.storage_type))
-    error_message = "ERROR: Supported value for `storage_type` are - standard, ha."
+    condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
+    error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
   }
 }
 
@@ -354,10 +354,10 @@ variable filestore_tier {
     }
 }
 
-variable "create_container_registry" {
+variable "enable_registry_access" {
   type        = bool
-  description = "Boolean flag to create container registry"
-  default     = false
+  description = "Enable access from GKE to the Project Container Registry."
+  default     = true
 }
 
 # Azure Monitor

@@ -21,7 +21,10 @@ locals {
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
-  ssh_public_key = file(var.ssh_public_key)
+  ssh_public_key = ( var.create_jump_vm || var.storage_type == "standard"
+                     ? file(var.ssh_public_key)
+                     : null
+                   )
 
   # Kubernetes
   kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"

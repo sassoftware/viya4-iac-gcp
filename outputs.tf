@@ -22,12 +22,18 @@ output "postgres_servers" {
 
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
-  value       = var.storage_type == "ha" ? element(coalescelist(google_filestore_instance.rwx.*.networks.0.ip_addresses.0,[""]),0) : module.nfs_server.0.private_ip
+  value       = ( var.storage_type == "none"
+                  ? null
+                  : var.storage_type == "ha" ? google_filestore_instance.rwx.0.networks.0.ip_addresses.0 : module.nfs_server.0.private_ip
+                )
 }
 
 output "rwx_filestore_path" {
   description = "Shared Storage mount path"
-  value       = var.storage_type == "ha" ? "/${element(coalescelist(google_filestore_instance.rwx.*.file_shares.0.name,[""]),0)}" : "/export"
+  value       = ( var.storage_type == "none"
+                  ? null
+                  : var.storage_type == "ha" ? "/${google_filestore_instance.rwx.0.file_shares.0.name}" : "/export"
+                )
 }
 
 output "nat_ip" {
@@ -70,20 +76,20 @@ output "jump_admin_username" {
 
 # NFS server
 output "nfs_private_ip" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.0.private_ip
+  value = var.storage_type == "standard" ? module.nfs_server.0.private_ip : null
 }
 
 output "nfs_public_ip" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.0.public_ip
+  value = var.storage_type == "standard" ? module.nfs_server.0.public_ip : null
 }
 
 output "nfs_admin_username" {
-  value = var.storage_type == "ha" ? null : module.nfs_server.0.admin_username
+  value = var.storage_type == "standard" ? module.nfs_server.0.admin_username : null
 }
 
 # Container regsitry
 output "cr_endpoint" {
-  value = var.create_container_registry ? "https://gcr.io/${var.project}" : null
+  value = var.enable_registry_access ? "https://gcr.io/${var.project}" : null
 }
 
 output "cluster_node_pool_mode" {

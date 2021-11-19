@@ -13,6 +13,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Default Nodepool](#default-nodepool)
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
+  - [Google Container Registry (GCR)](#gcr)
   - [Postgres](#postgres)
 
 Terraform input variables can be set in the following ways:
@@ -28,7 +29,6 @@ Terraform input variables can be set in the following ways:
 | location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
 | project | The GCP Project to use | string | | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | Not required when running on a Google Cloud VM that is associated with the Service Account |
-| ssh_public_key | Public ssh key for VMs | string | "~/.ssh/id_rsa.pub" | Value is required in order to access your VMs |
 
 ## GCP Authentication
 
@@ -62,8 +62,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_service_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
 | gke_control_plane_subnet_cidr |  Address space for the hosted master subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
-| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"` |
-| database_subnet_cidr | Address space for Google Cloud SQL Postgre subnet | string | "192.168.4.0/29" | Only used when `create_postgres=true` |
+| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
+| database_subnet_cidr | Address space for Google Cloud SQL Postgre subnet | string | "192.168.4.0/24" | Only used when `create_postgres=true` |
 
 ### Use Existing
 
@@ -109,6 +109,7 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 
 | jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
+| ssh_public_key | File name of public ssh key for jump and nfs VM | string | "~/.ssh/id_rsa.pub" | Required with `create_jump_vm=true` or `storage_type=standard` |
 
 ## Nodepools
 
@@ -232,6 +233,14 @@ stateful = {
 | :--- | ---: | ---: | ---: | ---: |
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
 | filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
+
+## Google Container Registry (GCR)
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| enable_registry_access | Enable access from the GKE Cluster to the GCR for your Google Project | bool | true | adds the "Artifact Registry Reader" and
+"Storage Object Viewer" Roles to the Service Account associated with the Node VMs. |
+
 
 ## Postgres Servers
 <<<<<<< HEAD
