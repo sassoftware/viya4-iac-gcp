@@ -48,7 +48,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Set a default for all Resources |
-| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl`. Only used with `cluster_api_mode=public` |
+| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl`. |
 | vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | Opens port 22 for SSH access to the jump server and/or NFS VM. Only used with `create_jump_public_ip=true` or `create_nfs_public_ip=true`. |
 | postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings ||Opens port 5432. Only used when creating postgres instances.|
 

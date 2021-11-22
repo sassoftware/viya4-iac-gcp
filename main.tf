@@ -122,7 +122,10 @@ module "gke" {
     }], [{
       display_name = "VPC"
       cidr_block   = module.vpc.subnets["gke"].ip_cidr_range
-  }])
+    }], [{
+     display_name = "MISC"
+     cidr_block   = module.vpc.subnets["misc"].ip_cidr_range
+    }])
 
   node_pools = [
     for nodepool, settings in local.node_pools: {
