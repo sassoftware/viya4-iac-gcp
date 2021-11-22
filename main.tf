@@ -93,8 +93,8 @@ module "gke" {
   ip_range_services             = local.subnet_names["gke_services_range_name"]
   http_load_balancing           = false
   horizontal_pod_autoscaling    = true
-  deploy_using_private_endpoint = local.is_private
-  enable_private_endpoint       = local.is_private
+  deploy_using_private_endpoint = var.cluster_api_mode == "private" ? true : false
+  enable_private_endpoint       = var.cluster_api_mode == "private" ? true : false
   enable_private_nodes          = true
   master_ipv4_cidr_block        = var.gke_control_plane_subnet_cidr
   
@@ -116,7 +116,7 @@ module "gke" {
   cluster_autoscaling           = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
 
   master_authorized_networks    = concat([
-    for cidr in (var.cluster_endpoint_public_access_cidrs == null ? local.default_public_access_cidrs : var.cluster_endpoint_public_access_cidrs): {
+    for cidr in (local.cluster_endpoint_public_access_cidrs): {
       display_name = cidr
       cidr_block   = cidr
     }], [{

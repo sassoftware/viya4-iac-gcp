@@ -40,18 +40,17 @@ For more detailed information on what is needed see [Authenticating Terraform to
 
 By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.
 To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the GCP firewall to allow access from your source IPs.
-To do this, specify ranges of IP in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
-Contact your Network System Administrator to find the public CIDR range of your network.
+
+To do set these permissions as part of this Terraform script, specify ranges of IP addresses in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing). Contact your Network Administrator to find the public CIDR range of your network.
 
 You can use `default_public_access_cidrs` to set a default range for all created resources. To set different ranges for other resources, define the appropriate variable. Use and empty list `[]` to disallow access explicitly.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| private_cluster | Creates a cluster api endpoint with a private ip address instead of a public ip address | bool | | When "true", all "*_public_access_cidrs" options may not use public ip addresses. Access to the cluster is only allowed from restricted IP ranges. |
-| default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Use to to set a default for all Resources |
-| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl` |
-| vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |
-| postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
+| default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Set a default for all Resources |
+| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl`. Only used with `cluster_api_mode=public` |
+| vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | Opens port 22 for SSH access to the jump server and/or NFS VM. Only used with `create_jump_public_ip=true` or `create_nfs_public_ip=true`. |
+| postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings ||Opens port 5432. Only used when creating postgres instances.|
 
 ## Networking
 
@@ -110,6 +109,8 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
 | ssh_public_key | File name of public ssh key for jump and nfs VM | string | "~/.ssh/id_rsa.pub" | Required with `create_jump_vm=true` or `storage_type=standard` |
+| cluster_api_mode | Public or private IP for the cluster api| string|"public"|Valid Values: "public", "private" |
+
 
 ## Nodepools
 
@@ -243,15 +244,9 @@ stateful = {
 
 
 ## Postgres Servers
-<<<<<<< HEAD
 
 When setting up ***external database servers***, you must provide information about those servers in the `postgres_servers` variable block. Each entry in the variable block represents a ***single database server***.
 
-=======
-
-When setting up ***external database servers***, you must provide information about those servers in the `postgres_servers` variable block. Each entry in the variable block represents a ***single database server***.
-
->>>>>>> main
 This code only configures database servers. No databases are created during the infrastructure setup.
 
 The variable has the following format:
@@ -281,11 +276,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | server_version | The version of the  PostgreSQL server instance | string | "11" | Supported values are 11 and 12 |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
 | availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
-<<<<<<< HEAD
-| database_flags | Database flags for the master instance. | list of objects |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
-=======
 | database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
->>>>>>> main
 
 Here is a sample of the `postgres_servers` variable with the `default` entry only overriding the `administrator_password` parameter and the `cps` entry overriding all of the parameters:
 
@@ -294,23 +285,6 @@ postgres_servers = {
   default = {
     administrator_password       = "D0ntL00kTh1sWay"
   },
-<<<<<<< HEAD
-  cps = {
-    default = {
-      machine_type                           = "db-custom-8-30720"
-      storage_gb                             = 10
-      backups_enabled                        = true
-      backups_start_time                     = "21:00"
-      backups_location                       = null
-      backups_point_in_time_recovery_enabled = false
-      administrator_login                    = "pgadmin"
-      administrator_password                 = "my$up3rS3cretPassw0rd"
-      server_version                         = "11"
-      availability_type                      = "ZONAL"
-      ssl_enforcement_enabled                = true
-      database_flags                         = []
-    }
-=======
   another_server = {
     machine_type                           = "db-custom-8-30720"
     storage_gb                             = 10
@@ -326,6 +300,5 @@ postgres_servers = {
     ssl_enforcement_enabled                = true
     database_flags                         = [{ name = "foo" value = "true"}, { name = "bar", value = "false"}]
   }
->>>>>>> main
 }
 ```
