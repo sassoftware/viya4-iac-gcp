@@ -27,7 +27,7 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 # }
 
 # GKE config
-kubernetes_version = "1.21.5-gke.1302"
+kubernetes_version = "1.21.6-gke.1500"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-standard-2"
 
