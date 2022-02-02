@@ -139,7 +139,7 @@ module "gke" {
       auto_upgrade       = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
       preemptible        = false
       disk_type          = "pd-standard"
-      image_type         = "COS"
+      image_type         = "cos_containerd"
       accelerator_count  = settings.accelerator_count
       accelerator_type   = settings.accelerator_type
       initial_node_count = settings.initial_node_count
