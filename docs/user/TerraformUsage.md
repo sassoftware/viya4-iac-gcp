@@ -78,6 +78,6 @@ NOTE: The "destroy" action is irreversible.
 ### Example Using `kubectl` 
 
 ```bash
-export KUBECONFIG=$(pwd)/<your prefix>-aks-kubeconfig.conf
+export KUBECONFIG=$(pwd)/<your prefix>-gke-kubeconfig.conf
 kubectl get nodes
 ```
