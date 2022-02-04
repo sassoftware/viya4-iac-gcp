@@ -29,7 +29,7 @@ Add volume mounts to the `docker run` command for all files and directories that
 - `--volume=$HOME/.ssh:/.ssh` for [`ssh_public_key`](../CONFIG-VARS.md#required-variables) variable in the `terraform.tfvars` file
 - `--volume=$(pwd):/workspace` for local directory where `terraform.tfvars` file resides and where `terraform.tfstate` file will be written. To grant Docker, permission to write to the local directory use [`--user` option](https://docs.docker.com/engine/reference/run/#user)
 
-The most common file references are the values of the [`service_account_keyfile`](./CONFIG-VARS.md#required-variables) and [`ssh_public_key`](./CONFIG-VARS.md#required-variables) variables in the `terraform.tfvars` file.
+The most common file references are the values of the [`service_account_keyfile`](../CONFIG-VARS.md#required-variables) and [`ssh_public_key`](../CONFIG-VARS.md#required-variables) variables in the `terraform.tfvars` file.
 
 **Note** that local references to `$HOME` (or "`~`") need to map to the root directory `/` in the container.
 
