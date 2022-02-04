@@ -13,7 +13,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
   - [Google Container Registry (GCR)](#google-container-registry-gcr)
-  - [Postgres](#postgres)
+  - [Postgres](#postgres-servers)
 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).

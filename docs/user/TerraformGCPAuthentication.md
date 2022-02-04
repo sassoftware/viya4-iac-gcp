@@ -31,7 +31,7 @@ The Service Account will need the following [IAM roles](https://cloud.google.com
 
 | Role Name | Description | Use |
 | :--- | :--- | :--- |
-| `roles/cloudsql.admin` | Cloud SQL Admin | Needed if you create an [SQL Postgres instance](../CONFIG-VARS.md#postgres) |
+| `roles/cloudsql.admin` | Cloud SQL Admin | Needed if you create an [SQL Postgres instance](../CONFIG-VARS.md#postgres-servers) |
 | `roles/compute.admin` | Compute Admin | Cluster creation |
 | `roles/compute.networkAdmin` | Compute Network Admin | Network creation |
 | `roles/compute.securityAdmin` | Compute Security Admin | Terraform Kubernetes Engine Module |
