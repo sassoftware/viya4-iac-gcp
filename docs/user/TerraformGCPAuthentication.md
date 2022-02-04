@@ -64,7 +64,7 @@ gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAM
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/resourcemanager.projectIamAdmin
 ```
 
-## Verfiy the necessary Roles have been applied to the Service Account
+## Verify the necessary Roles have been applied to the Service Account
 
 Run the following command:
 

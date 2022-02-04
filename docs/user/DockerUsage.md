@@ -20,7 +20,7 @@ The Docker image `viya4-iac-gcp` will contain Terraform and 'kubectl' executable
 
 ### Service Account Keyfile for GCP Authentication 
 
-Prepare a file with GCP authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md) and store it outside of this repo in a secuire file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
+Prepare a file with GCP authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md) and store it outside of this repo in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
 
 ### Docker Volume Mounts
 
@@ -29,7 +29,7 @@ Add volume mounts to the `docker run` command for all files and directories that
 - `--volume=$HOME/.ssh:/.ssh` for [`ssh_public_key`](../CONFIG-VARS.md#required-variables) variable in the `terraform.tfvars` file
 - `--volume=$(pwd):/workspace` for local directory where `terraform.tfvars` file resides and where `terraform.tfstate` file will be written. To grant Docker, permission to write to the local directory use [`--user` option](https://docs.docker.com/engine/reference/run/#user)
 
-The most common filre references are the values of the [`service_account_keyfile`](./CONFIG-VARS.md#required-variables) and [`ssh_public_key`](./CONFIG-VARS.md#required-variables) variables in the `terraform.tfvars` file.
+The most common file references are the values of the [`service_account_keyfile`](./CONFIG-VARS.md#required-variables) and [`ssh_public_key`](./CONFIG-VARS.md#required-variables) variables in the `terraform.tfvars` file.
 
 **Note** that local references to `$HOME` (or "`~`") need to map to the root directory `/` in the container.
 

@@ -10,7 +10,7 @@ When using the Terraform CLI, make sure you have all the necessary tools [instal
 
 Prepare a file with authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md).
 
-### Pepare Variable Definitions (.tfvars) File
+### Prepare Variable Definitions (.tfvars) File
 
 Prepare your `terraform.tfvars` file, as described in [Customize Input Values](../../README.md#customize-input-values).
 
