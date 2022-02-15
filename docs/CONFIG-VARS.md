@@ -12,8 +12,8 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Default Nodepool](#default-nodepool)
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
-  - [Google Container Registry (GCR)](#gcr)
-  - [Postgres](#postgres)
+  - [Google Container Registry (GCR)](#google-container-registry-gcr)
+  - [Postgres](#postgres-servers)
 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).
@@ -37,7 +37,7 @@ For more detailed information on what is needed see [Authenticating Terraform to
 
 ## Admin Access
 
-By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.
+By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.)
 To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the GCP firewall to allow access from your source IPs.
 To do this, specify ranges of IP in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
 Contact your Network System Administrator to find the public CIDR range of your network.
@@ -61,7 +61,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_control_plane_subnet_cidr |  Address space for the hosted master subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
-| database_subnet_cidr | Address space for Google Cloud SQL Postgre subnet | string | "192.168.4.0/24" | Only used when `create_postgres=true` |
+| database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/24" | Only used with external postgres |
 
 
 
@@ -238,8 +238,8 @@ stateful = {
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| enable_registry_access | Enable access from the GKE Cluster to the GCR for your Google Project | bool | true | adds the "Artifact Registry Reader" and
-"Storage Object Viewer" Roles to the Service Account associated with the Node VMs. |
+| enable_registry_access | Enable access from the GKE Cluster to the GCR for your Google Project | bool | true | adds the "Artifact Registry Reader" and "Storage Object Viewer" Roles to the Service Account associated with the Node VMs. |
+
 
 
 ## Postgres Servers
@@ -263,7 +263,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312.
+| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. |
 | storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
