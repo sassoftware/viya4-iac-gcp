@@ -40,7 +40,7 @@ After the resources are created use ```terraform state list``` to list all the r
 
 ```bash
 terraform state list
-# to get more details on a partictular resource
+# to get more details on a particular resource
 terraform state show <resource-name-from-state-list>
 ```
 
