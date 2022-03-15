@@ -87,7 +87,7 @@ resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
   name    = "${var.prefix}-nfs-server-firewall"
-  count   = (var.storage_type == "standard" && var.create_nfs_public_ip) ? 1 : 0
+  count   = (var.storage_type == "standard" && var.create_nfs_public_ip && length(local.vm_public_access_cidrs) != 0)  ? 1 : 0
   network = module.vpc.network_name
 
   allow {

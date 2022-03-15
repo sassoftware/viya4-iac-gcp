@@ -1,4 +1,5 @@
 # List of valid configuration variables
+
 Supported configuration variables are listed in the table below.  All variables can also be specified on the command line.  Values specified on the command line will override all values in configuration defaults files.
 
 ## Table of Contents
@@ -39,20 +40,20 @@ For more detailed information on what is needed see [Authenticating Terraform to
 
 By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.)
 To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the GCP firewall to allow access from your source IPs.
-To do this, specify ranges of IP in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing).
-Contact your Network System Administrator to find the public CIDR range of your network.
+
+To do set these permissions as part of this Terraform script, specify ranges of IP addresses in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing). Contact your Network Administrator to find the public CIDR range of your network.
 
 You can use `default_public_access_cidrs` to set a default range for all created resources. To set different ranges for other resources, define the appropriate variable. Use and empty list `[]` to disallow access explicitly.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| private_cluster | Creates a cluster api endpoint with a private ip address instead of a public ip address | bool | | When "true", all "*_public_access_cidrs" options may not use public ip addresses. Access to the cluster is only allowed from restricted IP ranges. |
-| default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Use to to set a default for all Resources |
-| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl` |
-| vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | opens port 22 for SSH access to the jump and/or nfs VM |
-| postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings |||
+| default_public_access_cidrs | IP Ranges allowed to access all created cloud resources | list of strings | | Set a default for all Resources |
+| cluster_endpoint_public_access_cidrs | IP Ranges allowed to access the GKE cluster api | list of strings | | for client admin access to the cluster, e.g. with `kubectl`. |
+| vm_public_access_cidrs | IP Ranges allowed to access the VMs | list of strings | | Opens port 22 for SSH access to the jump server and/or NFS VM. Only used with `create_jump_public_ip=true` or `create_nfs_public_ip=true`. |
+| postgres_public_access_cidrs | IP Ranges allowed to access the Google Cloud PostgreSQL Server | list of strings ||Opens port 5432. Only used when creating postgres instances.|
 
 ## Networking
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | gke_subnet_cidr | Address space for the subnet for the GKE resources | string | "192.168.0.0/23" | This variable is ignored when `vpc_name` is set (aka bring your own vnet) |
@@ -62,8 +63,6 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/24" | Only used with external postgres |
-
-
 
 ### Use Existing
 
@@ -110,6 +109,8 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
 | ssh_public_key | File name of public ssh key for jump and nfs VM | string | "~/.ssh/id_rsa.pub" | Required with `create_jump_vm=true` or `storage_type=standard` |
+| cluster_api_mode | Public or private IP for the cluster api| string|"public"|Valid Values: "public", "private" |
+
 
 ## Nodepools
 
