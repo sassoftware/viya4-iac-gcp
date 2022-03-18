@@ -60,12 +60,16 @@ variable "tags" {
   default     = {}
 }
 
-variable "private_cluster" {
-  description = "Use Private IP address for cluster API endpoint"
-  type        = bool
-  default     = false
-}
+variable "cluster_api_mode" {
+  description = "Use Public or Private IP address for the cluster API endpoint"
+  type        = string
+  default     = "public"
 
+  validation {
+    condition     = contains(["public", "private"], lower(var.cluster_api_mode))
+    error_message = "ERROR: Supported values for `cluster_api_mode` are - public, private."
+  }
+}
 variable "default_public_access_cidrs" {
   description = "List of CIDRs to access created resources"
   type        = list(string)
