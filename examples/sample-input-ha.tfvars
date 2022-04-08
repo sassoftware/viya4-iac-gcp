@@ -60,20 +60,6 @@ node_pools = {
     "accelerator_count" = 0
     "accelerator_type"  = ""
   },
-  connect = {
-    "vm_type"      = "n1-highmem-16"
-    "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 3
-    "node_taints"  = ["workload.sas.com/class=connect:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class"        = "connect"
-      "launcher.sas.com/prepullImage" = "sas-programming-environment"
-    }
-    "local_ssd_count"   = 0
-    "accelerator_count" = 0
-    "accelerator_type"  = ""
-  },
   stateless = {
     "vm_type"      = "e2-standard-16"
     "os_disk_size" = 200
