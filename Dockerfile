@@ -10,14 +10,12 @@ WORKDIR /viya4-iac-gcp
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY . .
 
-ENV HOME=/viya4-iac-gcp
-
 RUN apt-get install -y jq \
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \
   && chmod g=u -R /etc/passwd /etc/group /viya4-iac-gcp \
-  && git config --global --add safe.directory /viya4-iac-gcp \
+  && git config --system --add safe.directory /viya4-iac-gcp \
   && terraform init
 
 ENV TF_VAR_iac_tooling=docker
