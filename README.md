@@ -34,7 +34,7 @@ Operational knowledge of
     - [Terraform](https://www.terraform.io/downloads.html) - v1.0.0
     - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.23.8
     - [jq](https://stedolan.github.io/jq/) - v1.6
-    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v342.0.0
+    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v395.0.0
   - #### Docker
     - [Docker](https://docs.docker.com/get-docker/)
 
