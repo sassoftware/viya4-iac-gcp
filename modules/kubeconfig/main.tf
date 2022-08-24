@@ -29,6 +29,9 @@ data "template_file" "kubeconfig_sa" {
     token        = lookup(kubernetes_secret.sa_secret.0.data,"token", "")
     namespace    = var.namespace
   }
+  depends_on = [
+    kubernetes_secret.sa_secret
+  ]
 }
 
 # 1.24 change: Create service account secret
