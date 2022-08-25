@@ -49,7 +49,7 @@ resource "kubernetes_secret" "sa_secret" {
 data "kubernetes_secret" "sa_secret" {
   count = var.create_static_kubeconfig ? 1 : 0
   metadata {
-    name = "${kubernetes_secret.sa_secret[0].metadata.0.name}"
+    name = kubernetes_secret.sa_secret[0].metadata[0].name
     namespace = var.namespace
   }
 }
