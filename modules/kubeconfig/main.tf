@@ -17,6 +17,15 @@ data "template_file" "kubeconfig_provider" {
 }
 
 # Service Account based kube config data/template/resources
+data "kubernetes_secret" "sa_secret" {
+  count = var.create_static_kubeconfig ? 1 : 0
+  metadata {
+    name      = kubernetes_service_account.kubernetes_sa.0.default_secret_name
+    namespace = var.namespace
+  }
+  depends_on = [kubernetes_secret.sa_secret]
+}
+
 data "template_file" "kubeconfig_sa" {
   count = var.create_static_kubeconfig ? 1 : 0
   template = file("${path.module}/templates/kubeconfig-sa.tmpl")
@@ -29,7 +38,7 @@ data "template_file" "kubeconfig_sa" {
     token        = lookup(data.kubernetes_secret.sa_secret.0.data,"token", "")
     namespace    = var.namespace
   }
-  depends_on = [kubernetes_secret.sa_secret]
+  depends_on = [data.kubernetes_secret.sa_secret]
 }
 
 # 1.24 change: Create service account secret
@@ -44,14 +53,6 @@ resource "kubernetes_secret" "sa_secret" {
   }
   type = "kubernetes.io/service-account-token"
   depends_on = [kubernetes_service_account.kubernetes_sa]
-}
-
-data "kubernetes_secret" "sa_secret" {
-  count = var.create_static_kubeconfig ? 1 : 0
-  metadata {
-    name = kubernetes_secret.sa_secret[0].metadata[0].name
-    namespace = var.namespace
-  }
 }
 
 # Starting K8s v1.24+ hashicorp/terraform-provider-kubernetes issues warning message:
