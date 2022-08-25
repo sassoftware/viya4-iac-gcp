@@ -20,7 +20,7 @@ data "template_file" "kubeconfig_provider" {
 data "kubernetes_secret" "sa_secret" {
   count = var.create_static_kubeconfig ? 1 : 0
   metadata {
-    name      = kubernetes_service_account.kubernetes_sa.0.default_secret_name
+    name      = kubernetes_secret.sa_secret.0.metadata.0.name
     namespace = var.namespace
   }
   depends_on = [kubernetes_secret.sa_secret]
