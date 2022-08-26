@@ -12,7 +12,7 @@ terraform {
     }
     kubernetes  = {
       source  = "hashicorp/kubernetes"
-      version = "1.13.0" # Constrained by Google
+      version = "2.13.0" # Constrained by Google
     }
     local       = {
       source  = "hashicorp/local"
