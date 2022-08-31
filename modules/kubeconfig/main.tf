@@ -16,6 +16,14 @@ data "template_file" "kubeconfig_provider" {
   }
 }
 
+# Give the cluster time to create the secret
+# TODO update with official hashicorp/kubernetes wait method once
+# it is implemented.
+resource "time_sleep" "wait_for_secret_data" {
+  create_duration = "60s"
+  depends_on = [kubernetes_secret.sa_secret]
+}
+
 # Service Account based kube config data/template/resources
 data "kubernetes_secret" "sa_secret" {
   count = var.create_static_kubeconfig ? 1 : 0
@@ -23,7 +31,7 @@ data "kubernetes_secret" "sa_secret" {
     name      = kubernetes_secret.sa_secret.0.metadata.0.name
     namespace = var.namespace
   }
-  depends_on = [kubernetes_secret.sa_secret]
+  depends_on = [time_sleep.wait_for_secret_data]
 }
 
 data "template_file" "kubeconfig_sa" {
