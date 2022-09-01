@@ -17,7 +17,6 @@ provider "kubernetes" {
   host                   = "https://${module.gke.endpoint}"
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
   token                  = data.google_client_config.current.access_token
-  load_config_file       = false
 }
 
 data "google_client_config" "current" {}
@@ -81,7 +80,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "14.3.0"
+  version                       = "15.0.2"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
