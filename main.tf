@@ -80,7 +80,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "15.0.2"
+  version                       = "19.0.0"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
@@ -197,7 +197,7 @@ module "kubeconfig" {
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
 module "postgresql" {
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "6.0.0"
+  version                          = "9.0.0"
   project_id                       = var.project
 
   for_each                         = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
@@ -248,7 +248,7 @@ module "postgresql" {
 
 module "sql_proxy_sa" {
   source  = "terraform-google-modules/service-accounts/google"
-  version = "4.0.0"
+  version = "4.1.1"
   count = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
   project_id = var.project
   prefix = var.prefix
