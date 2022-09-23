@@ -57,7 +57,7 @@ resource "google_filestore_instance" "rwx" {
   name   = "${var.prefix}-rwx-filestore"
   count  = var.storage_type == "ha" ? 1 : 0 
   tier   = upper(var.filestore_tier)
-  zone   = local.zone
+  location   = local.location
   labels = var.tags
 
   file_shares {
@@ -112,7 +112,7 @@ module "gke" {
 
   monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  cluster_autoscaling           = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
+  cluster_autoscaling           = var.enable_cluster_autoscaling ? { enabled: true, max_cpu_cores: var.cluster_autoscaling_max_cpu_cores, max_memory_gb: var.cluster_autoscaling_max_memory_gb, min_cpu_cores: 1, min_memory_gb: 1, gpu_resources = [] } : { enabled: false, max_cpu_cores: 0, max_memory_gb: 0, min_cpu_cores: 0, min_memory_gb: 0, gpu_resources = []}
 
   master_authorized_networks    = concat([
     for cidr in (local.cluster_endpoint_public_access_cidrs): {
