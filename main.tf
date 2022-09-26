@@ -236,7 +236,7 @@ module "postgresql" {
   ip_configuration  = {
     private_network = module.vpc.network_self_link
     require_ssl     = each.value.ssl_enforcement_enabled
-
+    allocated_ip_range = null
     ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
     authorized_networks = [
       for cidr in local.postgres_public_access_cidrs: {
