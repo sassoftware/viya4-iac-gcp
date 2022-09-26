@@ -96,4 +96,4 @@ See [troubleshooting](./docs/Troubleshooting.md) page.
 ### Terraform 
 
 - Google Provider - https://www.terraform.io/docs/providers/google/index.html
-- Google GKE - https://www.terraform.io/docs/providers/google/r/container_cluster.html
+- Google GKE - https://www.terraform.io/docs/providers/google/r/container_cluster

@@ -20,7 +20,7 @@ variable "tags" {
 variable "vpc_name" {
   type        = string
   default     = ""
-  description = "Name of pre-exising VPC. Leave blank to have one created"
+  description = "Name of pre-existing VPC. Leave blank to have one created"
 }
 variable "subnet_names" {
   type        = map(string)
