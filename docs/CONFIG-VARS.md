@@ -259,7 +259,7 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | backup_count | The number of automated backups to retain, from 1 to 365 | string | "7" | Take note this is a **COUNT** not number of days |
 | administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
-| server_version | The version of the  PostgreSQL server instance | string | "13" | Supported values are 11-14 |
+| server_version | The version of the  PostgreSQL server instance | string | "13" | Refer to the [Viya 4 Administration Guide](https://go.documentation.sas.com/doc/en/sasadmincdc/default/itopssr/p05lfgkwib3zxbn1t6nyihexp12n.htm?fromDefault=#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for SAS Viya. |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
 | availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
 | database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
