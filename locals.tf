@@ -91,17 +91,17 @@ locals {
 
   postgres_outputs = length(module.postgresql) != 0 ? { for k,v in module.postgresql :
     k => {
-      "server_name" : module.postgresql[k].instance_name,
-      "fqdn" : module.postgresql[k].private_ip_address,
-      "admin" : local.postgres_servers[k].administrator_login,
-      "password" : local.postgres_servers[k].administrator_password,
-      "server_port" : "5432", # TODO - Create a var when supported
-      "ssl_enforcement_enabled" : local.postgres_servers[k].ssl_enforcement_enabled,
-      "connection_name" : module.postgresql[k].instance_connection_name,
-      "server_public_ip" : length(local.postgres_public_access_cidrs) > 0 ? module.postgresql[k].public_ip_address : null,
-      "server_cert" : module.postgresql[k].instance_server_ca_cert.0.cert,
-      "service_account" : module.sql_proxy_sa.0.service_account.email,
-      "internal" : false,
+      server_name : module.postgresql[k].instance_name,
+      fqdn : module.postgresql[k].private_ip_address,
+      admin : local.postgres_servers[k].administrator_login,
+      password : local.postgres_servers[k].administrator_password,
+      server_port : "5432", # TODO - Create a var when supported
+      ssl_enforcement_enabled : local.postgres_servers[k].ssl_enforcement_enabled,
+      connection_name : module.postgresql[k].instance_connection_name,
+      server_public_ip : length(local.postgres_public_access_cidrs) > 0 ? module.postgresql[k].public_ip_address : null,
+      server_cert : module.postgresql[k].instance_server_ca_cert.0.cert,
+      service_account : module.sql_proxy_sa.0.service_account.email,
+      internal : false,
     }
   } : {}
 
