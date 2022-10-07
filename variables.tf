@@ -11,7 +11,7 @@ variable "location" {
   The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script. 
   Choosing a Region will make this a multi-zonal cluster. 
   If you aren't sure which to choose, go with a ZONE instead of a region. 
-  If not set, it defaults to the google environment variables, as documented in https://www.terraform.io/docs/providers/google/guides/provider_reference.html"
+  If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
 }
 
@@ -159,8 +159,8 @@ variable "storage_type" {
 }
 
 variable "minimum_initial_nodes" {
-  description = "Number of initital nodes to aim for to overcome the Ingress quota limit of 100"
-  default     = 6
+  description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
+  default = 6
 }
 # Default Node pool config
 variable "default_nodepool_vm_type" {
@@ -293,7 +293,7 @@ variable "postgres_server_defaults" {
     backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
-    server_version                         = "11"
+    server_version                         = "13"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
@@ -321,7 +321,7 @@ variable "postgres_servers" {
         can(regex("^[a-z]+[a-z0-9-]*[a-zA-Z0-9]$", k)),
       ])
     ]) : false : true
-    error_message = "ERROR: The database server name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphends, letters, and numbers."
+    error_message = "ERROR: The database server name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphens, letters, and numbers."
   }
 
   # Checking user provided login
@@ -367,7 +367,7 @@ variable "gke_monitoring_service" {
 variable "vpc_name" {
   type        = string
   default     = ""
-  description = "Name of exising VPC. Leave blank to have one created"
+  description = "Name of existing VPC. Leave blank to have one created"
 }
 
 variable "nat_address_name" {

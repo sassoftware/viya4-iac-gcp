@@ -4,11 +4,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "3.78.0"
+      version = "4.38.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "3.78.0"
+      version = "4.38.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -16,7 +16,7 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.1.0"
+      version = "2.2.3"
     }
     template = {
       source  = "hashicorp/template"
@@ -32,7 +32,7 @@ terraform {
     }
     external = {
       source  = "hashicorp/external"
-      version = "2.1.0"
+      version = "2.2.2" # Constrained by Google
     }
     time = {
       source  = "hashicorp/time"
