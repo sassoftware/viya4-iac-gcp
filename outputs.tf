@@ -10,13 +10,13 @@ output "cluster_endpoint" {
 }
 
 output "kube_config" {
-  value = module.kubeconfig.kube_config
+  value     = module.kubeconfig.kube_config
   sensitive = true
 }
 
 #postgres
 output "postgres_servers" {
-  value = length(module.postgresql) != 0 ? local.postgres_outputs : null
+  value     = length(module.postgresql) != 0 ? local.postgres_outputs : null
   sensitive = true
 }
 

@@ -53,8 +53,8 @@ resource "google_compute_global_address" "private_ip_address" {
 
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  address       = split("/",var.database_subnet_cidr)[0]
-  prefix_length = split("/",var.database_subnet_cidr)[1]
+  address       = split("/", var.database_subnet_cidr)[0]
+  prefix_length = split("/", var.database_subnet_cidr)[1]
   network       = module.vpc.network_self_link
 }
 
@@ -81,13 +81,13 @@ resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
   target_tags = ["${var.prefix}-nfs-server"] # matches the tag on the nfs server
 
   # the node group vms are tagged with the cluster name
-  source_tags = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
+  source_tags   = ["${var.prefix}-gke", "${var.prefix}-jump-server"]
   source_ranges = distinct(concat([local.gke_pod_subnet_cidr], [local.gke_subnet_cidr])) # allow the pods
 }
 
 resource "google_compute_firewall" "nfs_vm_firewall" {
   name    = "${var.prefix}-nfs-server-firewall"
-  count   = (var.storage_type == "standard" && var.create_nfs_public_ip && length(local.vm_public_access_cidrs) != 0)  ? 1 : 0
+  count   = (var.storage_type == "standard" && var.create_nfs_public_ip && length(local.vm_public_access_cidrs) != 0) ? 1 : 0
   network = module.vpc.network_name
 
   allow {

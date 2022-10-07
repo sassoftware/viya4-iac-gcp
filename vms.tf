@@ -15,9 +15,9 @@ data "template_file" "nfs_cloudconfig" {
   template = file("${path.module}/files/cloud-init/nfs/cloud-config")
   count    = var.storage_type == "standard" ? 1 : 0
   vars = {
-    misc_subnet_cidr    = local.misc_subnet_cidr
-    gke_subnet_cidr     = local.gke_subnet_cidr
-    vm_admin            = var.nfs_vm_admin
+    misc_subnet_cidr = local.misc_subnet_cidr
+    gke_subnet_cidr  = local.gke_subnet_cidr
+    vm_admin         = var.nfs_vm_admin
   }
 }
 
@@ -41,7 +41,7 @@ data "template_file" "jump_cloudconfig" {
     vm_admin                = var.jump_vm_admin
     jump_rwx_filestore_path = var.jump_rwx_filestore_path
   }
-  depends_on = [module.nfs_server, google_filestore_instance.rwx ]
+  depends_on = [module.nfs_server, google_filestore_instance.rwx]
 }
 
 module "nfs_server" {

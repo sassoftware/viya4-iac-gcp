@@ -9,17 +9,17 @@ resource "google_compute_network" "vpc" {
 }
 
 data "google_compute_subnetwork" "gke_subnet" {
-  count   = var.create_subnets ? 0 : 1
-  name    = var.subnet_names["gke"]
-  region  = var.region
+  count  = var.create_subnets ? 0 : 1
+  name   = var.subnet_names["gke"]
+  region = var.region
 }
 resource "google_compute_subnetwork" "gke_subnet" {
-  count                     = var.create_subnets ? 1 : 0
-  name                      = var.subnet_names["gke"]
-  ip_cidr_range             = var.gke_subnet_cidr
-  region                    = var.region
-  network                   = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.id : data.google_compute_network.vpc.0.id
-  private_ip_google_access  = true
+  count                    = var.create_subnets ? 1 : 0
+  name                     = var.subnet_names["gke"]
+  ip_cidr_range            = var.gke_subnet_cidr
+  region                   = var.region
+  network                  = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.id : data.google_compute_network.vpc.0.id
+  private_ip_google_access = true
   secondary_ip_range {
     range_name    = var.subnet_names["gke_pods_range_name"]
     ip_cidr_range = var.gke_pod_subnet_cidr // /17
@@ -36,10 +36,10 @@ data "google_compute_subnetwork" "misc_subnet" {
   region = var.region
 }
 resource "google_compute_subnetwork" "misc_subnet" {
-  count                     = var.create_subnets ? 1 : 0
-  name                      = var.subnet_names["misc"]
-  ip_cidr_range             = var.misc_subnet_cidr
-  region                    = var.region
-  network                   = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.id : data.google_compute_network.vpc.0.id
-  private_ip_google_access  = false
+  count                    = var.create_subnets ? 1 : 0
+  name                     = var.subnet_names["misc"]
+  ip_cidr_range            = var.misc_subnet_cidr
+  region                   = var.region
+  network                  = length(var.vpc_name) == 0 ? google_compute_network.vpc.0.id : data.google_compute_network.vpc.0.id
+  private_ip_google_access = false
 }

@@ -13,7 +13,7 @@ service_account_keyfile = "<service-account-json-file>"
 
 # ****************  RECOMMENDED VARIABLES  ****************
 default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
-ssh_public_key              = "~/.ssh/id_rsa.pub"
+# ssh_public_key              = "~/.ssh/id_rsa.pub"
 # ****************  RECOMMENDED VARIABLES  ****************
 
 # add labels to the created resources
@@ -27,12 +27,12 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 # }
 
 # GKE config
-kubernetes_version = "1.23.8-gke.1900"
+kubernetes_version         = "1.23.8-gke.1900"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-standard-2"
 
 ## Cluster Node Pools config - mimimal
-cluster_node_pool_mode   = "minimal"
+cluster_node_pool_mode = "minimal"
 node_pools = {
   cas = {
     "vm_type"              = "n2-highmem-4"

@@ -2,17 +2,21 @@
 #
 # Terraform Registry : https://registry.terraform.io/namespaces/terraform-google-modules
 # GitHub Repository  : https://github.com/terraform-google-modules
-
+#
+# Terraform Cloud : Credentials are supplied with GOOGLE_CREDENTIALS a single line JSON
+#                   file contaiing the output of gcloud login. When copy the contents
+#                   of that output you must remove all newlines and store this as a single
+#                   line entry as a varaible
+#
 provider "google" {
-  credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
+  credentials = var.service_account_keyfile != null ? can(file(var.service_account_keyfile)) ? file(var.service_account_keyfile) : null : null
   project     = var.project
 }
 
 provider "google-beta" {
-  credentials = var.service_account_keyfile != null ? file(var.service_account_keyfile) : null
+  credentials = var.service_account_keyfile != null ? can(file(var.service_account_keyfile)) ? file(var.service_account_keyfile) : null : null
   project     = var.project
 }
-
 provider "kubernetes" {
   host                   = "https://${module.gke.endpoint}"
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
@@ -25,37 +29,41 @@ data "google_client_config" "current" {}
 data "google_compute_zones" "available" {
   region = local.region
 }
+
 data "external" "git_hash" {
+  count   = var.enable_tf_cloud_integration ? 0 : 1
   program = ["files/tools/iac_git_info.sh"]
 }
 
 data "external" "iac_tooling_version" {
+  count   = var.enable_tf_cloud_integration ? 0 : 1
   program = ["files/tools/iac_tooling_version.sh"]
 }
 
 resource "kubernetes_config_map" "sas_iac_buildinfo" {
+  count = var.enable_tf_cloud_integration ? 0 : 1
   metadata {
     name      = "sas-iac-buildinfo"
     namespace = "kube-system"
   }
 
   data = {
-    git-hash    = lookup(data.external.git_hash.result, "git-hash")
+    git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
     iac-tooling = var.iac_tooling
     terraform   = <<EOT
-version: ${lookup(data.external.iac_tooling_version.result, "terraform_version")}
-revision: ${lookup(data.external.iac_tooling_version.result, "terraform_revision")}
-provider-selections: ${lookup(data.external.iac_tooling_version.result, "provider_selections")}
-outdated: ${lookup(data.external.iac_tooling_version.result, "terraform_outdated")}
+version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
+revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
+provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
+outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
 EOT
   }
 
-  depends_on = [ module.gke ]
+  depends_on = [module.gke]
 }
 
 resource "google_filestore_instance" "rwx" {
   name   = "${var.prefix}-rwx-filestore"
-  count  = var.storage_type == "ha" ? 1 : 0 
+  count  = var.storage_type == "ha" ? 1 : 0
   tier   = upper(var.filestore_tier)
   zone   = local.zone
   labels = var.tags
@@ -149,7 +157,7 @@ module "gke" {
   ]
 
   node_pools_oauth_scopes = {
-    all = [   
+    all = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
       "https://www.googleapis.com/auth/devstorage.read_only",
@@ -164,13 +172,13 @@ module "gke" {
   }
 
   node_pools_labels = {
-    for nodepool, settings in local.node_pools: nodepool => settings.node_labels
+    for nodepool, settings in local.node_pools : nodepool => settings.node_labels
   }
 
   node_pools_taints = {
-    for nodepool, settings in local.node_pools: nodepool => [
-      for taint in settings.node_taints: {
-        key = split("=", split(":", taint)[0])[0]
+    for nodepool, settings in local.node_pools : nodepool => [
+      for taint in settings.node_taints : {
+        key    = split("=", split(":", taint)[0])[0]
         value  = split("=", split(":", taint)[0])[1]
         effect = local.taint_effects[split(":", taint)[1]]
       }
@@ -191,7 +199,7 @@ module "kubeconfig" {
   endpoint                 = "https://${module.gke.endpoint}"
   ca_crt                   = module.gke.ca_certificate
 
-  depends_on = [ module.gke ]
+  depends_on = [module.gke]
 }
 
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
@@ -233,13 +241,13 @@ module "postgresql" {
     transaction_log_retention_days = 1 # Range is 1-7 and should always be at most backup_count - 1 Can never be more than backup_count
   }
 
-  ip_configuration  = {
+  ip_configuration = {
     private_network = module.vpc.network_self_link
     require_ssl     = each.value.ssl_enforcement_enabled
 
     ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
     authorized_networks = [
-      for cidr in local.postgres_public_access_cidrs: {
+      for cidr in local.postgres_public_access_cidrs : {
         value = cidr
       }
     ]
@@ -247,12 +255,12 @@ module "postgresql" {
 }
 
 module "sql_proxy_sa" {
-  source  = "terraform-google-modules/service-accounts/google"
-  version = "4.0.0"
-  count = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
-  project_id = var.project
-  prefix = var.prefix
-  names = ["sql-proxy-sa"]
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "4.0.0"
+  count         = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
+  project_id    = var.project
+  prefix        = var.prefix
+  names         = ["sql-proxy-sa"]
   project_roles = ["${var.project}=>roles/cloudsql.admin"]
-  display_name = "IAC-managed service account for cluster ${var.prefix} and sql-proxy integration."
+  display_name  = "IAC-managed service account for cluster ${var.prefix} and sql-proxy integration."
 }

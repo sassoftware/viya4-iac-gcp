@@ -29,14 +29,14 @@ locals {
   # rough calculation to get to 6 initial nodes - in order to overcome the Ingress quota limit of 100
   initial_node_count = ceil((var.minimum_initial_nodes - tonumber(var.default_nodepool_min_nodes)) / length(var.node_pools))
 
-  taint_effects = { 
+  taint_effects = {
     NoSchedule       = "NO_SCHEDULE"
     PreferNoSchedule = "PREFER_NO_SCHEDULE"
     NoExecute        = "NO_EXECUTE"
   }
 
   node_pools_and_accelerator_taints = {
-    for node_pool, settings in var.node_pools: node_pool => {
+    for node_pool, settings in var.node_pools : node_pool => {
       accelerator_count  = settings.accelerator_count
       accelerator_type   = settings.accelerator_type
       local_ssd_count    = settings.local_ssd_count
@@ -45,22 +45,22 @@ locals {
       node_labels        = settings.node_labels
       os_disk_size       = settings.os_disk_size
       vm_type            = settings.vm_type
-      node_taints        = settings.accelerator_count >0 ? concat( settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
-      initial_node_count = max(local.initial_node_count,settings.min_nodes)
+      node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
+      initial_node_count = max(local.initial_node_count, settings.min_nodes)
     }
   }
 
   node_pools = merge(local.node_pools_and_accelerator_taints, {
     default = {
-      "vm_type"      = var.default_nodepool_vm_type
-      "os_disk_size" = var.default_nodepool_os_disk_size
-      "min_nodes"    = var.default_nodepool_min_nodes
-      "max_nodes"    = var.default_nodepool_max_nodes
-      "node_taints"  = var.default_nodepool_taints
-      "node_labels" = merge(var.tags, var.default_nodepool_labels,{"kubernetes.azure.com/mode"="system"})
-      "local_ssd_count" = var.default_nodepool_local_ssd_count
-      "accelerator_count" = 0
-      "accelerator_type" = ""
+      "vm_type"            = var.default_nodepool_vm_type
+      "os_disk_size"       = var.default_nodepool_os_disk_size
+      "min_nodes"          = var.default_nodepool_min_nodes
+      "max_nodes"          = var.default_nodepool_max_nodes
+      "node_taints"        = var.default_nodepool_taints
+      "node_labels"        = merge(var.tags, var.default_nodepool_labels, { "kubernetes.azure.com/mode" = "system" })
+      "local_ssd_count"    = var.default_nodepool_local_ssd_count
+      "accelerator_count"  = 0
+      "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
     }
   })
@@ -82,14 +82,14 @@ locals {
 
   filestore_size_in_gb = (
     var.filestore_size_in_gb == null
-      ? ( contains(["BASIC_HDD","STANDARD"], upper(var.filestore_tier)) ? 1024 : 2560 )
-      : var.filestore_size_in_gb
+    ? (contains(["BASIC_HDD", "STANDARD"], upper(var.filestore_tier)) ? 1024 : 2560)
+    : var.filestore_size_in_gb
   )
 
   # PostgreSQL
-  postgres_servers = var.postgres_servers == null ? {} : { for k, v in var.postgres_servers : k => merge( var.postgres_server_defaults, v, )}
+  postgres_servers = var.postgres_servers == null ? {} : { for k, v in var.postgres_servers : k => merge(var.postgres_server_defaults, v, ) }
 
-  postgres_outputs = length(module.postgresql) != 0 ? { for k,v in module.postgresql :
+  postgres_outputs = length(module.postgresql) != 0 ? { for k, v in module.postgresql :
     k => {
       "server_name" : module.postgresql[k].instance_name,
       "fqdn" : module.postgresql[k].private_ip_address,

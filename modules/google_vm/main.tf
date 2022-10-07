@@ -4,7 +4,7 @@ module "address" {
   project_id   = var.project
   region       = var.region
   address_type = "EXTERNAL"
-  names = var.create_public_ip ? [ "${var.name}-address" ] : []
+  names        = var.create_public_ip ? ["${var.name}-address"] : []
 }
 
 resource "google_compute_instance" "google_vm" {
@@ -13,7 +13,7 @@ resource "google_compute_instance" "google_vm" {
   zone         = var.zone
   labels       = var.tags
 
-  tags         = [var.name] # to match the firewall rule
+  tags = [var.name] # to match the firewall rule
 
   boot_disk {
     initialize_params {
@@ -33,8 +33,8 @@ resource "google_compute_instance" "google_vm" {
   }
 
   metadata = {
-    ssh-keys       = "${var.vm_admin}:${var.ssh_public_key}"
-    user-data      = var.user_data // cloud-init
+    ssh-keys  = "${var.vm_admin}:${var.ssh_public_key}"
+    user-data = var.user_data // cloud-init
   }
 
   dynamic "attached_disk" {

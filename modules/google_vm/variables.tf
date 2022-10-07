@@ -24,7 +24,7 @@ variable "create_public_ip" {
 
 variable "tags" {
   description = "Map of common tags to be placed on the Resources"
-  type        = map
+  type        = map(any)
   default     = { project_name = "viya401", cost_center = "rnd", environment = "dev" }
 }
 
@@ -47,7 +47,7 @@ variable "vm_admin" {
 
 variable "ssh_public_key" {
   description = "Path to ssh public key"
-  default     = "~/.ssh/id_rsa.pub"
+  default     = null
 }
 
 variable "os_image" {
