@@ -57,7 +57,7 @@ resource "google_filestore_instance" "rwx" {
   name   = "${var.prefix}-rwx-filestore"
   count  = var.storage_type == "ha" ? 1 : 0 
   tier   = upper(var.filestore_tier)
-  zone   = local.zone
+  location   = local.zone
   labels = var.tags
 
   file_shares {
@@ -80,7 +80,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "15.0.2"
+  version                       = "23.1.0"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
@@ -112,7 +112,7 @@ module "gke" {
 
   monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  cluster_autoscaling           = var.enable_cluster_autoscaling ? { "enabled": true, "max_cpu_cores": var.cluster_autoscaling_max_cpu_cores, "max_memory_gb": var.cluster_autoscaling_max_memory_gb, "min_cpu_cores": 1, "min_memory_gb": 1 } : { "enabled": false, "max_cpu_cores": 0, "max_memory_gb": 0, "min_cpu_cores": 0, "min_memory_gb": 0}
+  cluster_autoscaling           = var.enable_cluster_autoscaling ? { enabled: true, max_cpu_cores: var.cluster_autoscaling_max_cpu_cores, max_memory_gb: var.cluster_autoscaling_max_memory_gb, min_cpu_cores: 1, min_memory_gb: 1, gpu_resources = [] } : { enabled: false, max_cpu_cores: 0, max_memory_gb: 0, min_cpu_cores: 0, min_memory_gb: 0, gpu_resources = []}
 
   master_authorized_networks    = concat([
     for cidr in (local.cluster_endpoint_public_access_cidrs): {
@@ -194,10 +194,10 @@ module "kubeconfig" {
   depends_on = [ module.gke ]
 }
 
-# Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/5.1.0/submodules/postgresql
+# Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/12.0.0/submodules/postgresql
 module "postgresql" {
   source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "6.0.0"
+  version                          = "12.0.0"
   project_id                       = var.project
 
   for_each                         = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
@@ -236,7 +236,7 @@ module "postgresql" {
   ip_configuration  = {
     private_network = module.vpc.network_self_link
     require_ssl     = each.value.ssl_enforcement_enabled
-
+    allocated_ip_range = null
     ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
     authorized_networks = [
       for cidr in local.postgres_public_access_cidrs: {
@@ -248,7 +248,7 @@ module "postgresql" {
 
 module "sql_proxy_sa" {
   source  = "terraform-google-modules/service-accounts/google"
-  version = "4.0.0"
+  version = "4.1.1"
   count = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
   project_id = var.project
   prefix = var.prefix
