@@ -20,4 +20,7 @@ variable "cluster_name" {}
 variable "endpoint" {}
 variable "ca_crt" {}
 
+variable "tf_cloud_integration_enabled" {
+  default = false
+}
 

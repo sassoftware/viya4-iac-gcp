@@ -1,3 +1,3 @@
 output "kube_config" {
-  value = local_file.kubeconfig.content
+  value = var.tf_cloud_integration_enabled ? null : local_file.kubeconfig.*.content
 }

@@ -1,12 +1,6 @@
-locals {
-  service_account_name        = "${var.prefix}-cluster-admin-sa"
-  cluster_role_binding_name   = "${var.prefix}-cluster-admin-crb"
-  service_account_secret_name = "${var.prefix}-sa-secret"
-}
-
 # Provider based kube config data/template/resources
 data "template_file" "kubeconfig_provider" {
-  count    = var.create_static_kubeconfig ? 0 : 1
+  count    = var.tf_cloud_integration_enabled ? 0 : var.create_static_kubeconfig ? 0 : 1
   template = file("${path.module}/templates/kubeconfig-provider.tmpl")
 
   vars = {
@@ -19,34 +13,34 @@ data "template_file" "kubeconfig_provider" {
 # Give the cluster time to create the secret
 # TODO update with official hashicorp/kubernetes wait method once
 # it is implemented.
-resource "time_sleep" "wait_for_secret_data" {
-  create_duration = "60s"
-  depends_on      = [kubernetes_secret.sa_secret]
-}
+# resource "time_sleep" "wait_for_secret_data" {
+#   create_duration = "60s"
+#   depends_on      = [kubernetes_secret.sa_secret]
+# }
 
-# Service Account based kube config data/template/resources
-data "kubernetes_secret" "sa_secret" {
-  count = var.create_static_kubeconfig ? 1 : 0
-  metadata {
-    name      = kubernetes_secret.sa_secret.0.metadata.0.name
-    namespace = var.namespace
-  }
-  depends_on = [time_sleep.wait_for_secret_data]
-}
+# # Service Account based kube config data/template/resources
+# data "kubernetes_secret" "sa_secret" {
+#   count = var.create_static_kubeconfig ? 1 : 0
+#   metadata {
+#     name      = kubernetes_secret.sa_secret.0.metadata.0.name
+#     namespace = var.namespace
+#   }
+#   depends_on = [time_sleep.wait_for_secret_data]
+# }
 
 data "template_file" "kubeconfig_sa" {
-  count    = var.create_static_kubeconfig ? 1 : 0
+  count    = var.tf_cloud_integration_enabled ? 0 : var.create_static_kubeconfig ? 1 : 0
   template = file("${path.module}/templates/kubeconfig-sa.tmpl")
 
   vars = {
     cluster_name = var.cluster_name
     endpoint     = var.endpoint
     name         = local.service_account_name
-    ca_crt       = base64encode(lookup(data.kubernetes_secret.sa_secret.0.data, "ca.crt", ""))
-    token        = lookup(data.kubernetes_secret.sa_secret.0.data, "token", "")
+    ca_crt       = base64encode(lookup(kubernetes_secret.sa_secret.0.data, "ca.crt", ""))
+    token        = lookup(kubernetes_secret.sa_secret.0.data, "token", "")
     namespace    = var.namespace
   }
-  depends_on = [data.kubernetes_secret.sa_secret]
+  # depends_on = [data.kubernetes_secret.sa_secret]
 }
 
 # 1.24 change: Create service account secret
@@ -92,6 +86,7 @@ resource "kubernetes_cluster_role_binding" "kubernetes_crb" {
 
 # kube config file generation
 resource "local_file" "kubeconfig" {
+  count = var.tf_cloud_integration_enabled ? 0 : 1
   content              = var.create_static_kubeconfig ? data.template_file.kubeconfig_sa.0.rendered : data.template_file.kubeconfig_provider.0.rendered
   filename             = var.path
   file_permission      = "0644"

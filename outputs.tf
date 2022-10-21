@@ -9,10 +9,10 @@ output "cluster_endpoint" {
   sensitive   = true
 }
 
-output "kube_config" {
-  value     = module.kubeconfig.kube_config
-  sensitive = true
-}
+# output "kube_config" {
+#   value     = var.tf_cloud_integration_enabled ? null : module.kubeconfig.*.kube_config
+#   sensitive = true
+# }
 
 #postgres
 output "postgres_servers" {
@@ -22,18 +22,18 @@ output "postgres_servers" {
 
 output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
-  value       = ( var.storage_type == "none"
-                  ? null
-                  : var.storage_type == "ha" ? google_filestore_instance.rwx.0.networks.0.ip_addresses.0 : module.nfs_server.0.private_ip
-                )
+  value = (var.storage_type == "none"
+    ? null
+    : var.storage_type == "ha" ? google_filestore_instance.rwx.0.networks.0.ip_addresses.0 : module.nfs_server.0.private_ip
+  )
 }
 
 output "rwx_filestore_path" {
   description = "Shared Storage mount path"
-  value       = ( var.storage_type == "none"
-                  ? null
-                  : var.storage_type == "ha" ? "/${google_filestore_instance.rwx.0.file_shares.0.name}" : "/export"
-                )
+  value = (var.storage_type == "none"
+    ? null
+    : var.storage_type == "ha" ? "/${google_filestore_instance.rwx.0.file_shares.0.name}" : "/export"
+  )
 }
 
 output "nat_ip" {
@@ -98,4 +98,14 @@ output "cluster_node_pool_mode" {
 
 output "cluster_api_mode" {
   value = var.cluster_api_mode
+}
+
+output "kube_config_provider" {
+  value     = local.kube_config_provider
+  sensitive = true
+}
+
+output "kube_config_sa" {
+  value     = local.kube_config_sa
+  sensitive = true
 }

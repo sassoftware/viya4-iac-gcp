@@ -30,7 +30,7 @@ variable "project" {
   type = string
 }
 
-variable "enable_tf_cloud_integration" {
+variable "tf_cloud_integration_enabled" {
   type    = bool
   default = false
 }
@@ -160,7 +160,7 @@ variable "storage_type" {
 
 variable "minimum_initial_nodes" {
   description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
-  default = 6
+  default     = 6
 }
 # Default Node pool config
 variable "default_nodepool_vm_type" {

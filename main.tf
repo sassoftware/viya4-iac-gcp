@@ -31,42 +31,42 @@ data "google_compute_zones" "available" {
 }
 
 data "external" "git_hash" {
-  count   = var.enable_tf_cloud_integration ? 0 : 1
+  count   = var.tf_cloud_integration_enabled ? 0 : 1
   program = ["files/tools/iac_git_info.sh"]
 }
 
 data "external" "iac_tooling_version" {
-  count   = var.enable_tf_cloud_integration ? 0 : 1
+  count   = var.tf_cloud_integration_enabled ? 0 : 1
   program = ["files/tools/iac_tooling_version.sh"]
 }
 
-resource "kubernetes_config_map" "sas_iac_buildinfo" {
-  count = var.enable_tf_cloud_integration ? 0 : 1
-  metadata {
-    name      = "sas-iac-buildinfo"
-    namespace = "kube-system"
-  }
+# resource "kubernetes_config_map" "sas_iac_buildinfo" {
+#   count = var.tf_cloud_integration_enabled ? 0 : 1
+#   metadata {
+#     name      = "sas-iac-buildinfo"
+#     namespace = "kube-system"
+#   }
 
-  data = {
-    git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
-    iac-tooling = var.iac_tooling
-    terraform   = <<EOT
-version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
-revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
-provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
-outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
-EOT
-  }
+#   data = {
+#     git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
+#     iac-tooling = var.iac_tooling
+#     terraform   = <<EOT
+# version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
+# revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
+# provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
+# outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
+# EOT
+#   }
 
-  depends_on = [module.gke]
-}
+#   depends_on = [module.gke]
+# }
 
 resource "google_filestore_instance" "rwx" {
-  name   = "${var.prefix}-rwx-filestore"
-  count  = var.storage_type == "ha" ? 1 : 0
-  tier   = upper(var.filestore_tier)
-  location   = local.location
-  labels = var.tags
+  name     = "${var.prefix}-rwx-filestore"
+  count    = var.storage_type == "ha" ? 1 : 0
+  tier     = upper(var.filestore_tier)
+  location = local.location
+  labels   = var.tags
 
   file_shares {
     capacity_gb = local.filestore_size_in_gb
@@ -104,38 +104,38 @@ module "gke" {
   enable_private_endpoint       = var.cluster_api_mode == "private" ? true : false
   enable_private_nodes          = true
   master_ipv4_cidr_block        = var.gke_control_plane_subnet_cidr
-  
-  node_pools_metadata           = {"all": var.tags}
-  cluster_resource_labels       = var.tags
 
-  add_cluster_firewall_rules    = true
+  node_pools_metadata     = { "all" : var.tags }
+  cluster_resource_labels = var.tags
 
-  release_channel               = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
-  kubernetes_version            = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
+  add_cluster_firewall_rules = true
 
-  network_policy                = var.gke_network_policy
-  remove_default_node_pool	    = true
+  release_channel    = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
+  kubernetes_version = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
 
-  grant_registry_access         = var.enable_registry_access
+  network_policy           = var.gke_network_policy
+  remove_default_node_pool = true
 
-  monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
+  grant_registry_access = var.enable_registry_access
 
-  cluster_autoscaling           = var.enable_cluster_autoscaling ? { enabled: true, max_cpu_cores: var.cluster_autoscaling_max_cpu_cores, max_memory_gb: var.cluster_autoscaling_max_memory_gb, min_cpu_cores: 1, min_memory_gb: 1, gpu_resources = [] } : { enabled: false, max_cpu_cores: 0, max_memory_gb: 0, min_cpu_cores: 0, min_memory_gb: 0, gpu_resources = []}
+  monitoring_service = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  master_authorized_networks    = concat([
-    for cidr in (local.cluster_endpoint_public_access_cidrs): {
+  cluster_autoscaling = var.enable_cluster_autoscaling ? { enabled : true, max_cpu_cores : var.cluster_autoscaling_max_cpu_cores, max_memory_gb : var.cluster_autoscaling_max_memory_gb, min_cpu_cores : 1, min_memory_gb : 1, gpu_resources = [] } : { enabled : false, max_cpu_cores : 0, max_memory_gb : 0, min_cpu_cores : 0, min_memory_gb : 0, gpu_resources = [] }
+
+  master_authorized_networks = concat([
+    for cidr in(local.cluster_endpoint_public_access_cidrs) : {
       display_name = cidr
       cidr_block   = cidr
-    }], [{
+      }], [{
       display_name = "VPC"
       cidr_block   = module.vpc.subnets["gke"].ip_cidr_range
-    }], [{
-     display_name = "MISC"
-     cidr_block   = module.vpc.subnets["misc"].ip_cidr_range
-    }])
+      }], [{
+      display_name = "MISC"
+      cidr_block   = module.vpc.subnets["misc"].ip_cidr_range
+  }])
 
   node_pools = [
-    for nodepool, settings in local.node_pools: {
+    for nodepool, settings in local.node_pools : {
       name               = nodepool
       machine_type       = settings.vm_type
       node_locations     = local.zone # This must be a zone not a region. So var.location may not always work. ;)
@@ -188,48 +188,48 @@ module "gke" {
   depends_on = [module.vpc]
 }
 
-module "kubeconfig" {
-  source                   = "./modules/kubeconfig"
-  prefix                   = var.prefix
-  create_static_kubeconfig = var.create_static_kubeconfig
-  path                     = local.kubeconfig_path
-  namespace                = "kube-system"
+# module "kubeconfig" {
+#   source                       = "./modules/kubeconfig"
+#   prefix                       = var.prefix
+#   create_static_kubeconfig     = var.create_static_kubeconfig
+#   tf_cloud_integration_enabled = var.tf_cloud_integration_enabled
+#   path                         = local.kubeconfig_path
+#   namespace                    = "kube-system"
+#   cluster_name                 = module.gke.name
+#   endpoint                     = "https://${module.gke.endpoint}"
+#   ca_crt                       = module.gke.ca_certificate
 
-  cluster_name             = module.gke.name
-  endpoint                 = "https://${module.gke.endpoint}"
-  ca_crt                   = module.gke.ca_certificate
-
-  depends_on = [module.gke]
-}
+#   depends_on = [module.gke]
+# }
 
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/12.0.0/submodules/postgresql
 module "postgresql" {
-  source                           = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version                          = "12.0.0"
-  project_id                       = var.project
+  source     = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
+  version    = "12.0.0"
+  project_id = var.project
 
-  for_each                         = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
+  for_each = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
 
-  name                             = lower("${var.prefix}-${each.key}-pgsql") 
-  random_instance_name             = true // Need this because of this: https://cloud.google.com/sql/docs/mysql/delete-instance
-  zone                             = local.zone
+  name                 = lower("${var.prefix}-${each.key}-pgsql")
+  random_instance_name = true // Need this because of this: https://cloud.google.com/sql/docs/mysql/delete-instance
+  zone                 = local.zone
 
-  region                           = local.region // regex("^[a-z0-9]*-[a-z0-9]*", var.location)
-  availability_type                = each.value.availability_type
+  region            = local.region // regex("^[a-z0-9]*-[a-z0-9]*", var.location)
+  availability_type = each.value.availability_type
 
-  deletion_protection              = false
-  module_depends_on                = [google_service_networking_connection.private_vpc_connection]
+  deletion_protection = false
+  module_depends_on   = [google_service_networking_connection.private_vpc_connection]
 
-  tier                             = each.value.machine_type 
-  disk_size                        = each.value.storage_gb
+  tier      = each.value.machine_type
+  disk_size = each.value.storage_gb
 
-  enable_default_db                = false
-  user_name                        = each.value.administrator_login
-  user_password                    = each.value.administrator_password
-  user_labels                      = var.tags
+  enable_default_db = false
+  user_name         = each.value.administrator_login
+  user_password     = each.value.administrator_password
+  user_labels       = var.tags
 
-  database_version                 = "POSTGRES_${each.value.server_version}"
-  database_flags                   = each.value.database_flags
+  database_version = "POSTGRES_${each.value.server_version}"
+  database_flags   = each.value.database_flags
 
   backup_configuration = {
     enabled                        = each.value.backups_enabled
@@ -242,10 +242,10 @@ module "postgresql" {
   }
 
   ip_configuration = {
-    private_network = module.vpc.network_self_link
-    require_ssl     = each.value.ssl_enforcement_enabled
+    private_network    = module.vpc.network_self_link
+    require_ssl        = each.value.ssl_enforcement_enabled
     allocated_ip_range = null
-    ipv4_enabled = length(local.postgres_public_access_cidrs) > 0 ? true : false
+    ipv4_enabled       = length(local.postgres_public_access_cidrs) > 0 ? true : false
     authorized_networks = [
       for cidr in local.postgres_public_access_cidrs : {
         value = cidr

@@ -3,14 +3,14 @@ locals {
   # General
 
   # get the region from "location", or else from the local config
-  region     = var.location != "" ? regex("^[a-z0-9]*-[a-z0-9]*", var.location) : data.google_client_config.current.region
+  region = var.location != "" ? regex("^[a-z0-9]*-[a-z0-9]*", var.location) : data.google_client_config.current.region
 
   # get the zone from "location", or else from the local config. If none is set, default to the first zone in the region
   is_region  = var.location != "" ? var.location == regex("^[a-z0-9]*-[a-z0-9]*", var.location) : false
   first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
   # all_zones  = length(data.google_compute_zones.available.names) > 0 ? join(",", [for item in data.google_compute_zones.available.names : format("%s", item)]) : ""
-  zone       = ( var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone) )
-  location   = var.location != "" ? var.location : local.zone
+  zone     = (var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone))
+  location = var.location != "" ? var.location : local.zone
 
   # CIDRs/Network
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
@@ -18,13 +18,13 @@ locals {
   vm_public_access_cidrs               = var.vm_public_access_cidrs == null ? local.default_public_access_cidrs : var.vm_public_access_cidrs
   postgres_public_access_cidrs         = var.postgres_public_access_cidrs == null ? local.default_public_access_cidrs : var.postgres_public_access_cidrs
 
-  ssh_public_key = ( var.create_jump_vm || var.storage_type == "standard"
-                     ? file(var.ssh_public_key)
-                     : null
-                   )
+  ssh_public_key = (var.create_jump_vm || var.storage_type == "standard"
+    ? can(file(var.ssh_public_key)) ? file(var.ssh_public_key) : var.ssh_public_key != null ? length(var.ssh_public_key) > 0 ? var.ssh_public_key : null : null
+    : null
+  )
 
   # Kubernetes
-  kubeconfig_path     = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
+  kubeconfig_path = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
 
   # rough calculation to get to 6 initial nodes - in order to overcome the Ingress quota limit of 100
   initial_node_count = ceil((var.minimum_initial_nodes - tonumber(var.default_nodepool_min_nodes)) / length(var.node_pools))
@@ -34,6 +34,11 @@ locals {
     PreferNoSchedule = "PREFER_NO_SCHEDULE"
     NoExecute        = "NO_EXECUTE"
   }
+
+  # kube config
+  service_account_name        = "${var.prefix}-cluster-admin-sa"
+  cluster_role_binding_name   = "${var.prefix}-cluster-admin-crb"
+  service_account_secret_name = "${var.prefix}-sa-secret"
 
   node_pools_and_accelerator_taints = {
     for node_pool, settings in var.node_pools : node_pool => {
@@ -72,10 +77,10 @@ locals {
     gke_services_range_name = "${var.prefix}-gke-services"
   }
 
-  subnet_names        = length(var.subnet_names) == 0 ? local.subnet_names_defaults : var.subnet_names
+  subnet_names = length(var.subnet_names) == 0 ? local.subnet_names_defaults : var.subnet_names
 
-  gke_subnet_cidr     = length(var.subnet_names) == 0 ? var.gke_subnet_cidr : module.vpc.subnets["gke"].ip_cidr_range
-  misc_subnet_cidr    = length(var.subnet_names) == 0 ? var.misc_subnet_cidr : module.vpc.subnets["misc"].ip_cidr_range
+  gke_subnet_cidr  = length(var.subnet_names) == 0 ? var.gke_subnet_cidr : module.vpc.subnets["gke"].ip_cidr_range
+  misc_subnet_cidr = length(var.subnet_names) == 0 ? var.misc_subnet_cidr : module.vpc.subnets["misc"].ip_cidr_range
 
   gke_pod_range_index = length(var.subnet_names) == 0 ? index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"]) : 0
   gke_pod_subnet_cidr = length(var.subnet_names) == 0 ? var.gke_pod_subnet_cidr : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range

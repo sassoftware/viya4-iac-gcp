@@ -17,8 +17,8 @@ ssh_public_key              = "~/.ssh/id_rsa.pub"
 # ****************  RECOMMENDED VARIABLES  ****************
 
 # Bring your own existing resources
-vpc_name        = "name-of-existing-vpc"
-subnet_names    = { 
+vpc_name = "name-of-existing-vpc"
+subnet_names = {
   gke                     = "<name-of-existing-subnetfor-gke>"
   gke_pods_range_name     = "<name-of-existing-secondary-ip-range-for-pods-in-gke-subnet>"
   gke_services_range_name = "<name-of-existing-secondary-ip-range-for-services-in-gke-subnet>"
