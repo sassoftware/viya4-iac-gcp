@@ -86,7 +86,7 @@ resource "kubernetes_cluster_role_binding" "kubernetes_crb" {
 
 # kube config file generation
 resource "local_file" "kubeconfig" {
-  count = var.tf_cloud_integration_enabled ? 0 : 1
+  count                = var.tf_cloud_integration_enabled ? 0 : 1
   content              = var.create_static_kubeconfig ? data.template_file.kubeconfig_sa.0.rendered : data.template_file.kubeconfig_provider.0.rendered
   filename             = var.path
   file_permission      = "0644"
