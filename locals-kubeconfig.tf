@@ -1,4 +1,9 @@
 locals {
+
+  # ca_crt
+  ca_crt = base64encode(lookup(kubernetes_secret.sa_secret.0.data, "ca.crt", ""))
+  token  = lookup(kubernetes_secret.sa_secret.0.data, "token", "")
+
   kube_config_provider = <<-EOT
 apiVersion: v1
 clusters:
@@ -33,14 +38,14 @@ kind: Config
 clusters:
 - name: ${module.gke.name}
     cluster:
-    server: 'https://${module.gke.endpoint}'
+    server: https://${module.gke.endpoint}
     certificate-authority-data: >-
-        ${module.gke.ca_certificate}
+        ${local.ca_crt}
 users:
 - name: ${local.service_account_name}
     user:
     token: >-
-        {token}
+        ${local.token}
 contexts:
 - name: ${module.gke.name}    
     context:
