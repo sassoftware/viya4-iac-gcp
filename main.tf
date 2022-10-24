@@ -189,7 +189,7 @@ module "gke" {
 }
 
 module "kubeconfig" {
-  source                   = "./modules/kubeconf"
+  source                   = "./modules/kubeconfig"
   prefix                   = var.prefix
   namespace                = "kube-system"
   create_static_kubeconfig = var.create_static_kubeconfig
