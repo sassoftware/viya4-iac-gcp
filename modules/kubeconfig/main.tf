@@ -8,8 +8,8 @@ resource "kubernetes_secret" "sa_secret" {
       "kubernetes.io/service-account.name" = local.service_account_name
     }
   }
-  type = "kubernetes.io/service-account-token"
-  #   depends_on = [kubernetes_service_account.kubernetes_sa]
+  type       = "kubernetes.io/service-account-token"
+  depends_on = [kubernetes_service_account.kubernetes_sa]
 }
 
 # Create service account for use with the service account kube config
