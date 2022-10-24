@@ -100,7 +100,7 @@ default_public_access_cidrs = ["0.0.0.0/0",
   # "44.238.78.236/32",
 ]
 # default_public_access_cidrs = []
-create_static_kubeconfig = true
+create_static_kubeconfig     = true
 # **************  RECOMMENDED  VARIABLES  ***************
 
 # User variables
