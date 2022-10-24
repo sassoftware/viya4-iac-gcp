@@ -15,12 +15,20 @@ variable "create_static_kubeconfig" {
   default     = false
 }
 
-variable "path" {}
-variable "cluster_name" {}
-variable "endpoint" {}
-variable "ca_crt" {}
-
-variable "tf_cloud_integration_enabled" {
-  default = false
+variable "cluster_name" {
+  description = "Cluster name provided by GKE module"
+  type        = string
+  default     = null
 }
 
+variable "cluster_endpoint" {
+  description = "Cluster endpoint provided by GKE module"
+  type        = string
+  default     = null
+}
+
+variable "cluster_ca_cert" {
+  description = "Cluster CA certificate provided by GKE module"
+  type        = string
+  default     = null
+}

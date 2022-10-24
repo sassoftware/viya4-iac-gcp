@@ -9,10 +9,10 @@ output "cluster_endpoint" {
   sensitive   = true
 }
 
-# output "kube_config" {
-#   value     = var.tf_cloud_integration_enabled ? null : module.kubeconfig.*.kube_config
-#   sensitive = true
-# }
+output "kube_config" {
+  value     = module.kubeconfig.kube_config
+  sensitive = true
+}
 
 #postgres
 output "postgres_servers" {
@@ -100,12 +100,12 @@ output "cluster_api_mode" {
   value = var.cluster_api_mode
 }
 
-output "kube_config_provider" {
-  value     = local.kube_config_provider
-  sensitive = true
-}
+# output "kube_config_provider" {
+#   value     = local.kube_config_provider
+#   sensitive = true
+# }
 
-output "kube_config_sa" {
-  value     = local.kube_config_sa
-  sensitive = true
-}
+# output "kube_config_sa" {
+#   value     = local.kube_config_sa
+#   sensitive = true
+# }

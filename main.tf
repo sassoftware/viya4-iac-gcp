@@ -40,26 +40,26 @@ data "external" "iac_tooling_version" {
   program = ["files/tools/iac_tooling_version.sh"]
 }
 
-# resource "kubernetes_config_map" "sas_iac_buildinfo" {
-#   count = var.tf_cloud_integration_enabled ? 0 : 1
-#   metadata {
-#     name      = "sas-iac-buildinfo"
-#     namespace = "kube-system"
-#   }
+resource "kubernetes_config_map" "sas_iac_buildinfo" {
+  count = var.tf_cloud_integration_enabled ? 0 : 1
+  metadata {
+    name      = "sas-iac-buildinfo"
+    namespace = "kube-system"
+  }
 
-#   data = {
-#     git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
-#     iac-tooling = var.iac_tooling
-#     terraform   = <<EOT
-# version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
-# revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
-# provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
-# outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
-# EOT
-#   }
+  data = {
+    git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
+    iac-tooling = var.iac_tooling
+    terraform   = <<EOT
+version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
+revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
+provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
+outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
+EOT
+  }
 
-#   depends_on = [module.gke]
-# }
+  depends_on = [module.gke]
+}
 
 resource "google_filestore_instance" "rwx" {
   name     = "${var.prefix}-rwx-filestore"
@@ -188,19 +188,26 @@ module "gke" {
   depends_on = [module.vpc]
 }
 
-# module "kubeconfig" {
-#   source                       = "./modules/kubeconfig"
-#   prefix                       = var.prefix
-#   create_static_kubeconfig     = var.create_static_kubeconfig
-#   tf_cloud_integration_enabled = var.tf_cloud_integration_enabled
-#   path                         = local.kubeconfig_path
-#   namespace                    = "kube-system"
-#   cluster_name                 = module.gke.name
-#   endpoint                     = "https://${module.gke.endpoint}"
-#   ca_crt                       = module.gke.ca_certificate
+module "kubeconfig" {
+  source                   = "./modules/kubeconf"
+  prefix                   = var.prefix
+  namespace                = "kube-system"
+  create_static_kubeconfig = var.create_static_kubeconfig
+  cluster_name             = module.gke.name
+  cluster_endpoint         = "https://${module.gke.endpoint}"
+  cluster_ca_cert          = module.gke.ca_certificate
 
-#   depends_on = [module.gke]
-# }
+  depends_on = [module.gke]
+}
+
+# Create file based kube config
+resource "local_file" "kubeconfig" {
+  count                = var.tf_cloud_integration_enabled ? 0 : 1
+  content              = module.kubeconfig.kube_config
+  filename             = local.kubeconfig_path
+  file_permission      = "0644"
+  directory_permission = "0755"
+}
 
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/12.0.0/submodules/postgresql
 module "postgresql" {
