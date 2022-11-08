@@ -99,3 +99,7 @@ output "cluster_node_pool_mode" {
 output "cluster_api_mode" {
   value = var.cluster_api_mode
 }
+
+output "gke_pod_subnet_cidr" {
+  value = var.gke_pod_subnet_cidr
+}
