@@ -4,13 +4,6 @@
 
 # ****************  REQUIRED VARIABLES  ****************
 # These required variables' values MUST be provided by the User
-# Tags for cloud resources
-# Note, when 'resourceowner' tag is not provided, SAS IT monitoring process will add later, that could create differences with your local Terraform state
-tags = {
-  "resourceowner" = "thpang",
-  "project_name"  = "thpang-dev",
-  "environment"   = "thpang-dev"
-}
 # ****************  REQUIRED VARIABLES  ****************
 
 # GKE config
