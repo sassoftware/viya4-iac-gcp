@@ -31,17 +31,17 @@ data "google_compute_zones" "available" {
 }
 
 data "external" "git_hash" {
-  count   = var.tf_cloud_integration_enabled ? 0 : 1
+  count   = var.tf_enterprise_integration_enabled ? 0 : 1
   program = ["files/tools/iac_git_info.sh"]
 }
 
 data "external" "iac_tooling_version" {
-  count   = var.tf_cloud_integration_enabled ? 0 : 1
+  count   = var.tf_enterprise_integration_enabled ? 0 : 1
   program = ["files/tools/iac_tooling_version.sh"]
 }
 
 resource "kubernetes_config_map" "sas_iac_buildinfo" {
-  count = var.tf_cloud_integration_enabled ? 0 : 1
+  count = var.tf_enterprise_integration_enabled ? 0 : 1
   metadata {
     name      = "sas-iac-buildinfo"
     namespace = "kube-system"
@@ -202,7 +202,7 @@ module "kubeconfig" {
 
 # Create file based kube config
 resource "local_file" "kubeconfig" {
-  count                = var.tf_cloud_integration_enabled ? 0 : 1
+  count                = var.tf_enterprise_integration_enabled ? 0 : 1
   content              = module.kubeconfig.kube_config
   filename             = local.kubeconfig_path
   file_permission      = "0644"

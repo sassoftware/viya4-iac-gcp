@@ -30,7 +30,7 @@ variable "project" {
   type = string
 }
 
-variable "tf_cloud_integration_enabled" {
+variable "tf_enterprise_integration_enabled" {
   type    = bool
   default = false
 }
