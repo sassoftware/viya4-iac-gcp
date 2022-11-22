@@ -100,12 +100,6 @@ output "cluster_api_mode" {
   value = var.cluster_api_mode
 }
 
-# output "kube_config_provider" {
-#   value     = local.kube_config_provider
-#   sensitive = true
-# }
-
-# output "kube_config_sa" {
-#   value     = local.kube_config_sa
-#   sensitive = true
-# }
+output "gke_pod_subnet_cidr" {
+  value = var.gke_pod_subnet_cidr
+}

@@ -92,7 +92,8 @@ locals {
   )
 
   # PostgreSQL
-  postgres_servers = var.postgres_servers == null ? {} : { for k, v in var.postgres_servers : k => merge(var.postgres_server_defaults, v, ) }
+  postgres_servers = var.postgres_servers == null ? {} : { for k, v in var.postgres_servers : k => merge( var.postgres_server_defaults, v, )}
+  base_database_flags = [{ name = "max_prepared_transactions", value = "1024" }, { name = "max_connections", value = "1024" }]
 
   postgres_outputs = length(module.postgresql) != 0 ? { for k, v in module.postgresql :
     k => {
