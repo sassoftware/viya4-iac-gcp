@@ -4,7 +4,39 @@
 
 # ****************  REQUIRED VARIABLES  ****************
 # These required variables' values MUST be provided by the User
+#
+# NOTE: For Terraform Cloud/Enterprise these variables should be defined
+#       in the workspace in terraform cloud/enterprise as a terraform variable
+#
+#       You also need to define: GOOGLE_CREDENTIALS as an envrionment
+#       variable.
+# prefix         = "<prefix-value>"
+# location       = "<gcp-zone-or-region>" # e.g., "us-east1-b"
+# project        = "<gcp-project>"
+# ssh_public_key = "<ssh-public-key>"
 # ****************  REQUIRED VARIABLES  ****************
+
+#
+# !NOTE! - Without specifying your CIDR block access rules, ingress traffic
+#          to your cluster will be blocked by default.
+#
+# If you are not working from a machine on the SAS Cary Network, you can always use your own public ip:
+# Use the IP reported in https://ifconfig.me/ and append "/32", e.g. 1.2.3.4/32
+# For a list of the CIDRs of other SAS networks, see http://mom.unx.sas.com/net/InetAddrs.html
+#
+# !NOTE! - When using Terraform Cloud you must set your access_cidrs to ["0.0.0.0/0"]
+#          in order to work. They do not publish their 'helper' agent IPs or assign those
+#          per account so no way to predict those values when setting up access CIDRs.
+
+# **************  RECOMMENDED  VARIABLES  ***************
+default_public_access_cidrs = [
+  "0.0.0.0/0",
+]
+create_static_kubeconfig = true
+# **************  RECOMMENDED  VARIABLES  ***************
+
+# add labels to the created resources
+# tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
 # GKE config
 kubernetes_version         = "1.23.8-gke.1900"
@@ -62,30 +94,6 @@ nfs_raid_disk_size   = 128
 postgres_servers = {
   default = {},
 }
-
-# Select a kubernetes version based on channel or exact version. Google
-# does not allow one to pick both. By default the value is set to 'latest'
-# kubernetes_channel = "RAPID" # Which currently supports 1.24
-# kubernetes_version = "1.23.8-gke.1900"
-
-# !NOTE! - Without specifying your CIDR block access rules, ingress traffic
-#          to your cluster will be blocked by default.
-#
-# If you are not working from a machine on the SAS Cary Network, you can always use your own public ip:
-# Use the IP reported in https://ifconfig.me/ and append "/32", e.g. 1.2.3.4/32
-# For a list of the CIDRs of other SAS networks, see http://mom.unx.sas.com/net/InetAddrs.html
-#
-# !NOTE! - When using Terraform Cloud you must set your access_cidrs to ["0.0.0.0/0"]
-#          in order to work. They do not publish their 'helper' agent IPs or assign those
-#          per account so no way to predict those values when setting up access CIDRs.
-
-# **************  RECOMMENDED  VARIABLES  ***************
-default_public_access_cidrs = [
-  "0.0.0.0/0",
-]
-# default_public_access_cidrs = []
-create_static_kubeconfig          = true
-# **************  RECOMMENDED  VARIABLES  ***************
 
 # User variables
 tf_enterprise_integration_enabled = true
