@@ -221,7 +221,7 @@ module "postgresql" {
   user_labels                      = var.tags
 
   database_version                 = "POSTGRES_${each.value.server_version}"
-  database_flags                   = each.value.database_flags
+  database_flags                   = values(zipmap(concat(local.base_database_flags.*.name,each.value.database_flags.*.name),concat(local.base_database_flags,each.value.database_flags)))
 
   backup_configuration = {
     enabled                        = each.value.backups_enabled
