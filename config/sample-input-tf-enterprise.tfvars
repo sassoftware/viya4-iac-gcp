@@ -20,9 +20,8 @@
 # !NOTE! - Without specifying your CIDR block access rules, ingress traffic
 #          to your cluster will be blocked by default.
 #
-# If you are not working from a machine on the SAS Cary Network, you can always use your own public ip:
-# Use the IP reported in https://ifconfig.me/ and append "/32", e.g. 1.2.3.4/32
-# For a list of the CIDRs of other SAS networks, see http://mom.unx.sas.com/net/InetAddrs.html
+# If you need to add your own public ip, use `curl -s ifconfig.me` 
+# and append "/32", e.g. 1.2.3.4/32 to create a valid CIDR for use.
 #
 # !NOTE! - When using Terraform Cloud you must set your access_cidrs to ["0.0.0.0/0"]
 #          in order to work. They do not publish their 'helper' agent IPs or assign those
