@@ -17,8 +17,8 @@ ssh_public_key              = "~/.ssh/id_rsa.pub"
 # ****************  RECOMMENDED VARIABLES  ****************
 
 # Bring your own existing resources
-vpc_name        = "name-of-existing-vpc"
-subnet_names    = { 
+vpc_name = "name-of-existing-vpc"
+subnet_names = {
   gke                     = "<name-of-existing-subnetfor-gke>"
   gke_pods_range_name     = "<name-of-existing-secondary-ip-range-for-pods-in-gke-subnet>"
   gke_services_range_name = "<name-of-existing-secondary-ip-range-for-services-in-gke-subnet>"
@@ -37,9 +37,9 @@ postgres_servers = {
 }
 
 # GKE config
-kubernetes_version = "1.23.14-gke.401"
+kubernetes_version         = "1.23.14-gke.401"
 default_nodepool_min_nodes = 2
-default_nodepool_vm_type    = "e2-standard-8"
+default_nodepool_vm_type   = "e2-standard-8"
 
 # Node Pools config
 node_pools = {

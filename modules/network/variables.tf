@@ -12,7 +12,7 @@ variable "region" {
 
 variable "tags" {
   description = "Map of tags to be placed on the Resources"
-  type        = map
+  type        = map(any)
   default     = {}
 }
 
@@ -29,7 +29,7 @@ variable "subnet_names" {
 }
 
 variable "create_subnets" {
-   type = bool
+  type = bool
 }
 
 variable "gke_subnet_cidr" {

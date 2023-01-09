@@ -4,30 +4,41 @@
 
 # ****************  REQUIRED VARIABLES  ****************
 # These required variables' values MUST be provided by the User
-prefix                  = "<prefix-value>"
-location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
-project                 = "<gcp-project>"
-service_account_keyfile = "<service-account-json-file>"
 #
+# NOTE: For Terraform Cloud/Enterprise these variables should be defined
+#       in the workspace in terraform cloud/enterprise as a terraform variable
+#
+#       You also need to define: GOOGLE_CREDENTIALS as an envrionment
+#       variable.
+# prefix         = "<prefix-value>"
+# location       = "<gcp-zone-or-region>" # e.g., "us-east1-b"
+# project        = "<gcp-project>"
+# ssh_public_key = "<ssh-public-key>"
 # ****************  REQUIRED VARIABLES  ****************
 
-# ****************  RECOMMENDED VARIABLES  ****************
-default_public_access_cidrs = [] # e.g., ["123.45.6.89/32"]
-ssh_public_key              = "~/.ssh/id_rsa.pub"
-# ****************  RECOMMENDED VARIABLES  ****************
+#
+# !NOTE! - Without specifying your CIDR block access rules, ingress traffic
+#          to your cluster will be blocked by default.
+#
+# If you need to add your own public ip, use `curl -s ifconfig.me` 
+# and append "/32", e.g. 1.2.3.4/32 to create a valid CIDR for use.
+#
+# !NOTE! - When using Terraform Cloud you must set your access_cidrs to ["0.0.0.0/0"]
+#          in order to work. They do not publish their 'helper' agent IPs or assign those
+#          per account so no way to predict those values when setting up access CIDRs.
+
+# **************  RECOMMENDED  VARIABLES  ***************
+default_public_access_cidrs = [
+  "0.0.0.0/0",
+]
+create_static_kubeconfig = true
+# **************  RECOMMENDED  VARIABLES  ***************
 
 # add labels to the created resources
-tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
-
-# Postgres config - By having this entry a database server is created. If you do not
-#                   need an external database server remove the 'postgres_servers'
-#                   block below.
-# postgres_servers = {
-#   default = {},
-# }
+# tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
 # GKE config
-kubernetes_version         = "1.23.14-gke.401"
+kubernetes_version         = "1.23.8-gke.1900"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-standard-2"
 
@@ -75,3 +86,13 @@ create_nfs_public_ip = false
 nfs_vm_admin         = "nfsuser"
 nfs_vm_type          = "n2-standard-4"
 nfs_raid_disk_size   = 128
+
+# Postgres config - By having this entry a database server is created. If you do not
+#                   need an external database server remove the 'postgres_servers'
+#                   block below.
+postgres_servers = {
+  default = {},
+}
+
+# User variables
+tf_enterprise_integration_enabled = true
