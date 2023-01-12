@@ -329,7 +329,7 @@ variable "postgres_servers" {
   # Checking user provided password
 }
 
-## filstore
+## filestore
 variable "filestore_size_in_gb" {
   default = null
 }
