@@ -30,6 +30,11 @@ variable "project" {
   type = string
 }
 
+variable "tf_enterprise_integration_enabled" {
+  type    = bool
+  default = false
+}
+
 variable "iac_tooling" {
   description = "Value used to identify the tooling used to generate this providers infrastructure."
   type        = string
@@ -56,7 +61,7 @@ variable "kubernetes_version" {
 
 variable "tags" {
   description = "Map of tags to be placed on the Resources"
-  type        = map
+  type        = map(any)
   default     = {}
 }
 
@@ -95,7 +100,7 @@ variable "postgres_public_access_cidrs" {
 }
 
 variable "ssh_public_key" {
-  default = "~/.ssh/id_rsa.pub"
+  default = null
 }
 
 # Bastion VM
@@ -155,7 +160,7 @@ variable "storage_type" {
 
 variable "minimum_initial_nodes" {
   description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
-  default = 6
+  default     = 6
 }
 # Default Node pool config
 variable "default_nodepool_vm_type" {
@@ -179,27 +184,27 @@ variable "default_nodepool_min_nodes" {
 }
 
 variable "default_nodepool_taints" {
-  type    = list
+  type    = list(any)
   default = []
 }
 
 variable "default_nodepool_labels" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 
 variable "node_pools" {
   description = "Node pool definitions"
   type = map(object({
-    vm_type         = string
-    os_disk_size    = number
-    min_nodes       = string
-    max_nodes       = string
-    node_taints     = list(string)
-    node_labels     = map(string)
-    local_ssd_count = number
+    vm_type           = string
+    os_disk_size      = number
+    min_nodes         = string
+    max_nodes         = string
+    node_taints       = list(string)
+    node_labels       = map(string)
+    local_ssd_count   = number
     accelerator_count = number
-    accelerator_type = string
+    accelerator_type  = string
   }))
   default = {
     cas = {
@@ -258,7 +263,7 @@ variable "node_pools" {
   }
 }
 
-variable enable_cluster_autoscaling {
+variable "enable_cluster_autoscaling" {
   description = "Setting this value will enable cluster_autoscaling"
   type        = bool
   default     = false
@@ -303,14 +308,14 @@ variable "postgres_servers" {
 
   # Checking for user provided "default" server
   validation {
-    condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
+    condition     = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
     error_message = "ERROR: The provided map of PostgreSQL server objects does not contain the required 'default' key."
   }
 
   # Checking server name
   validation {
     condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? alltrue([
-      for k,v in var.postgres_servers : alltrue([
+      for k, v in var.postgres_servers : alltrue([
         length(k) > 0,
         length(k) < 88,
         can(regex("^[a-z]+[a-z0-9-]*[a-zA-Z0-9]$", k)),
@@ -325,18 +330,18 @@ variable "postgres_servers" {
 }
 
 ## filestore
-variable filestore_size_in_gb {
+variable "filestore_size_in_gb" {
   default = null
 }
 
-variable filestore_tier {
+variable "filestore_tier" {
   default = "BASIC_HDD"
-  type = string
+  type    = string
   validation {
-      # we allow the old values "STANDARD" and "PREMIUM" but do not document them
-      condition     = (contains(["STANDARD", "PREMIUM", "BASIC_HDD", "BASIC_SSD"], upper(var.filestore_tier)))
-      error_message = "Filestore tier must be one of BASIC_HDD, BASIC_SSD."
-    }
+    # we allow the old values "STANDARD" and "PREMIUM" but do not document them
+    condition     = (contains(["STANDARD", "PREMIUM", "BASIC_HDD", "BASIC_SSD"], upper(var.filestore_tier)))
+    error_message = "Filestore tier must be one of BASIC_HDD, BASIC_SSD."
+  }
 }
 
 variable "enable_registry_access" {

@@ -4,17 +4,22 @@ Supported configuration variables are listed in the table below.  All variables 
 
 ## Table of Contents
 
+- [List of valid configuration variables](#list-of-valid-configuration-variables)
+  - [Table of Contents](#table-of-contents)
   - [Required Variables](#required-variables)
+  - [GCP Authentication](#gcp-authentication)
   - [Admin Access](#admin-access)
   - [Networking](#networking)
-      - [Use Existing](#use-existing)
+    - [Use Existing](#use-existing)
   - [General](#general)
   - [Nodepools](#nodepools)
     - [Default Nodepool](#default-nodepool)
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
+    - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
+    - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
   - [Google Container Registry (GCR)](#google-container-registry-gcr)
-  - [Postgres](#postgres-servers)
+  - [Postgres Servers](#postgres-servers)
 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).
@@ -105,10 +110,10 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
-| jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | | 
+| jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | |
 | jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
 | tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
-| ssh_public_key | File name of public ssh key for jump and nfs VM | string | "~/.ssh/id_rsa.pub" | Required with `create_jump_vm=true` or `storage_type=standard` |
+| ssh_public_key | File name of public ssh key for jump and nfs VM | string | null | Required with `create_jump_vm=true` or `storage_type=standard` |
 | cluster_api_mode | Public or private IP for the cluster api| string|"public"|Valid Values: "public", "private" |
 
 

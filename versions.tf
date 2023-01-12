@@ -10,15 +10,15 @@ terraform {
       source  = "hashicorp/google-beta"
       version = "4.38.0"
     }
-    kubernetes  = {
+    kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.13.0" # Constrained by Google
+      version = "2.14.0" # Constrained by Google
     }
-    local       = {
+    local = {
       source  = "hashicorp/local"
       version = "2.2.3"
     }
-    template    = {
+    template = {
       source  = "hashicorp/template"
       version = "2.2.0"
     }
@@ -35,7 +35,7 @@ terraform {
       version = "2.2.2" # Constrained by Google
     }
     time = {
-      source = "hashicorp/time"
+      source  = "hashicorp/time"
       version = "0.8.0"
     }
   }
