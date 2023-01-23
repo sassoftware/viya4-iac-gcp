@@ -2,18 +2,18 @@
 
 ## Overview
 
-This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 products. Here is a list of resources this project can create -
+This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 platform products. Here is a list of resources this project can create -
 
   >- VPC Network and Network Firewalls
   >- Managed Google Kubernetes Engine (GKE) cluster
   >- System and User GKE Node pools with required Labels and Taints
-  >- Infrastructure to deploy SAS Viya CAS in SMP or MPP mode
-  >- Shared Storage options for SAS Viya -  Google Filestore (ha) or NFS Server (standard)
+  >- Infrastructure to deploy SAS Viya platform CAS in SMP or MPP mode
+  >- Shared Storage options for SAS Viya platform -  Google Filestore (ha) or NFS Server (standard)
   >- Google Cloud SQL for PostgreSQL instance, optional
 
 [<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)
 
-Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repo to deploy SAS Viya 4 products. If you need more information on the SAS Viya 4 products refer to the official [SAS&reg; Viya&reg; 4 Operations](https://go.documentation.sas.com/?cdcId=itopscdc&cdcVersion=v_001LTS&docsetId=itopswlcm&docsetTarget=home.htm&locale=en) documentation for more details.
+Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repo to deploy SAS Viya 4 platform products. If you need more information on the SAS Viya 4 platform products refer to the official [SAS&reg; Viya&reg; platform Operations](https://go.documentation.sas.com/?cdcId=itopscdc&cdcVersion=v_001LTS&docsetId=itopswlcm&docsetTarget=home.htm&locale=en) documentation for more details.
 
 ## Prerequisites
 
