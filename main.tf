@@ -65,7 +65,7 @@ resource "google_filestore_instance" "rwx" {
   name     = "${var.prefix}-rwx-filestore"
   count    = var.storage_type == "ha" ? 1 : 0
   tier     = upper(var.filestore_tier)
-  location = local.location
+  location = local.zone
   labels   = var.tags
 
   file_shares {
