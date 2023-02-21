@@ -3,7 +3,7 @@ ARG GCP_CLI_VERSION=409.0.0
 FROM hashicorp/terraform:$TERRAFORM_VERSION as terraform
 
 FROM google/cloud-sdk:$GCP_CLI_VERSION
-ARG KUBECTL_VERSION=1.23.8
+ARG KUBECTL_VERSION=1.24.10
 
 WORKDIR /viya4-iac-gcp
 
