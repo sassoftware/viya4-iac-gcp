@@ -54,11 +54,8 @@ variable "kubernetes_version" {
   default = "latest"
 
   validation {
-    condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest" || can(regex("^\\d.\\d+$", var.kubernetes_version)) || can(regex("^\\d.\\d+.\\d+$", var.kubernetes_version)) )
+    condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest" || can(regex("^\\d.\\d+$", var.kubernetes_version)) || can(regex("^\\d.\\d+.\\d+$", var.kubernetes_version)))
     error_message = "The format for kubernetes version is: major.minor.patch-gke.N, major.minor, major.minor.patch, or 'latest'."
-#   condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest")
-#   error_message = "The format for kubernetes version is: x.yy-gke.zzzz or 'latest'."
-
   }
 }
 
