@@ -70,9 +70,9 @@ Do not set the `kubernetes_channel` variable.
 
 **NOTE**: If you find that the version you would like to use in your kubernetes cluster is not listed, you will need to go the [Channel Based](#channel-based) section to find the desired version.
 
-### Aliased Version
+### Aliased Versions
 
-Only applicable in the version based scenario, Google supports the use of [aliased versions](https://cloud.google.com/kubernetes-engine/versioning#specifying_cluster_version) when creating your kubernetes cluster. The format required looks like:
+Only applicable in the "version based" scenario, Google supports the use of [aliased versions](https://cloud.google.com/kubernetes-engine/versioning#specifying_cluster_version) when creating your kubernetes cluster. The format required looks like:
 
 * 1.X
   * Specifies the highest valid patch+gke.N patch release in the 1.X minor version
