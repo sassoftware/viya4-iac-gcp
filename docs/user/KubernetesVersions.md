@@ -60,7 +60,7 @@ validMasterVersions:
 
 **NOTE**: This value will also be the value applied to the compute nodes of your custer.
 
-From here you would take one of these values and set the `kubernetes_version` variable in your tfvars files like this:
+To set the exact version for your cluster, you would take one of these values and set the `kubernetes_version` variable in your tfvars files like so:
 
 ```terraform
 kubernetes_version = "1.24.9-gke.3200"
