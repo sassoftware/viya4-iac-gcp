@@ -31,43 +31,75 @@ export LOCATION="us-east1-b"
 gcloud container get-server-config --format "yaml(validMasterVersions)" --zone $LOCATION
 Fetching server config for us-east1-b
 validMasterVersions:
-- 1.18.16-gke.1200
-- 1.18.16-gke.500
-- 1.18.16-gke.302
-- 1.18.16-gke.300
-- 1.18.15-gke.1502
-- 1.18.15-gke.1501
-- 1.18.15-gke.1500
-- 1.18.15-gke.1102
-- 1.18.15-gke.1100
-- 1.18.14-gke.1600
-- 1.18.14-gke.1200
-- 1.18.12-gke.1210
-- 1.17.17-gke.3700
-- 1.17.17-gke.3000
-- 1.17.17-gke.2800
-- 1.17.17-gke.1500
-- 1.17.17-gke.1101
-- 1.17.17-gke.1100
-- 1.17.15-gke.800
-- 1.16.15-gke.12500
-- 1.16.15-gke.11800
-- 1.16.15-gke.10600
-- 1.16.15-gke.7801
-- 1.15.12-gke.6002
+- 1.25.6-gke.1000
+- 1.25.6-gke.200
+- 1.25.5-gke.2000
+- 1.24.9-gke.3200
+- 1.24.9-gke.2000
+- 1.24.9-gke.1500
+- 1.24.8-gke.2000
+- 1.23.16-gke.1100
+- 1.23.16-gke.200
+- 1.23.15-gke.1900
+- 1.23.15-gke.1400
+- 1.23.14-gke.1800
+- 1.23.14-gke.401
+- 1.23.13-gke.900
+- 1.22.17-gke.4000
+- 1.22.17-gke.3100
+- 1.22.16-gke.2000
+- 1.22.16-gke.1300
+- 1.22.15-gke.2500
+- 1.22.15-gke.1000
+- 1.21.14-gke.15800
+- 1.21.14-gke.14600
+- 1.21.14-gke.14100
+- 1.21.14-gke.8500
+- 1.21.14-gke.7100
 ```
 
 **NOTE**: This value will also be the value applied to the compute nodes of your custer.
 
-From here you would take one of these values and set the `kubernets_version` variable in your tfvars files like this:
+To set the exact version for your cluster, you would take one of these values and set the `kubernetes_version` variable in your tfvars files like so:
 
-```bash
-kubernetes_version = "1.18.15-gke.1102"
+```terraform
+kubernetes_version = "1.24.9-gke.3200"
 ```
 
 Do not set the `kubernetes_channel` variable.
 
 **NOTE**: If you find that the version you would like to use in your kubernetes cluster is not listed, you will need to go the [Channel Based](#channel-based) section to find the desired version.
+
+### Aliased Versions
+
+Only applicable in the "version based" scenario (omitting `kubernetes_channel` or setting it to "UNSPECIFIED"), Google supports the use of [aliased versions](https://cloud.google.com/kubernetes-engine/versioning#specifying_cluster_version) when creating your kubernetes cluster. The format required looks like:
+
+* 1.X
+  * Specifies the highest valid patch+gke.N patch release in the 1.X minor version
+* 1.X.Y
+  * Specifies the highest valid gke.N patch in the 1.X.Y patch release.
+
+
+**Example: 1.X Format**
+
+In your tfvars you would set the `kubernetes_version` variable in like so:
+
+```terraform
+kubernetes_version = "1.24"
+```
+
+Going by the list of versions from the output of the `gcloud container get-server-config` command above, this assignment results in a cluster being created with the version `1.24.9-gke.3200`, since Google chooses the "highest valid patch+gke.N patch release in the 1.24 minor version"
+
+**Example: 1.X.Y Format**
+
+In your tfvars you would set the `kubernetes_version` variable in like so:
+
+```terraform
+kubernetes_version = "1.23.15"
+```
+
+Going by the list of versions from the output of the `gcloud container get-server-config` command above, this assignment results in a cluster being created with the version `1.23.15-gke.1900`, since Google chooses the "highest valid gke.N patch in the 1.23.15 patch release."
+
 
 ## Channel Based
 
@@ -90,33 +122,43 @@ gcloud container get-server-config --format "yaml(channels)" --zone $LOCATION
 Fetching server config for us-east1-b
 channels:
 - channel: RAPID
-  defaultVersion: 1.19.8-gke.1000
+  defaultVersion: 1.25.6-gke.200
   validVersions:
-  - 1.20.4-gke.1800
-  - 1.19.8-gke.1600
-  - 1.19.8-gke.1000
+  - 1.26.1-gke.200
+  - 1.25.6-gke.1000
+  - 1.25.6-gke.200
+  - 1.24.9-gke.3200
+  - 1.23.16-gke.1100
+  - 1.23.16-gke.200
+  - 1.22.17-gke.4000
+  - 1.22.17-gke.3100
+  - 1.21.14-gke.15800
 - channel: REGULAR
-  defaultVersion: 1.18.15-gke.1501
+  defaultVersion: 1.24.9-gke.2000
   validVersions:
-  - 1.18.16-gke.302
-  - 1.18.15-gke.1502
-  - 1.18.15-gke.1501
+  - 1.25.5-gke.2000
+  - 1.24.9-gke.2000
+  - 1.23.14-gke.1800
+  - 1.22.16-gke.2000
+  - 1.21.14-gke.14600
 - channel: STABLE
-  defaultVersion: 1.17.17-gke.1101
+  defaultVersion: 1.23.14-gke.1800
   validVersions:
-  - 1.17.17-gke.2800
-  - 1.17.17-gke.1101
-  - 1.16.15-gke.7801
+  - 1.24.9-gke.1500
+  - 1.23.14-gke.1800
+  - 1.22.16-gke.2000
+  - 1.21.14-gke.14600
+  - 1.21.14-gke.14100
 ```
 
-From this example output if you are looking to create a kubernetes cluster with v1.19 then you would choose the 'RAPID' channel.
+From this example output if you are looking to create a kubernetes cluster with v1.25 then you would choose the 'RAPID' channel.
 
 From here you would set the `kubernetes_channel` variable in your tfvars files like this:
 
-```bash
+```terraform
 kubernetes_channel = "RAPID"
 ```
 
-This assignment results in a cluster being created with the version: `1.19.8-gke.1000` for this example.
+This assignment results in a cluster being created with the version: `1.25.6-gke.200` for this example.
 
 Do not set the `kubernetes_version` variable.

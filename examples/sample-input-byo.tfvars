@@ -37,7 +37,7 @@ postgres_servers = {
 }
 
 # GKE config
-kubernetes_version         = "1.23.14-gke.401"
+kubernetes_version         = "1.24"
 default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "e2-standard-8"
 
