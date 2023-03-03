@@ -88,7 +88,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "23.1.0"
+  version                       = "25.0.0"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
@@ -120,7 +120,27 @@ module "gke" {
 
   monitoring_service = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
-  cluster_autoscaling = var.enable_cluster_autoscaling ? { enabled : true, max_cpu_cores : var.cluster_autoscaling_max_cpu_cores, max_memory_gb : var.cluster_autoscaling_max_memory_gb, min_cpu_cores : 1, min_memory_gb : 1, gpu_resources = [] } : { enabled : false, max_cpu_cores : 0, max_memory_gb : 0, min_cpu_cores : 0, min_memory_gb : 0, gpu_resources = [] }
+  monitoring_enable_managed_prometheus = var.enable_managed_prometheus
+
+  cluster_autoscaling = var.enable_cluster_autoscaling ? {
+    enabled : true,
+    max_cpu_cores : var.cluster_autoscaling_max_cpu_cores,
+    max_memory_gb : var.cluster_autoscaling_max_memory_gb,
+    min_cpu_cores : 1,
+    min_memory_gb : 1,
+    gpu_resources = [],
+    auto_repair   = (var.kubernetes_channel == "UNSPECIFIED") ? false : true,
+    auto_upgrade  = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
+    } : {
+    enabled : false,
+    max_cpu_cores : 0,
+    max_memory_gb : 0,
+    min_cpu_cores : 0,
+    min_memory_gb : 0,
+    gpu_resources = [],
+    auto_repair   = (var.kubernetes_channel == "UNSPECIFIED") ? false : true,
+    auto_upgrade  = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
+  }
 
   master_authorized_networks = concat([
     for cidr in(local.cluster_endpoint_public_access_cidrs) : {

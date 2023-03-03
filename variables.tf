@@ -350,7 +350,7 @@ variable "enable_registry_access" {
   default     = true
 }
 
-# Azure Monitor
+# GKE Monitoring
 variable "create_gke_monitoring_service" {
   type        = bool
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
@@ -361,6 +361,12 @@ variable "gke_monitoring_service" {
   type        = string
   description = "Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none"
   default     = "none"
+}
+
+variable "enable_managed_prometheus" {
+  type        = bool
+  description = "Enable Google Cloud Managed Service for Prometheus for your cluster"
+  default     = "false"
 }
 
 # Network
