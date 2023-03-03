@@ -299,4 +299,4 @@ postgres_servers = {
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| enable_managed_prometheus| Enable Google Cloud Managed Service for Prometheus for your cluster | boolean | false | |
+| enable_managed_prometheus| Enable Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) for your cluster | boolean | false | |
