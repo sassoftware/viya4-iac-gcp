@@ -297,8 +297,6 @@ postgres_servers = {
 
 ## Monitoring
 
-Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below:
-
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | enable_managed_prometheus| Enable Google Cloud Managed Service for Prometheus for your cluster | boolean | false | |
