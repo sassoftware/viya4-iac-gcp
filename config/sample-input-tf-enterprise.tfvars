@@ -8,7 +8,7 @@
 # NOTE: For Terraform Cloud/Enterprise these variables should be defined
 #       in the workspace in terraform cloud/enterprise as a terraform variable
 #
-#       You also need to define: GOOGLE_CREDENTIALS as an envrionment
+#       You also need to define: GOOGLE_CREDENTIALS as an environment
 #       variable.
 # prefix         = "<prefix-value>"
 # location       = "<gcp-zone-or-region>" # e.g., "us-east1-b"
@@ -38,7 +38,7 @@ create_static_kubeconfig = true
 # tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 
 # GKE config
-kubernetes_version         = "1.23.8-gke.1900"
+kubernetes_version         = "1.24"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-standard-2"
 
