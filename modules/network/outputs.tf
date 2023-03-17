@@ -1,3 +1,6 @@
+# Copyright © 2021-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 output "network_name" {
   value = length(var.vpc_name) == 0 ? element(coalescelist(google_compute_network.vpc.*.name, [" "]), 0) : var.vpc_name
 }
