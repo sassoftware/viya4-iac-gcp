@@ -1,3 +1,6 @@
+# Copyright © 2021-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 # Create service account secret
 resource "kubernetes_secret" "sa_secret" {
   count = var.create_static_kubeconfig ? 1 : 0

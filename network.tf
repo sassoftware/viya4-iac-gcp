@@ -1,3 +1,6 @@
+# Copyright © 2021-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 data "google_compute_address" "nat_address" {
   count   = length(var.nat_address_name) == 0 ? 0 : 1
   name    = var.nat_address_name

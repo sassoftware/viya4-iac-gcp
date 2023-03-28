@@ -1,3 +1,6 @@
+# Copyright © 2021-2023, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 module "address" {
   source       = "terraform-google-modules/address/google"
   version      = "3.1.1"
