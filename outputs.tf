@@ -17,7 +17,7 @@ output "kube_config" {
   sensitive = true
 }
 
-#postgres
+# postgres
 output "postgres_servers" {
   value     = length(module.postgresql) != 0 ? local.postgres_outputs : null
   sensitive = true
@@ -90,7 +90,7 @@ output "nfs_admin_username" {
   value = var.storage_type == "standard" ? module.nfs_server.0.admin_username : null
 }
 
-# Container regsitry
+# Container registry
 output "cr_endpoint" {
   value = var.enable_registry_access ? "https://gcr.io/${var.project}" : null
 }

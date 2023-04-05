@@ -196,6 +196,13 @@ variable "default_nodepool_labels" {
   default = {}
 }
 
+# Multi-zonal cluster support - Experimental
+variable "default_nodepool_locations" {
+  description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
+  type    = string
+  default = ""
+}
+
 variable "node_pools" {
   description = "Node pool definitions"
   type = map(object({
@@ -264,6 +271,22 @@ variable "node_pools" {
       "accelerator_type"  = ""
     }
   }
+}
+
+# Multi-zonal cluster support - Experimental
+# TODO - NOTE
+#   This was made external to the node_pools map variable since a requirement of terraform v1.0.0 (the minimum version
+#   we require, see versions.tf) is that for variables with nested fields, all attributes are required otherwise
+#   execution fails.
+#   In Terraform v1.3+ you can mark nested attributes as optional.
+#   Since this is an experimental change, at the moment I do no want to impose new requirements on existing users.
+#   Potentially we upgrade Terraform modules and versions and we bump our minimum required terraform version to be >1.3
+#   then at that time I can deprecate this variable and instead allow the user to configure node_locations per node pool.
+#   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
+variable "nodepools_locations" {
+  description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
+  type    = string
+  default = ""
 }
 
 variable "enable_cluster_autoscaling" {

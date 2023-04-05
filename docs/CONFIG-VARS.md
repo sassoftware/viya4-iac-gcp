@@ -107,7 +107,7 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
 | create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | true | A value of `false` will default to using the cloud providers mechanism for generating the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials. |
-| regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created |
+| regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created. **WARNING: changing this after cluster creation is destructive** |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | |
