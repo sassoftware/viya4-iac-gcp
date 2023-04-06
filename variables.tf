@@ -196,7 +196,7 @@ variable "default_nodepool_labels" {
   default = {}
 }
 
-# Multi-zonal cluster support - Experimental
+# Multi-zonal cluster support - Experimental - may change, use at your own risk
 variable "default_nodepool_locations" {
   description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
   type    = string
@@ -273,7 +273,7 @@ variable "node_pools" {
   }
 }
 
-# Multi-zonal cluster support - Experimental
+# Multi-zonal cluster support - Experimental - may change, use at your own risk
 # TODO - NOTE
 #   This was made external to the node_pools map variable since a requirement of terraform v1.0.0 (the minimum version
 #   we require, see versions.tf) is that for variables with nested fields, all attributes are required otherwise
