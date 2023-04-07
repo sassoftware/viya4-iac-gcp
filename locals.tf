@@ -55,7 +55,7 @@ locals {
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
       initial_node_count = max(local.initial_node_count, settings.min_nodes)
-      node_locations     = var.nodepools_locations	!= "" ? var.nodepools_locations : local.zone
+      node_locations     = var.nodepools_locations	!= "" && var.nodepools_locations != null ? var.nodepools_locations : local.zone
     }
   }
 
@@ -71,7 +71,7 @@ locals {
       "accelerator_count"  = 0
       "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
-      "node_locations"     = var.default_nodepool_locations	!= "" ? var.default_nodepool_locations : local.zone
+      "node_locations"     = var.default_nodepool_locations	!= "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone
     }
   })
 
