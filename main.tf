@@ -141,7 +141,7 @@ module "gke" {
     for nodepool, settings in local.node_pools : {
       name               = nodepool
       machine_type       = settings.vm_type
-      node_locations     = local.zone # This must be a zone not a region. So var.location may not always work. ;)
+      node_locations     = settings.node_locations
       min_count          = settings.min_nodes
       max_count          = settings.max_nodes
       node_count         = (settings.min_nodes == settings.max_nodes) ? settings.min_nodes : null
