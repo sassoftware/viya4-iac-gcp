@@ -10,7 +10,8 @@ locals {
   service_account_secret_name = "${var.prefix}-sa-secret"
 
   # Service account secret token
-  sa_secret_token = lookup(kubernetes_secret.sa_secret.0.data, "token", "")
+#  sa_secret_token = lookup(kubernetes_secret.sa_secret.0.data, "token", "") # TODO CLEANUP
+  sa_secret_token = var.create_static_kubeconfig ? lookup(kubernetes_secret.sa_secret.0.data, "token", "") : ""
 
   #
   # Kubernetes configuration file - Provider based format. May use helper tools
@@ -22,28 +23,39 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: ${var.cluster_ca_cert}
-    server: 'https://${var.cluster_endpoint}'
-name: ${var.cluster_name}
+    server: '${var.cluster_endpoint}'
+  name: ${var.cluster_name}
 contexts:
 - context:
     cluster: ${var.cluster_name}
     user: ${var.cluster_name}
-name: ${var.cluster_name}
+  name: ${var.cluster_name}
 current-context: ${var.cluster_name}
 kind: Config
 preferences: {}
 users:
 - name: ${var.cluster_name}
-user:
-    auth-provider:
-    config:
-        cmd-args: config config-helper --format=json
-        cmd-path: gcloud
-        access-token: '{.credential.access_token}'
-        expiry-key: '{.credential.token_expiry}'
-        token-key: '{.credential.access_token}'
-    name: gcp
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: gke-gcloud-auth-plugin
+      installHint: Install gke-gcloud-auth-plugin for use with kubectl by following
+        https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
+      provideClusterInfo: true
+      name: gcp
 EOT
+
+# TODO DELETE - REFERENCE
+#- name: ${var.cluster_name}
+#  user:
+#    auth-provider:
+#      config:
+#        cmd-args: config config-helper --format=json
+#        cmd-path: gcloud
+#        access-token: '{.credential.access_token}'
+#        expiry-key: '{.credential.token_expiry}'
+#        token-key: '{.credential.access_token}'
+#      name: gcp
 
   #
   # Kubernetes configuration file - Service Account based for portability
