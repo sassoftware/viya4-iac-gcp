@@ -10,7 +10,6 @@ locals {
   service_account_secret_name = "${var.prefix}-sa-secret"
 
   # Service account secret token
-#  sa_secret_token = lookup(kubernetes_secret.sa_secret.0.data, "token", "") # TODO CLEANUP
   sa_secret_token = var.create_static_kubeconfig ? lookup(kubernetes_secret.sa_secret.0.data, "token", "") : ""
 
   #
@@ -44,18 +43,6 @@ users:
       provideClusterInfo: true
       name: gcp
 EOT
-
-# TODO DELETE - REFERENCE
-#- name: ${var.cluster_name}
-#  user:
-#    auth-provider:
-#      config:
-#        cmd-args: config config-helper --format=json
-#        cmd-path: gcloud
-#        access-token: '{.credential.access_token}'
-#        expiry-key: '{.credential.token_expiry}'
-#        token-key: '{.credential.access_token}'
-#      name: gcp
 
   #
   # Kubernetes configuration file - Service Account based for portability
