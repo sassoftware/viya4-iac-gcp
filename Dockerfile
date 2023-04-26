@@ -4,6 +4,7 @@ FROM hashicorp/terraform:$TERRAFORM_VERSION as terraform
 
 FROM google/cloud-sdk:$GCP_CLI_VERSION
 ARG KUBECTL_VERSION=1.25.8
+ARG ENABLE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 WORKDIR /viya4-iac-gcp
 
@@ -19,5 +20,6 @@ RUN apt-get install -y jq \
   && terraform init
 
 ENV TF_VAR_iac_tooling=docker
+ENV USE_GKE_GCLOUD_AUTH_PLUGIN=ENABLE_GKE_GCLOUD_AUTH_PLUGIN
 ENTRYPOINT ["/viya4-iac-gcp/docker-entrypoint.sh"]
 VOLUME ["/workspace"]
