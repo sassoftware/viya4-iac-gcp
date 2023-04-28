@@ -113,7 +113,7 @@ module "gke" {
 
   add_cluster_firewall_rules = true
 
-  release_channel    = var.kubernetes_channel != "UNSPECIFIED" ? var.kubernetes_channel : null
+  release_channel    = var.kubernetes_channel
   kubernetes_version = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
 
   network_policy           = var.gke_network_policy
