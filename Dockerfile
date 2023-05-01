@@ -23,6 +23,6 @@ RUN apt-get install -y jq \
   && terraform init
 
 ENV TF_VAR_iac_tooling=docker
-ENV USE_GKE_GCLOUD_AUTH_PLUGIN=ENABLE_GKE_GCLOUD_AUTH_PLUGIN
+ENV USE_GKE_GCLOUD_AUTH_PLUGIN=$ENABLE_GKE_GCLOUD_AUTH_PLUGIN
 ENTRYPOINT ["/viya4-iac-gcp/docker-entrypoint.sh"]
 VOLUME ["/workspace"]
