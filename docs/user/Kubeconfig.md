@@ -12,7 +12,7 @@ The options are:
 - Provider Based
 - Kubernetes Service Account and Cluster Role Binding
 
-### Notes - viya4-iac-gcp:5.0.0
+### Notes - viya4-iac-gcp:4.5.0
 
 The release of kubectl v1.26 is dropping support for built-in provider-specific code in their project for authentication and instead opting for a plugin-based strategy. To quote this [Google blog post](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke): 
 
