@@ -7,31 +7,28 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.38.0"
+      version = "4.63.1"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "4.38.0"
+      version = "4.63.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.14.0" # Constrained by Google
+      version = "2.20.0" # Constrained by Google
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.2.3"
-    }
-    template = {
-      source  = "hashicorp/template"
-      version = "2.2.0"
+      version = "2.4.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.1.0" # Constrained by Google
+      version = "3.5.1" # Constrained by Google
     }
     null = {
       source  = "hashicorp/null"
       version = "3.1.0" # Constrained by Google
+#      version = "3.2.1" # Constrained by Google # TODO BUMP AFTER UPGRADING PG MODULE
     }
     external = {
       source  = "hashicorp/external"
@@ -39,7 +36,7 @@ terraform {
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.8.0"
+      version = "0.9.1"
     }
   }
 }
