@@ -27,8 +27,7 @@ terraform {
     }
     null = {
       source  = "hashicorp/null"
-      version = "3.1.0" # Constrained by Google
-#      version = "3.2.1" # Constrained by Google # TODO BUMP AFTER UPGRADING PG MODULE
+      version = "3.2.1" # Constrained by Google
     }
     external = {
       source  = "hashicorp/external"
