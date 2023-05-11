@@ -251,13 +251,14 @@ module "postgresql" {
   tier      = each.value.machine_type
   disk_size = each.value.storage_gb
 
-  enable_default_db = false
-  user_name         = each.value.administrator_login
-  user_password     = each.value.administrator_password
-  user_labels       = var.tags
-
-  database_version = "POSTGRES_${each.value.server_version}"
-  database_flags   = values(zipmap(concat(local.base_database_flags.*.name, each.value.database_flags.*.name), concat(local.base_database_flags, each.value.database_flags)))
+  enable_default_db        = false
+  user_name                = each.value.administrator_login
+  user_password            = each.value.administrator_password
+  user_labels              = var.tags
+  user_deletion_policy     = "ABANDON"
+  database_deletion_policy = "ABANDON"
+  database_version         = "POSTGRES_${each.value.server_version}"
+  database_flags           = values(zipmap(concat(local.base_database_flags.*.name, each.value.database_flags.*.name), concat(local.base_database_flags, each.value.database_flags)))
 
   backup_configuration = {
     enabled                        = each.value.backups_enabled
