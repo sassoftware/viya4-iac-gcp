@@ -23,7 +23,7 @@ module "nat_address" {
 module "cloud_nat" {
   count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
-  version       = "2.2.1"
+  version       = "3.0.0"
   project_id    = var.project
   name          = "${var.prefix}-cloud-nat"
   region        = local.region
