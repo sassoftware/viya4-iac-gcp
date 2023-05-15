@@ -12,41 +12,6 @@ locals {
   )
 }
 
-
-data "template_file" "nfs_cloudconfig" {
-  # https://blog.woohoosvcs.com/2019/11/cloud-init-on-google-compute-engine/
-  template = file("${path.module}/files/cloud-init/nfs/cloud-config")
-  count    = var.storage_type == "standard" ? 1 : 0
-  vars = {
-    misc_subnet_cidr = local.misc_subnet_cidr
-    gke_subnet_cidr  = local.gke_subnet_cidr
-    vm_admin         = var.nfs_vm_admin
-  }
-}
-
-data "template_file" "jump_cloudconfig" {
-  template = file("${path.module}/files/cloud-init/jump/cloud-config")
-  count    = var.create_jump_vm ? 1 : 0
-  vars = {
-    mounts = (var.storage_type == "none"
-      ? "[]"
-      : jsonencode(
-        ["${local.rwx_filestore_endpoint}:${local.rwx_filestore_path}",
-          "${var.jump_rwx_filestore_path}",
-          "nfs",
-          "_netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=3,tcp,namlen=255,retrans=2,sec=sys,local_lock=none",
-          "0",
-          "0"
-      ])
-    )
-    rwx_filestore_endpoint  = local.rwx_filestore_endpoint
-    rwx_filestore_path      = local.rwx_filestore_path
-    vm_admin                = var.jump_vm_admin
-    jump_rwx_filestore_path = var.jump_rwx_filestore_path
-  }
-  depends_on = [module.nfs_server, google_filestore_instance.rwx]
-}
-
 module "nfs_server" {
   source           = "./modules/google_vm"
   project          = var.project
@@ -65,7 +30,12 @@ module "nfs_server" {
   vm_admin       = var.nfs_vm_admin
   ssh_public_key = local.ssh_public_key
 
-  user_data = length(data.template_file.nfs_cloudconfig) == 1 ? data.template_file.nfs_cloudconfig.0.rendered : null
+  user_data = var.storage_type == "standard" ? templatefile("${path.module}/files/cloud-init/nfs/cloud-config", {
+    misc_subnet_cidr = local.misc_subnet_cidr
+    gke_subnet_cidr  = local.gke_subnet_cidr
+    vm_admin         = var.nfs_vm_admin
+    }
+  ) : null
 
   data_disk_count = 4
   data_disk_size  = var.nfs_raid_disk_size
@@ -91,7 +61,24 @@ module "jump_server" {
   vm_admin       = var.jump_vm_admin
   ssh_public_key = local.ssh_public_key
 
-  user_data = data.template_file.jump_cloudconfig.0.rendered
+  user_data = templatefile("${path.module}/files/cloud-init/jump/cloud-config", {
+    mounts = (var.storage_type == "none"
+      ? "[]"
+      : jsonencode(
+        ["${local.rwx_filestore_endpoint}:${local.rwx_filestore_path}",
+          var.jump_rwx_filestore_path,
+          "nfs",
+          "_netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=3,tcp,namlen=255,retrans=2,sec=sys,local_lock=none",
+          "0",
+          "0"
+      ])
+    )
+    rwx_filestore_endpoint  = local.rwx_filestore_endpoint
+    rwx_filestore_path      = local.rwx_filestore_path
+    vm_admin                = var.jump_vm_admin
+    jump_rwx_filestore_path = var.jump_rwx_filestore_path
+    }
+  )
 
-  depends_on = [module.nfs_server]
+  depends_on = [module.nfs_server, google_filestore_instance.rwx]
 }
