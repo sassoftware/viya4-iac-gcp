@@ -31,7 +31,7 @@ terraform {
     }
     external = {
       source  = "hashicorp/external"
-      version = "2.2.2" # Constrained by Google
+      version = "2.3.1" # Constrained by Google
     }
     time = {
       source  = "hashicorp/time"
