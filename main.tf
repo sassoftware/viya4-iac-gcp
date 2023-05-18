@@ -7,9 +7,9 @@
 # GitHub Repository  : https://github.com/terraform-google-modules
 #
 # Terraform Cloud : Credentials are supplied with GOOGLE_CREDENTIALS a single line JSON
-#                   file contaiing the output of gcloud login. When copy the contents
+#                   file containing the output of gcloud login. When copy the contents
 #                   of that output you must remove all newlines and store this as a single
-#                   line entry as a varaible
+#                   line entry as a variable
 #
 provider "google" {
   credentials = var.service_account_keyfile != null ? can(file(var.service_account_keyfile)) ? file(var.service_account_keyfile) : null : null
