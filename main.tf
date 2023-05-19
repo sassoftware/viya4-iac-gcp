@@ -123,6 +123,8 @@ module "gke" {
 
   monitoring_service = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
 
+  monitoring_enable_managed_prometheus = var.enable_managed_prometheus
+
   cluster_autoscaling = var.enable_cluster_autoscaling ? {
     enabled : true,
     max_cpu_cores : var.cluster_autoscaling_max_cpu_cores,

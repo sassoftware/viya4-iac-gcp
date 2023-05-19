@@ -20,6 +20,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
   - [Google Container Registry (GCR)](#google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
+  - [Monitoring](#monitoring)
 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).
@@ -293,3 +294,9 @@ postgres_servers = {
   }
 }
 ```
+
+## Monitoring
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| enable_managed_prometheus | Enable Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) for your cluster | boolean | false | |
