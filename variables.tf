@@ -389,10 +389,16 @@ variable "gke_monitoring_service" {
   default     = "none"
 }
 
+variable "gke_monitoring_enabled_components" {
+  type        = list(string)
+  description = "List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (WORKLOADS deprecated in 1.24)."
+  default     = ["SYSTEM_COMPONENTS"]
+}
+
 variable "enable_managed_prometheus" {
   type        = bool
   description = "Enable Google Cloud Managed Service for Prometheus for your cluster"
-  default     = "false"
+  default     = false
 }
 
 # Network
