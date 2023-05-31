@@ -14,7 +14,8 @@ WORKDIR /viya4-iac-gcp
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY . .
 
-RUN apt-get install -y jq \
+RUN apt-get update && apt-get upgrade -y \
+  && apt-get install -y jq \
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \
