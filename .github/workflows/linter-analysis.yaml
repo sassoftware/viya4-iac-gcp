@@ -58,7 +58,7 @@ jobs:
         # Necessary so we can recursively tflint our modules folder
         # not needed for regular project use.
       - name: Initializing viya4-iac-gcp/modules/google_vm
-        run: terraform -chdir=modules/google_vm apply init
+        run: terraform -chdir=modules/google_vm init
 
       - name: Initializing TFLint
         run: TFLINT_LOG=info tflint --init -c "$(pwd)/linting-configs/.tflint.hcl"
