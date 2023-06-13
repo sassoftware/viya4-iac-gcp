@@ -27,17 +27,20 @@ variable "regional" {
 }
 
 variable "service_account_keyfile" {
-  type    = string
-  default = null
+  description = "Filename of the Service Account JSON file"
+  type        = string
+  default     = null
 }
 
 variable "project" {
-  type = string
+  description = "The GCP Project to use"
+  type        = string
 }
 
 variable "tf_enterprise_integration_enabled" {
-  type    = bool
-  default = false
+  description = "Modify IAC workflow/resource creation to support integration with Terraform Enterprise"
+  type        = bool
+  default     = false
 }
 
 variable "iac_tooling" {
@@ -48,8 +51,9 @@ variable "iac_tooling" {
 
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID
 variable "kubernetes_channel" {
-  type    = string
-  default = "UNSPECIFIED"
+  description = "The GKE cluster channel for auto-updates"
+  type        = string
+  default     = "UNSPECIFIED"
 }
 
 # Google Cloud will utilize the current default value for the given channel.
@@ -57,8 +61,9 @@ variable "kubernetes_channel" {
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  type    = string
-  default = "latest"
+  description = "The GKE cluster K8S version"
+  type        = string
+  default     = "latest"
 
   validation {
     condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest" || can(regex("^\\d.\\d+$", var.kubernetes_version)) || can(regex("^\\d.\\d+.\\d+$", var.kubernetes_version)))
@@ -107,18 +112,20 @@ variable "postgres_public_access_cidrs" {
 }
 
 variable "ssh_public_key" {
-  type    = string
-  default = null
+  description = "File name of public ssh key for jump and nfs VM"
+  type        = string
+  default     = null
 }
 
 # Bastion VM
 variable "create_jump_vm" {
-  type    = bool
-  default = true
+  description = "Toggle creation of the Jump VM"
+  type        = bool
+  default     = true
 }
 
 variable "jump_vm_admin" {
-  description = "OS Admin User for Bastion VM"
+  description = "OS Admin User for Jump VM"
   type        = string
   default     = "jumpuser"
 }
@@ -130,8 +137,9 @@ variable "jump_vm_type" {
 }
 
 variable "create_jump_public_ip" {
-  type    = bool
-  default = true
+  description = "Add public ip to jump VM"
+  type        = bool
+  default     = true
 }
 
 variable "jump_rwx_filestore_path" {
@@ -160,13 +168,15 @@ variable "nfs_raid_disk_size" {
 }
 
 variable "create_nfs_public_ip" {
-  type    = bool
-  default = false
+  description = "Add public ip to the NFS server VM"
+  type        = bool
+  default     = false
 }
 
 variable "storage_type" {
-  type    = string
-  default = "standard"
+  description = "Type of storage to create"
+  type        = string
+  default     = "standard"
   # NOTE: storage_type="none" is for internal use only 
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
@@ -182,38 +192,45 @@ variable "minimum_initial_nodes" {
 
 # Default Node pool config
 variable "default_nodepool_vm_type" {
-  type    = string
-  default = "e2-standard-8"
+  description = "Type of the default nodepool VMs"
+  type        = string
+  default     = "e2-standard-8"
 }
 
 variable "default_nodepool_local_ssd_count" {
-  type    = number
-  default = 0
+  description = "Number of local ssd disks to provision for the default nodepool"
+  type        = number
+  default     = 0
 }
 
 variable "default_nodepool_os_disk_size" {
-  type    = number
-  default = 128
+  description = "Disk size for default nodepool VMs in GB"
+  type        = number
+  default     = 128
 }
 
 variable "default_nodepool_max_nodes" {
-  type    = number
-  default = 5
+  description = "Maximum number of nodes for the default nodepool"
+  type        = number
+  default     = 5
 }
 
 variable "default_nodepool_min_nodes" {
-  type    = number
-  default = 1
+  description = "Minimum number of nodes for the default nodepool"
+  type        = number
+  default     = 1
 }
 
 variable "default_nodepool_taints" {
-  type    = list(any)
-  default = []
+  description = "Taints for the default nodepool VMs"
+  type        = list(any)
+  default     = []
 }
 
 variable "default_nodepool_labels" {
-  type    = map(any)
-  default = {}
+  description = "Labels to add to the default nodepool VMs"
+  type        = map(any)
+  default     = {}
 }
 
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
@@ -316,20 +333,22 @@ variable "enable_cluster_autoscaling" {
 }
 
 variable "cluster_autoscaling_max_cpu_cores" {
-  type    = number
-  default = 500
+  description = "Max number of cores in the cluster"
+  type        = number
+  default     = 500
 }
 
 variable "cluster_autoscaling_max_memory_gb" {
-  type    = number
-  default = 10000
+  description = "Max number of gb of memory in the cluster	"
+  type        = number
+  default     = 10000
 }
 
 # PostgreSQL
 
 # Defaults
 variable "postgres_server_defaults" {
-  description = ""
+  description = "default values for a postgres server"
   type        = any
   default = {
     machine_type                           = "db-custom-8-30720"
@@ -379,13 +398,15 @@ variable "postgres_servers" {
 
 ## filestore
 variable "filestore_size_in_gb" {
-  type    = number
-  default = null
+  description = "Size in GB of Filesystem in the Google Filestore Instance"
+  type        = number
+  default     = null
 }
 
 variable "filestore_tier" {
-  type    = string
-  default = "BASIC_HDD"
+  description = "The service tier for the Google Filestore Instance"
+  type        = string
+  default     = "BASIC_HDD"
   validation {
     # we allow the old values "STANDARD" and "PREMIUM" but do not document them
     condition     = (contains(["STANDARD", "PREMIUM", "BASIC_HDD", "BASIC_SSD"], upper(var.filestore_tier)))
@@ -451,38 +472,45 @@ variable "subnet_names" {
 }
 
 variable "gke_subnet_cidr" {
-  type    = string
-  default = "192.168.0.0/23"
+  description = "Address space for the subnet for the GKE resources"
+  type        = string
+  default     = "192.168.0.0/23"
 }
 
 variable "misc_subnet_cidr" {
-  type    = string
-  default = "192.168.2.0/24"
+  description = "Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet"
+  type        = string
+  default     = "192.168.2.0/24"
 }
 
 variable "gke_pod_subnet_cidr" {
-  type    = string
-  default = "10.0.0.0/17"
+  description = "Secondary address space in the GKE subnet for Kubernetes Pods"
+  type        = string
+  default     = "10.0.0.0/17"
 }
 
 variable "gke_service_subnet_cidr" {
-  type    = string
-  default = "10.1.0.0/22"
+  description = "Secondary address space in the GKE subnet for Kubernetes Services"
+  type        = string
+  default     = "10.1.0.0/22"
 }
 
 variable "gke_control_plane_subnet_cidr" {
-  type    = string
-  default = "10.2.0.0/28"
+  description = "Address space for the hosted master subnet"
+  type        = string
+  default     = "10.2.0.0/28"
 }
 
 variable "filestore_subnet_cidr" {
-  type    = string
-  default = "192.168.3.0/29"
+  description = "Address space for Google Filestore subnet"
+  type        = string
+  default     = "192.168.3.0/29"
 }
 
 variable "database_subnet_cidr" {
-  type    = string
-  default = "192.168.4.0/24"
+  description = "Address space for Google Cloud SQL Postgres subnet"
+  type        = string
+  default     = "192.168.4.0/24"
 }
 
 

@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 variable "prefix" {
-  type = string
+  description = "A prefix used in the name of all the GCP resources created by this module"
+  type        = string
 }
 
 variable "region" {
-  type = string
+  description = "The GCP Region for all the GCP resources created by this module."
+  type        = string
 }
 
 # Network
@@ -22,25 +24,30 @@ variable "subnet_names" {
 }
 
 variable "create_subnets" {
-  type = bool
+  description = "toggle creation of subnets"
+  type        = bool
 }
 
 variable "gke_subnet_cidr" {
-  type    = string
-  default = "192.168.0.0/23"
+  description = "Address space for the subnet for the GKE resources"
+  type        = string
+  default     = "192.168.0.0/23"
 }
 
 variable "misc_subnet_cidr" {
-  type    = string
-  default = "192.168.2.0/24"
+  description = "Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet"
+  type        = string
+  default     = "192.168.2.0/24"
 }
 
 variable "gke_pod_subnet_cidr" {
-  type    = string
-  default = "10.0.0.0/17"
+  description = "Secondary address space in the GKE subnet for Kubernetes Pods"
+  type        = string
+  default     = "10.0.0.0/17"
 }
 
 variable "gke_service_subnet_cidr" {
-  type    = string
-  default = "10.1.0.0/22"
+  description = "Secondary address space in the GKE subnet for Kubernetes Services"
+  type        = string
+  default     = "10.1.0.0/22"
 }

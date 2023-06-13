@@ -2,28 +2,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 variable "name" {
-  type = string
+  description = "Name of the VM to be created"
+  type        = string
 }
 
 variable "project" {
-  type = string
+  description = "The GCP Project to create the VM resources in"
+  type        = string
 }
 
 variable "region" {
-  type = string
+  description = "The region to create the VM in"
+  type        = string
 }
 
 variable "zone" {
-  type = string
+  description = "The zone to create the VM resources in"
+  type        = string
 }
 
 variable "subnet" {
-  type = string
+  description = "The subnetwork to configure VM network interface with"
+  type        = string
 }
 
 variable "create_public_ip" {
-  type    = bool
-  default = false
+  description = "Toggle the creation of a public IP associated with the VM"
+  type        = bool
+  default     = false
 }
 
 variable "tags" {
@@ -33,13 +39,15 @@ variable "tags" {
 }
 
 variable "machine_type" {
-  type    = string
-  default = "n2-standard-4"
+  description = "Machine type of the VM to be created"
+  type        = string
+  default     = "n2-standard-4"
 }
 
 variable "user_data" {
-  type    = string
-  default = ""
+  description = "Script to be run on the VM during provision time"
+  type        = string
+  default     = ""
 }
 
 variable "vm_admin" {
@@ -55,23 +63,27 @@ variable "ssh_public_key" {
 }
 
 variable "os_image" {
-  type    = string
-  default = "ubuntu-os-cloud/ubuntu-2004-lts" # FAMILY/PROJECT glcoud compute images list
+  description = "OS Image to configure the VM with"
+  type        = string
+  default     = "ubuntu-os-cloud/ubuntu-2004-lts" # FAMILY/PROJECT glcoud compute images list
 }
 
 
 variable "data_disk_count" {
-  type    = number
-  default = 0
+  description = "Number of compute disks to associated with the VM"
+  type        = number
+  default     = 0
 }
 
 variable "data_disk_size" {
-  type    = number
-  default = 128
+  description = "Size of the compute disks associated with the VM"
+  type        = number
+  default     = 128
 }
 
 variable "data_disk_type" {
-  type    = string
-  default = "pd-ssd"
+  description = "Type of compute disk to associate with the VM"
+  type        = string
+  default     = "pd-ssd"
 }
 
