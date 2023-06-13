@@ -26,21 +26,21 @@ variable "create_subnets" {
 }
 
 variable "gke_subnet_cidr" {
-  type = string
+  type    = string
   default = "192.168.0.0/23"
 }
 
 variable "misc_subnet_cidr" {
-  type = string
+  type    = string
   default = "192.168.2.0/24"
 }
 
 variable "gke_pod_subnet_cidr" {
-  type = string
+  type    = string
   default = "10.0.0.0/17"
 }
 
 variable "gke_service_subnet_cidr" {
-  type = string
+  type    = string
   default = "10.1.0.0/22"
 }

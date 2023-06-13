@@ -121,7 +121,7 @@ module "gke" {
 
   grant_registry_access = var.enable_registry_access
 
-  monitoring_service = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
+  monitoring_service            = var.create_gke_monitoring_service ? var.gke_monitoring_service : "none"
   monitoring_enabled_components = var.create_gke_monitoring_service ? var.gke_monitoring_enabled_components : []
 
   monitoring_enable_managed_prometheus = var.enable_managed_prometheus

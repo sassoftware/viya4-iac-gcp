@@ -12,7 +12,7 @@ locals {
   is_region  = var.location != "" ? var.location == regex("^[a-z0-9]*-[a-z0-9]*", var.location) : false
   first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
   # all_zones  = length(data.google_compute_zones.available.names) > 0 ? join(",", [for item in data.google_compute_zones.available.names : format("%s", item)]) : ""
-  zone     = (var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone))
+  zone = (var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone))
 
   # CIDRs/Network
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
@@ -49,7 +49,7 @@ locals {
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
       initial_node_count = max(local.initial_node_count, settings.min_nodes)
-      node_locations     = var.nodepools_locations	!= "" && var.nodepools_locations != null ? var.nodepools_locations : local.zone
+      node_locations     = var.nodepools_locations != "" && var.nodepools_locations != null ? var.nodepools_locations : local.zone
     }
   }
 
@@ -65,7 +65,7 @@ locals {
       "accelerator_count"  = 0
       "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
-      "node_locations"     = var.default_nodepool_locations	!= "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone
+      "node_locations"     = var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone
     }
   })
 

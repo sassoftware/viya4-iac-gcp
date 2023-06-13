@@ -3,7 +3,7 @@
 
 variable "prefix" {
   description = "A prefix used in the name for all cloud resources created by this script. The prefix string must start with lowercase letter and contain only lowercase alphanumeric characters and hyphen or dash(-), but can not start or end with '-'."
-  type = string
+  type        = string
   validation {
     condition     = can(regex("^[a-z][-0-9a-z]*[0-9a-z]$", var.prefix))
     error_message = "ERROR: Value of 'prefix'\n * must start with lowercase letter\n * can only contain lowercase letters, numbers, and hyphen or dash(-), but can't start or end with '-'."
@@ -17,7 +17,7 @@ variable "location" {
   If you aren't sure which to choose, go with a ZONE instead of a region. 
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
-  type = string
+  type        = string
 }
 
 variable "regional" {
@@ -48,7 +48,7 @@ variable "iac_tooling" {
 
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID
 variable "kubernetes_channel" {
-  type = string
+  type    = string
   default = "UNSPECIFIED"
 }
 
@@ -57,7 +57,7 @@ variable "kubernetes_channel" {
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "latest"
 
   validation {
@@ -107,7 +107,7 @@ variable "postgres_public_access_cidrs" {
 }
 
 variable "ssh_public_key" {
-  type = string
+  type    = string
   default = null
 }
 
@@ -119,48 +119,48 @@ variable "create_jump_vm" {
 
 variable "jump_vm_admin" {
   description = "OS Admin User for Bastion VM"
-  type = string
+  type        = string
   default     = "jumpuser"
 }
 
 variable "jump_vm_type" {
   description = "Jump VM type"
-  type = string
+  type        = string
   default     = "n2-standard-4"
 }
 
 variable "create_jump_public_ip" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "jump_rwx_filestore_path" {
   description = "OS path used for NFS integration"
-  type = string
+  type        = string
   default     = "/viya-share"
 }
 
 # NFS VM
 variable "nfs_vm_admin" {
   description = "OS Admin User for NFS VM"
-  type = string
+  type        = string
   default     = "nfsuser"
 }
 
 variable "nfs_vm_type" {
   description = "NFS VM type"
-  type = string
+  type        = string
   default     = "n2-standard-4"
 }
 
 variable "nfs_raid_disk_size" {
   description = "Size in Gb for each disk of the RAID5 cluster"
-  type = number
+  type        = number
   default     = 128
 }
 
 variable "create_nfs_public_ip" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -176,33 +176,33 @@ variable "storage_type" {
 
 variable "minimum_initial_nodes" {
   description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
-  type = number
+  type        = number
   default     = 6
 }
 
 # Default Node pool config
 variable "default_nodepool_vm_type" {
-  type = string
+  type    = string
   default = "e2-standard-8"
 }
 
 variable "default_nodepool_local_ssd_count" {
-  type = number
+  type    = number
   default = 0
 }
 
 variable "default_nodepool_os_disk_size" {
-  type = number
+  type    = number
   default = 128
 }
 
 variable "default_nodepool_max_nodes" {
-  type = number
+  type    = number
   default = 5
 }
 
 variable "default_nodepool_min_nodes" {
-  type = number
+  type    = number
   default = 1
 }
 
@@ -219,8 +219,8 @@ variable "default_nodepool_labels" {
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
 variable "default_nodepool_locations" {
   description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "node_pools" {
@@ -305,8 +305,8 @@ variable "node_pools" {
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
 variable "nodepools_locations" {
   description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "enable_cluster_autoscaling" {
@@ -316,12 +316,12 @@ variable "enable_cluster_autoscaling" {
 }
 
 variable "cluster_autoscaling_max_cpu_cores" {
-  type = number
+  type    = number
   default = 500
 }
 
 variable "cluster_autoscaling_max_memory_gb" {
-  type = number
+  type    = number
   default = 10000
 }
 
@@ -379,7 +379,7 @@ variable "postgres_servers" {
 
 ## filestore
 variable "filestore_size_in_gb" {
-  type = number
+  type    = number
   default = null
 }
 

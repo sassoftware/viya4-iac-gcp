@@ -22,7 +22,7 @@ variable "subnet" {
 }
 
 variable "create_public_ip" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -33,45 +33,45 @@ variable "tags" {
 }
 
 variable "machine_type" {
-  type = string
+  type    = string
   default = "n2-standard-4"
 }
 
 variable "user_data" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "vm_admin" {
   description = "Login account for VM"
-  type = string
+  type        = string
   default     = "googleuser"
 }
 
 variable "ssh_public_key" {
   description = "Path to ssh public key"
-  type = string
+  type        = string
   default     = null
 }
 
 variable "os_image" {
-  type = string
+  type    = string
   default = "ubuntu-os-cloud/ubuntu-2004-lts" # FAMILY/PROJECT glcoud compute images list
 }
 
 
 variable "data_disk_count" {
-  type = number
+  type    = number
   default = 0
 }
 
 variable "data_disk_size" {
-  type = number
+  type    = number
   default = 128
 }
 
 variable "data_disk_type" {
-  type = string
+  type    = string
   default = "pd-ssd"
 }
 
