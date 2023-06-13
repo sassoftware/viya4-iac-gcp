@@ -30,7 +30,7 @@ module "cloud_nat" {
   create_router = true
   router        = "${var.prefix}-router"
   network       = module.vpc.network_self_link
-  nat_ips       = module.nat_address.0.self_links
+  nat_ips       = module.nat_address[0].self_links
 }
 
 module "vpc" {

@@ -13,7 +13,6 @@ locals {
   first_zone = length(data.google_compute_zones.available.names) > 0 ? data.google_compute_zones.available.names[0] : ""
   # all_zones  = length(data.google_compute_zones.available.names) > 0 ? join(",", [for item in data.google_compute_zones.available.names : format("%s", item)]) : ""
   zone     = (var.location != "" ? (local.is_region ? local.first_zone : var.location) : (data.google_client_config.current.zone == "" ? local.first_zone : data.google_client_config.current.zone))
-  location = var.location != "" ? var.location : local.zone
 
   # CIDRs/Network
   default_public_access_cidrs          = var.default_public_access_cidrs == null ? [] : var.default_public_access_cidrs
@@ -37,11 +36,6 @@ locals {
     PreferNoSchedule = "PREFER_NO_SCHEDULE"
     NoExecute        = "NO_EXECUTE"
   }
-
-  # kube config
-  service_account_name        = "${var.prefix}-cluster-admin-sa"
-  cluster_role_binding_name   = "${var.prefix}-cluster-admin-crb"
-  service_account_secret_name = "${var.prefix}-sa-secret"
 
   node_pools_and_accelerator_taints = {
     for node_pool, settings in var.node_pools : node_pool => {
@@ -87,7 +81,7 @@ locals {
   gke_subnet_cidr  = length(var.subnet_names) == 0 ? var.gke_subnet_cidr : module.vpc.subnets["gke"].ip_cidr_range
   misc_subnet_cidr = length(var.subnet_names) == 0 ? var.misc_subnet_cidr : module.vpc.subnets["misc"].ip_cidr_range
 
-  gke_pod_range_index = length(var.subnet_names) == 0 ? index(module.vpc.subnets["gke"].secondary_ip_range.*.range_name, local.subnet_names["gke_pods_range_name"]) : 0
+  gke_pod_range_index = length(var.subnet_names) == 0 ? index(module.vpc.subnets["gke"].secondary_ip_range[*].range_name, local.subnet_names["gke_pods_range_name"]) : 0
   gke_pod_subnet_cidr = length(var.subnet_names) == 0 ? var.gke_pod_subnet_cidr : module.vpc.subnets["gke"].secondary_ip_range[local.gke_pod_range_index].ip_cidr_range
 
   filestore_size_in_gb = (
@@ -110,8 +104,8 @@ locals {
       ssl_enforcement_enabled : local.postgres_servers[k].ssl_enforcement_enabled,
       connection_name : module.postgresql[k].instance_connection_name,
       server_public_ip : length(local.postgres_public_access_cidrs) > 0 ? module.postgresql[k].public_ip_address : null,
-      server_cert : module.postgresql[k].instance_server_ca_cert.0.cert,
-      service_account : module.sql_proxy_sa.0.service_account.email,
+      server_cert : module.postgresql[k].instance_server_ca_cert[0].cert,
+      service_account : module.sql_proxy_sa[0].service_account.email,
       internal : false,
     }
   } : {}

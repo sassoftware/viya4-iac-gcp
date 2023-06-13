@@ -51,13 +51,13 @@ resource "kubernetes_config_map" "sas_iac_buildinfo" {
   }
 
   data = {
-    git-hash    = lookup(data.external.git_hash.0.result, "git-hash")
+    git-hash    = lookup(data.external.git_hash[0].result, "git-hash")
     iac-tooling = var.iac_tooling
     terraform   = <<EOT
-version: ${lookup(data.external.iac_tooling_version.0.result, "terraform_version")}
-revision: ${lookup(data.external.iac_tooling_version.0.result, "terraform_revision")}
-provider-selections: ${lookup(data.external.iac_tooling_version.0.result, "provider_selections")}
-outdated: ${lookup(data.external.iac_tooling_version.0.result, "terraform_outdated")}
+version: ${lookup(data.external.iac_tooling_version[0].result, "terraform_version")}
+revision: ${lookup(data.external.iac_tooling_version[0].result, "terraform_revision")}
+provider-selections: ${lookup(data.external.iac_tooling_version[0].result, "provider_selections")}
+outdated: ${lookup(data.external.iac_tooling_version[0].result, "terraform_outdated")}
 EOT
   }
 
@@ -261,7 +261,7 @@ module "postgresql" {
   user_deletion_policy     = "ABANDON"
   database_deletion_policy = "ABANDON"
   database_version         = "POSTGRES_${each.value.server_version}"
-  database_flags           = values(zipmap(concat(local.base_database_flags.*.name, each.value.database_flags.*.name), concat(local.base_database_flags, each.value.database_flags)))
+  database_flags           = values(zipmap(concat(local.base_database_flags[*].name, each.value.database_flags[*].name), concat(local.base_database_flags, each.value.database_flags)))
 
   backup_configuration = {
     enabled                        = each.value.backups_enabled
