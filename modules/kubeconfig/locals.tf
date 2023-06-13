@@ -10,7 +10,7 @@ locals {
   service_account_secret_name = "${var.prefix}-sa-secret"
 
   # Service account secret token
-  sa_secret_token = var.create_static_kubeconfig ? lookup(kubernetes_secret.sa_secret.0.data, "token", "") : ""
+  sa_secret_token = var.create_static_kubeconfig ? lookup(kubernetes_secret.sa_secret[0].data, "token", "") : ""
 
   #
   # Kubernetes configuration file - Provider based format. May use helper tools
