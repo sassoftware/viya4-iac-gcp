@@ -1,7 +1,7 @@
 name: Linter Analysis
 on:
   push:
-    branches: ['*'] # '*' will cause the workflow to run on all commits to all branches.
+    branches: [ '*' ] # '*' will cause the workflow to run on all commits to all branches.
 
 jobs:
   # Hadolint: Job-1
@@ -37,26 +37,31 @@ jobs:
     name: TFLint
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-    - name: Cache Plugin Directory
-      uses: actions/cache@v3
-      with:
-        path: ~/.tflint.d/plugins
-        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+      - name: Cache Plugin Directory
+        uses: actions/cache@v3
+        with:
+          path: ~/.tflint.d/plugins
+          key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v3.0.0
-      with:
-        tflint_version: latest
-        github_token: ${{ secrets.LINTER_TOKEN }}
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3.0.0
+        with:
+          tflint_version: latest
+          github_token: ${{ secrets.LINTER_TOKEN }}
 
-    - name: Initializing viya4-iac-gcp
-      run: terraform init
+      - name: Initializing viya4-iac-gcp
+        run: terraform init
 
-    - name: Initializing TFLint
-      run: TFLINT_LOG=info tflint --init -c linting-configs/.tflint.hcl
+        # Necessary so we can recursively tflint our modules folder
+        # not needed for regular project use.
+      - name: Initializing viya4-iac-gcp/modules/google_vm
+        run: terraform -chdir=modules/google_vm apply init
 
-    - name: Run TFLint Action
-      run: TFLINT_LOG=info tflint -c linting-configs/.tflint.hcl --module
+      - name: Initializing TFLint
+        run: TFLINT_LOG=info tflint --init -c "$(pwd)/linting-configs/.tflint.hcl"
+
+      - name: Run TFLint Action
+        run: TFLINT_LOG=info tflint -c "$(pwd)/linting-configs/.tflint.hcl" --recursive

@@ -1,4 +1,3 @@
-
 # For more information on configuring TFlint; see https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/config.md
 
 # For more information on plugins see https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md
@@ -13,13 +12,22 @@ config {
 }
 
 plugin "google" {
-    enabled = true
-    version = "0.23.1"
-    source  = "github.com/terraform-linters/tflint-ruleset-google"
+  enabled = true
+  version = "0.23.1"
+  source  = "github.com/terraform-linters/tflint-ruleset-google"
 }
 
 plugin "terraform" {
   enabled = true
-  preset = "recommended"
+  preset  = "recommended"
 }
 
+# We specify the versions and providers in the top level versions.tf.
+# This stops it from throwing a warning when scanning our modules
+# in viya4-iac-gcp/modules/
+rule "terraform_required_version" {
+  enabled = false
+}
+rule "terraform_required_providers" {
+  enabled = false
+}
