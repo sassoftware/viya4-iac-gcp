@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 output "private_ip" {
-  value = google_compute_instance.google_vm.network_interface.0.network_ip
+  value = google_compute_instance.google_vm.network_interface[0].network_ip
 }
 
 output "public_ip" {
