@@ -20,6 +20,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
   - [Google Container Registry (GCR)](#google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
+  - [Monitoring](#monitoring)
 
 Terraform input variables can be set in the following ways:
 - Individually, with the [-var command line option](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line).
@@ -293,3 +294,14 @@ postgres_servers = {
   }
 }
 ```
+
+## Monitoring
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| create_gke_monitoring_service | Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API | boolean | false | |
+| gke_monitoring_service | Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none | string | "none" | |
+| gke_monitoring_enabled_components | List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (WORKLOADS deprecated in 1.24). | list of strings | ["SYSTEM_COMPONENTS"] | |
+| enable_managed_prometheus | Enable Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) for your cluster | boolean | false | |
+
+Note: For additional details about Google Kubernetes Engine (GKE) integration with Cloud Logging and Cloud Monitoring, including Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), view the ["Overview of Google Cloud's operations suite for GKE" documentation](https://cloud.google.com/stackdriver/docs/solutions/gke) 
