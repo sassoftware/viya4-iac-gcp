@@ -270,14 +270,16 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
 | database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
-Here is a sample of the `postgres_servers` variable with the `default` entry only overriding the `administrator_password` parameter and the `cps` entry overriding all of the parameters:
+Multiple SAS offerings require a second PostgreSQL instance referred to as SAS Common Data Store, or CDS PostgreSQL. For more information, see [Common Customizations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). A list of SAS offerings that require CDS PostgreSQL is provided in [SAS Common Data Store Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa). To create and configure an external CDS PostgreSQL instance in addition to the external platform PostgreSQL instance named `default`, specify `cds-postgres` as a second PostgreSQL instance, as shown in the example below.
+
+Here is an example of the `postgres_servers` variable with the `default` server entry overriding only the `administrator_password` parameter and the `cds-postgres` entry overriding all of the parameters:
 
 ```terraform
 postgres_servers = {
   default = {
     administrator_password       = "D0ntL00kTh1sWay"
   },
-  another_server = {
+  cds-postgres = {
     machine_type                           = "db-custom-8-30720"
     storage_gb                             = 10
     backups_enabled                        = true
@@ -285,7 +287,7 @@ postgres_servers = {
     backups_location                       = null
     backups_point_in_time_recovery_enabled = false
     backup_count                           = 7 # Number of backups to retain, not in days
-    administrator_login                    = "pgadmin"
+    administrator_login                    = "cdsadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
     server_version                         = "13"
     availability_type                      = "ZONAL"
