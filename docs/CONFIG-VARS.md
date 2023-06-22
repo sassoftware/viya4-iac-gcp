@@ -18,7 +18,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Storage](#storage)
     - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
     - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
-  - [Google Container Registry (GCR)](#google-container-registry-gcr)
+  - [Google Artifact Registry (GAR) and Google Container Registry (GCR)](#google-artifact-registry-gar-and-google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
   - [Monitoring](#monitoring)
 
@@ -227,12 +227,11 @@ stateful = {
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
 | filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
 
-## Google Container Registry (GCR)
+## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| enable_registry_access | Enable access from the GKE Cluster to the GCR for your Google Project | bool | true | adds the "Artifact Registry Reader" and "Storage Object Viewer" Roles to the Service Account associated with the Node VMs. |
-
+| enable_registry_access | Enable access from the GKE Cluster to the GAR and GCR for your Google Project | bool | true | adds the "Artifact Registry Reader" and "Storage Object Viewer" Roles to the Service Account associated with the Node VMs. |
 
 
 ## Postgres Servers
