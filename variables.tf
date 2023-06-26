@@ -3,6 +3,7 @@
 
 variable "prefix" {
   description = "A prefix used in the name for all cloud resources created by this script. The prefix string must start with lowercase letter and contain only lowercase alphanumeric characters and hyphen or dash(-), but can not start or end with '-'."
+  type        = string
   validation {
     condition     = can(regex("^[a-z][-0-9a-z]*[0-9a-z]$", var.prefix))
     error_message = "ERROR: Value of 'prefix'\n * must start with lowercase letter\n * can only contain lowercase letters, numbers, and hyphen or dash(-), but can't start or end with '-'."
@@ -16,6 +17,7 @@ variable "location" {
   If you aren't sure which to choose, go with a ZONE instead of a region. 
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
+  type        = string
 }
 
 variable "regional" {
@@ -25,17 +27,20 @@ variable "regional" {
 }
 
 variable "service_account_keyfile" {
-  type    = string
-  default = null
+  description = "Filename of the Service Account JSON file"
+  type        = string
+  default     = null
 }
 
 variable "project" {
-  type = string
+  description = "The GCP Project to use"
+  type        = string
 }
 
 variable "tf_enterprise_integration_enabled" {
-  type    = bool
-  default = false
+  description = "Modify IAC workflow/resource creation to support integration with Terraform Enterprise"
+  type        = bool
+  default     = false
 }
 
 variable "iac_tooling" {
@@ -46,7 +51,9 @@ variable "iac_tooling" {
 
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID
 variable "kubernetes_channel" {
-  default = "UNSPECIFIED"
+  description = "The GKE cluster channel for auto-updates"
+  type        = string
+  default     = "UNSPECIFIED"
 }
 
 # Google Cloud will utilize the current default value for the given channel.
@@ -54,7 +61,9 @@ variable "kubernetes_channel" {
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
-  default = "latest"
+  description = "The GKE cluster K8S version"
+  type        = string
+  default     = "latest"
 
   validation {
     condition     = (can(regex("^\\d.\\d+.\\d+-gke.\\d+$", var.kubernetes_version)) || var.kubernetes_version == "latest" || can(regex("^\\d.\\d+$", var.kubernetes_version)) || can(regex("^\\d.\\d+.\\d+$", var.kubernetes_version)))
@@ -103,57 +112,71 @@ variable "postgres_public_access_cidrs" {
 }
 
 variable "ssh_public_key" {
-  default = null
+  description = "File name of public ssh key for jump and nfs VM"
+  type        = string
+  default     = null
 }
 
 # Bastion VM
 variable "create_jump_vm" {
-  type    = bool
-  default = true
+  description = "Toggle creation of the Jump VM"
+  type        = bool
+  default     = true
 }
 
 variable "jump_vm_admin" {
-  description = "OS Admin User for Bastion VM"
+  description = "OS Admin User for Jump VM"
+  type        = string
   default     = "jumpuser"
 }
 
 variable "jump_vm_type" {
   description = "Jump VM type"
+  type        = string
   default     = "n2-standard-4"
 }
 
 variable "create_jump_public_ip" {
-  default = true
+  description = "Add public ip to jump VM"
+  type        = bool
+  default     = true
 }
 
 variable "jump_rwx_filestore_path" {
   description = "OS path used for NFS integration"
+  type        = string
   default     = "/viya-share"
 }
 
 # NFS VM
 variable "nfs_vm_admin" {
   description = "OS Admin User for NFS VM"
+  type        = string
   default     = "nfsuser"
 }
 
 variable "nfs_vm_type" {
   description = "NFS VM type"
+  type        = string
   default     = "n2-standard-4"
 }
 
 variable "nfs_raid_disk_size" {
   description = "Size in Gb for each disk of the RAID5 cluster"
+  type        = number
   default     = 128
 }
 
 variable "create_nfs_public_ip" {
-  default = false
+  description = "Add public ip to the NFS server VM"
+  type        = bool
+  default     = false
 }
 
 variable "storage_type" {
-  type    = string
-  default = "standard"
+  description = "Type of storage to create"
+  type        = string
+  default     = "standard"
   # NOTE: storage_type="none" is for internal use only 
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
@@ -163,44 +186,58 @@ variable "storage_type" {
 
 variable "minimum_initial_nodes" {
   description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
+  type        = number
   default     = 6
 }
+
 # Default Node pool config
 variable "default_nodepool_vm_type" {
-  default = "e2-standard-8"
+  description = "Type of the default nodepool VMs"
+  type        = string
+  default     = "e2-standard-8"
 }
 
 variable "default_nodepool_local_ssd_count" {
-  default = 0
+  description = "Number of local ssd disks to provision for the default nodepool"
+  type        = number
+  default     = 0
 }
 
 variable "default_nodepool_os_disk_size" {
-  default = 128
+  description = "Disk size for default nodepool VMs in GB"
+  type        = number
+  default     = 128
 }
 
 variable "default_nodepool_max_nodes" {
-  default = 5
+  description = "Maximum number of nodes for the default nodepool"
+  type        = number
+  default     = 5
 }
 
 variable "default_nodepool_min_nodes" {
-  default = 1
+  description = "Minimum number of nodes for the default nodepool"
+  type        = number
+  default     = 1
 }
 
 variable "default_nodepool_taints" {
-  type    = list(any)
-  default = []
+  description = "Taints for the default nodepool VMs"
+  type        = list(any)
+  default     = []
 }
 
 variable "default_nodepool_labels" {
-  type    = map(any)
-  default = {}
+  description = "Labels to add to the default nodepool VMs"
+  type        = map(any)
+  default     = {}
 }
 
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
 variable "default_nodepool_locations" {
   description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "node_pools" {
@@ -285,8 +322,8 @@ variable "node_pools" {
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
 variable "nodepools_locations" {
   description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "enable_cluster_autoscaling" {
@@ -296,18 +333,22 @@ variable "enable_cluster_autoscaling" {
 }
 
 variable "cluster_autoscaling_max_cpu_cores" {
-  default = 500
+  description = "Max number of cores in the cluster"
+  type        = number
+  default     = 500
 }
 
 variable "cluster_autoscaling_max_memory_gb" {
-  default = 10000
+  description = "Max number of gb of memory in the cluster	"
+  type        = number
+  default     = 10000
 }
 
 # PostgreSQL
 
 # Defaults
 variable "postgres_server_defaults" {
-  description = ""
+  description = "default values for a postgres server"
   type        = any
   default = {
     machine_type                           = "db-custom-8-30720"
@@ -357,12 +398,15 @@ variable "postgres_servers" {
 
 ## filestore
 variable "filestore_size_in_gb" {
-  default = null
+  description = "Size in GB of Filesystem in the Google Filestore Instance"
+  type        = number
+  default     = null
 }
 
 variable "filestore_tier" {
-  default = "BASIC_HDD"
-  type    = string
+  description = "The service tier for the Google Filestore Instance"
+  type        = string
+  default     = "BASIC_HDD"
   validation {
     # we allow the old values "STANDARD" and "PREMIUM" but do not document them
     condition     = (contains(["STANDARD", "PREMIUM", "BASIC_HDD", "BASIC_SSD"], upper(var.filestore_tier)))
@@ -371,53 +415,53 @@ variable "filestore_tier" {
 }
 
 variable "enable_registry_access" {
-  type        = bool
   description = "Enable access from GKE to the Project Container Registry."
+  type        = bool
   default     = true
 }
 
 # GKE Monitoring
 variable "create_gke_monitoring_service" {
-  type        = bool
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
+  type        = bool
   default     = "false"
 }
 
 variable "gke_monitoring_service" {
-  type        = string
   description = "Value of the Google Cloud Monitoring API to use if monitoring is enabled. Values are: monitoring.googleapis.com, monitoring.googleapis.com/kubernetes, none"
+  type        = string
   default     = "none"
 }
 
 variable "gke_monitoring_enabled_components" {
-  type        = list(string)
   description = "List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (WORKLOADS deprecated in 1.24)."
+  type        = list(string)
   default     = ["SYSTEM_COMPONENTS"]
 }
 
 variable "enable_managed_prometheus" {
-  type        = bool
   description = "Enable Google Cloud Managed Service for Prometheus for your cluster"
+  type        = bool
   default     = false
 }
 
 # Network
 variable "vpc_name" {
+  description = "Name of existing VPC. Leave blank to have one created"
   type        = string
   default     = ""
-  description = "Name of existing VPC. Leave blank to have one created"
 }
 
 variable "nat_address_name" {
+  description = "Name of existing ip address for Cloud NAT"
   type        = string
   default     = ""
-  description = "Name of existing ip address for Cloud NAT"
 }
 
 variable "subnet_names" {
+  description = "Map subnet usage roles to existing subnet and secondary range names. Required when vpc_name is set."
   type        = map(string)
   default     = {}
-  description = "Map subnet usage roles to existing subnet and secondary range names. Required when vpc_name is set."
   # Example:
   # subnet_names = {
   # gke = "my_gke_subnet"
@@ -428,31 +472,45 @@ variable "subnet_names" {
 }
 
 variable "gke_subnet_cidr" {
-  default = "192.168.0.0/23"
+  description = "Address space for the subnet for the GKE resources"
+  type        = string
+  default     = "192.168.0.0/23"
 }
 
 variable "misc_subnet_cidr" {
-  default = "192.168.2.0/24"
+  description = "Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet"
+  type        = string
+  default     = "192.168.2.0/24"
 }
 
 variable "gke_pod_subnet_cidr" {
-  default = "10.0.0.0/17"
+  description = "Secondary address space in the GKE subnet for Kubernetes Pods"
+  type        = string
+  default     = "10.0.0.0/17"
 }
 
 variable "gke_service_subnet_cidr" {
-  default = "10.1.0.0/22"
+  description = "Secondary address space in the GKE subnet for Kubernetes Services"
+  type        = string
+  default     = "10.1.0.0/22"
 }
 
 variable "gke_control_plane_subnet_cidr" {
-  default = "10.2.0.0/28"
+  description = "Address space for the hosted master subnet"
+  type        = string
+  default     = "10.2.0.0/28"
 }
 
 variable "filestore_subnet_cidr" {
-  default = "192.168.3.0/29"
+  description = "Address space for Google Filestore subnet"
+  type        = string
+  default     = "192.168.3.0/29"
 }
 
 variable "database_subnet_cidr" {
-  default = "192.168.4.0/24"
+  description = "Address space for Google Cloud SQL Postgres subnet"
+  type        = string
+  default     = "192.168.4.0/24"
 }
 
 

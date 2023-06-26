@@ -4,11 +4,11 @@
 locals {
   rwx_filestore_endpoint = (var.storage_type == "none"
     ? ""
-    : var.storage_type == "ha" ? google_filestore_instance.rwx.0.networks.0.ip_addresses.0 : module.nfs_server.0.private_ip
+    : var.storage_type == "ha" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0] : module.nfs_server[0].private_ip
   )
   rwx_filestore_path = (var.storage_type == "none"
     ? ""
-    : var.storage_type == "ha" ? "/${google_filestore_instance.rwx.0.file_shares.0.name}" : "/export"
+    : var.storage_type == "ha" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}" : "/export"
   )
 }
 

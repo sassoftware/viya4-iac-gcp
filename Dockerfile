@@ -15,7 +15,9 @@ COPY --from=terraform /bin/terraform /bin/terraform
 COPY . .
 
 RUN apt-get update && apt-get upgrade -y \
-  && apt-get install -y jq \
+  && apt-get install --no-install-recommends -y jq \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
   && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \

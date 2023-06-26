@@ -2,56 +2,52 @@
 # SPDX-License-Identifier: Apache-2.0
 
 variable "prefix" {
-  type = string
-}
-
-variable "project" {
-  type = string
+  description = "A prefix used in the name of all the GCP resources created by this module"
+  type        = string
 }
 
 variable "region" {
-  type = string
-}
-
-variable "tags" {
-  description = "Map of tags to be placed on the Resources"
-  type        = map(any)
-  default     = {}
+  description = "The GCP Region for all the GCP resources created by this module."
+  type        = string
 }
 
 # Network
 variable "vpc_name" {
+  description = "Name of pre-existing VPC. Leave blank to have one created"
   type        = string
   default     = ""
-  description = "Name of pre-existing VPC. Leave blank to have one created"
 }
 variable "subnet_names" {
+  description = "Map subnet usage roles to existing subnet names"
   type        = map(string)
   default     = {}
-  description = "Map subnet usage roles to existing subnet names"
 }
 
 variable "create_subnets" {
-  type = bool
+  description = "toggle creation of subnets"
+  type        = bool
 }
 
 variable "gke_subnet_cidr" {
-  default = "192.168.0.0/23"
+  description = "Address space for the subnet for the GKE resources"
+  type        = string
+  default     = "192.168.0.0/23"
 }
 
 variable "misc_subnet_cidr" {
-  default = "192.168.2.0/24"
+  description = "Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet"
+  type        = string
+  default     = "192.168.2.0/24"
 }
 
 variable "gke_pod_subnet_cidr" {
-  default = "10.0.0.0/17"
+  description = "Secondary address space in the GKE subnet for Kubernetes Pods"
+  type        = string
+  default     = "10.0.0.0/17"
 }
 
 variable "gke_service_subnet_cidr" {
-  default = "10.1.0.0/22"
+  description = "Secondary address space in the GKE subnet for Kubernetes Services"
+  type        = string
+  default     = "10.1.0.0/22"
 }
-
-variable "gke_control_plane_subnet_cidr" {
-  default = "10.2.0.0/28"
-}
-
