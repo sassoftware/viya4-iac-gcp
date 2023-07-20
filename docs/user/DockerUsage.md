@@ -18,6 +18,19 @@ docker build -t viya4-iac-gcp .
 
 The Docker image `viya4-iac-gcp` will contain Terraform and 'kubectl' executables. The Docker entrypoint for the image is `terraform` that will be run with sub-commands in the subsequent steps.
 
+#### Install Additional gcloud Components
+
+In order to keep our Docker image as light as possible, we opt not to install all the `gcloud` components as that drastically increases the image size. This project currently makes use of `google/cloud-sdk:xxx.0.0-alpine` as the [base image](https://hub.docker.com/r/google/cloud-sdk/tags), which includes a [default set](https://github.com/GoogleCloudPlatform/cloud-sdk-docker#components-installed-in-each-tag) of `gcloud` components. On top of that we also install the `gke-gcloud-auth-plugin`, Cloud SQL Proxy, and the `gcloud` Alpha/Beta Commands. All the `gcloud` components necessary for interacting with the resources created by this project are installed by default. If you require additional `gcloud` components to be present within the Docker image, you can set the `INSTALL_COMPONENTS` build-arg to a space separated list of components IDs.
+
+```bash
+# for a full list components
+gcloud components list
+
+# example: "I additionally want the Cloud Spanner Emulator present in my Docker image"
+docker build --build-arg INSTALL_COMPONENTS="cloud-spanner-emulator" -t viya4-iac-gcp . 
+```
+
+
 ### Service Account Keyfile for GCP Authentication 
 
 Prepare a file with GCP authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md) and store it outside of this repo in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
