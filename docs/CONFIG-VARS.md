@@ -104,7 +104,7 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | :--- | ---: | ---: | ---: | ---: |
 | kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
 | kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
-| enable_cluster_autoscaling | Enable cluster autoscaling | bool | false | |
+| enable_cluster_autoscaling | Per-cluster configuration of [Node Auto-Provisioning](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning) with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload | bool | false | This is different from node autoscaling which is controlled by `max_node` & `min_node` in your [node pool definitions](#Nodepools)|
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
 | create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | true | A value of `false` will default to using the cloud providers mechanism for generating the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials. |
