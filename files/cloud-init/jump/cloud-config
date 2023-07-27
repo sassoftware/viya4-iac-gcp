@@ -32,6 +32,8 @@ runcmd:
       #
   -   while [ `df -h | grep "${rwx_filestore_endpoint}:${rwx_filestore_path}" | wc -l` -eq 0 ]; do sleep 5 && mount -a ; done
       # Create pvs folder and adjust perms and owner only if the folder doesn't exist
+      # On subsequent jump server creation if the mounted NFS already contains a "pvs" directory
+      # don't overwrite ownerships and permissions set by SAS Viya
   -   if ! [ -d "${jump_rwx_filestore_path}/pvs" ]
   -   then
         #
