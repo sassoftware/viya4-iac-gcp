@@ -33,7 +33,7 @@ Terraform input variables can be set in the following ways:
 | :--- | :--- | :--- | :--- | :--- |
 | prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only lowercase alphanumeric characters and dashes (-), but cannot end with a dash. |
 | location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
-| project | The GCP Project to use | string | | |
+| project | The ID of the GCP Project to use | string | | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | Not required when running on a Google Cloud VM that is associated with the Service Account |
 
 ## GCP Authentication

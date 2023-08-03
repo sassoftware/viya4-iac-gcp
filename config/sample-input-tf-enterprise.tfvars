@@ -12,7 +12,7 @@
 #       variable.
 # prefix         = "<prefix-value>"
 # location       = "<gcp-zone-or-region>" # e.g., "us-east1-b"
-# project        = "<gcp-project>"
+# project        = "<gcp-project-id>"
 # ssh_public_key = "<ssh-public-key>"
 # ****************  REQUIRED VARIABLES  ****************
 

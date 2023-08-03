@@ -6,7 +6,7 @@
 # These required variables' values MUST be provided by the User
 prefix                  = "<prefix-value>"
 location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
-project                 = "<gcp-project>"
+project                 = "<gcp-project-id>"
 service_account_keyfile = "<service-account-json-file>"
 #
 # ****************  REQUIRED VARIABLES  ****************
