@@ -33,7 +33,7 @@ variable "service_account_keyfile" {
 }
 
 variable "project" {
-  description = "The GCP Project to use"
+  description = "The ID of the GCP Project to use"
   type        = string
 }
 
