@@ -6,7 +6,7 @@
 # These required variables' values MUST be provided by the User
 prefix                  = "<prefix-value>"
 location                = "<gcp-zone-or-region>" # e.g., "us-east1-b"
-project                 = "<gcp-project>"
+project                 = "<gcp-project-id>"
 service_account_keyfile = "<service-account-json-file>"
 #
 # ****************  REQUIRED VARIABLES  ****************
@@ -27,7 +27,7 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 # }
 
 # GKE config
-kubernetes_version         = "1.25"
+kubernetes_version         = "1.26"
 default_nodepool_min_nodes = 1
 default_nodepool_vm_type   = "n2-standard-2"
 
