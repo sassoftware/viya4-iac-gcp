@@ -510,7 +510,7 @@ variable "filestore_subnet_cidr" {
 variable "database_subnet_cidr" {
   description = "Address space for Google Cloud SQL Postgres subnet"
   type        = string
-  default     = "192.168.4.0/24"
+  default     = "192.168.4.0/23"
 }
 
 
