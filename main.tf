@@ -51,13 +51,13 @@ resource "kubernetes_config_map" "sas_iac_buildinfo" {
   }
 
   data = {
-    git-hash    = lookup(data.external.git_hash[0].result, "git-hash")
+    git-hash    = data.external.git_hash[0].result["git-hash"]
     iac-tooling = var.iac_tooling
     terraform   = <<EOT
-version: ${lookup(data.external.iac_tooling_version[0].result, "terraform_version")}
-revision: ${lookup(data.external.iac_tooling_version[0].result, "terraform_revision")}
-provider-selections: ${lookup(data.external.iac_tooling_version[0].result, "provider_selections")}
-outdated: ${lookup(data.external.iac_tooling_version[0].result, "terraform_outdated")}
+version: ${data.external.iac_tooling_version[0].result["terraform_version"]}
+revision: ${data.external.iac_tooling_version[0].result["terraform_revision"]}
+provider-selections: ${data.external.iac_tooling_version[0].result["provider_selections"]}
+outdated: ${data.external.iac_tooling_version[0].result["terraform_outdated"]}
 EOT
   }
 
