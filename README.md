@@ -13,7 +13,7 @@ This project contains Terraform scripts to provision Google GCP infrastructure r
 
 [<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)
 
-Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repo to deploy SAS Viya 4 platform products. If you need more information on the SAS Viya 4 platform products refer to the official [SAS&reg; Viya&reg; platform Operations](https://go.documentation.sas.com/?cdcId=itopscdc&cdcVersion=v_001LTS&docsetId=itopswlcm&docsetTarget=home.htm&locale=en) documentation for more details.
+Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repo to deploy SAS Viya 4 platform products. If you need more information on the SAS Viya 4 platform products refer to the official [SAS&reg; Viya&reg; platform Operations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopswlcm&docsetTarget=home.htm) documentation for more details.
 
 ## Prerequisites
 
