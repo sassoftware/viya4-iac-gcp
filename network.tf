@@ -68,6 +68,11 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = module.vpc.network_name
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address[0].name]
+
+  # required as of hashicorp/google v5.12.0 when using google_service_networking_connection in
+  # conjunction with CloudSQL instances in order to cleanly delete resources
+  # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_networking_connection
+  deletion_policy         = "ABANDON"
 }
 
 resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
