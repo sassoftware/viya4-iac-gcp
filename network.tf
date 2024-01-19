@@ -11,7 +11,7 @@ data "google_compute_address" "nat_address" {
 module "nat_address" {
   count        = length(var.nat_address_name) == 0 ? 1 : 0
   source       = "terraform-google-modules/address/google"
-  version      = "3.1.2"
+  version      = "3.2.0"
   project_id   = var.project
   region       = local.region
   address_type = "EXTERNAL"
@@ -23,7 +23,7 @@ module "nat_address" {
 module "cloud_nat" {
   count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
-  version       = "3.0.0"
+  version       = "5.0.0"
   project_id    = var.project
   name          = "${var.prefix}-cloud-nat"
   region        = local.region
@@ -31,6 +31,8 @@ module "cloud_nat" {
   router        = "${var.prefix}-router"
   network       = module.vpc.network_self_link
   nat_ips       = module.nat_address[0].self_links
+  # this was disabled by default in v5.0.0, setting to true to retain previous behavior
+  enable_endpoint_independent_mapping = true
 }
 
 module "vpc" {
