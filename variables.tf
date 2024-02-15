@@ -242,7 +242,7 @@ variable "default_nodepool_locations" {
 
 variable "node_pools" {
   description = "Node pool definitions"
-  type        = map(object({
+  type = map(object({
     vm_type           = string
     os_disk_size      = number
     min_nodes         = string
@@ -260,7 +260,7 @@ variable "node_pools" {
       "min_nodes"    = 1
       "max_nodes"    = 5
       "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
-      "node_labels"  = {
+      "node_labels" = {
         "workload.sas.com/class" = "cas"
       }
       "local_ssd_count"   = 0
@@ -273,7 +273,7 @@ variable "node_pools" {
       "min_nodes"    = 1
       "max_nodes"    = 5
       "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
-      "node_labels"  = {
+      "node_labels" = {
         "workload.sas.com/class"        = "compute"
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
       }
@@ -287,7 +287,7 @@ variable "node_pools" {
       "min_nodes"    = 1
       "max_nodes"    = 5
       "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
-      "node_labels"  = {
+      "node_labels" = {
         "workload.sas.com/class" = "stateless"
       }
       "local_ssd_count"   = 0
@@ -300,7 +300,7 @@ variable "node_pools" {
       "min_nodes"    = 1
       "max_nodes"    = 3
       "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
-      "node_labels"  = {
+      "node_labels" = {
         "workload.sas.com/class" = "stateful"
       }
       "local_ssd_count"   = 0
@@ -350,7 +350,7 @@ variable "cluster_autoscaling_max_memory_gb" {
 variable "postgres_server_defaults" {
   description = "default values for a postgres server"
   type        = any
-  default     = {
+  default = {
     machine_type                           = "db-custom-8-30720"
     storage_gb                             = 10
     backups_enabled                        = true

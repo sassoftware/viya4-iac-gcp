@@ -7,35 +7,35 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.63.1"
+      version = "5.12.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "4.63.1"
+      version = "5.12.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.20.0" # Constrained by Google
+      version = "~> 2.25" # Constrained by Google
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.4.0"
+      version = "~> 2.4"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.5.1" # Constrained by Google
+      version = "~> 3.6" # Constrained by Google
     }
     null = {
       source  = "hashicorp/null"
-      version = "3.2.1" # Constrained by Google
+      version = "~> 3.2" # Constrained by Google
     }
     external = {
       source  = "hashicorp/external"
-      version = "2.3.1" # Constrained by Google
+      version = "~> 2.3" # Constrained by Google
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.9.1"
+      version = "~> 0.10"
     }
   }
 }
