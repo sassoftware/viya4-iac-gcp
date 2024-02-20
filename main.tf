@@ -138,7 +138,7 @@ module "gke" {
     gpu_resources       = [],
     auto_repair         = (var.kubernetes_channel == "UNSPECIFIED") ? false : true,
     auto_upgrade        = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
-    autoscaling_profile = "BALANCED"
+    autoscaling_profile = var.cluster_autoscaling_profile
     } : {
     enabled : false,
     max_cpu_cores : 0,
@@ -148,7 +148,7 @@ module "gke" {
     gpu_resources       = [],
     auto_repair         = (var.kubernetes_channel == "UNSPECIFIED") ? false : true,
     auto_upgrade        = (var.kubernetes_channel == "UNSPECIFIED") ? false : true
-    autoscaling_profile = "BALANCED"
+    autoscaling_profile = var.cluster_autoscaling_profile
   }
 
   master_authorized_networks = concat([
