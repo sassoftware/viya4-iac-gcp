@@ -360,7 +360,7 @@ variable "postgres_server_defaults" {
     backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
-    server_version                         = "13"
+    server_version                         = "15"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
