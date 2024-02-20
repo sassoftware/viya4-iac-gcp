@@ -344,6 +344,12 @@ variable "cluster_autoscaling_max_memory_gb" {
   default     = 10000
 }
 
+variable "cluster_autoscaling_profile" {
+  description = "Configuration options for the Autoscaling profile feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster"
+  type        = string
+  default     = "BALANCED"
+}
+
 # PostgreSQL
 
 # Defaults
