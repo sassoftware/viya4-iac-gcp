@@ -344,6 +344,12 @@ variable "cluster_autoscaling_max_memory_gb" {
   default     = 10000
 }
 
+variable "cluster_autoscaling_profile" {
+  description = "Configuration options for the Autoscaling profile feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster"
+  type        = string
+  default     = "BALANCED"
+}
+
 # PostgreSQL
 
 # Defaults
@@ -360,7 +366,7 @@ variable "postgres_server_defaults" {
     backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
-    server_version                         = "13"
+    server_version                         = "15"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
