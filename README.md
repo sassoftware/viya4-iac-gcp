@@ -34,7 +34,7 @@ Operational knowledge of
     - [Terraform](https://www.terraform.io/downloads.html) - v1.7.3
     - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.28.7
     - [jq](https://stedolan.github.io/jq/) - v1.6
-    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v464.0.0
+    - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v471.0.0
     - [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin) - (optional - only for provider based Kubernetes configuration files) - >= v1.26
   - #### Docker
     - [Docker](https://docs.docker.com/get-docker/)
