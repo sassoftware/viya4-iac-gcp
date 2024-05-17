@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ARG TERRAFORM_VERSION=1.7.3
-ARG GCP_CLI_VERSION=471.0.0
+ARG GCP_CLI_VERSION=472.0.0
 
 FROM hashicorp/terraform:$TERRAFORM_VERSION as terraform
 FROM google/cloud-sdk:$GCP_CLI_VERSION-alpine
@@ -24,7 +24,7 @@ RUN apk update \
   && chmod g=u -R /etc/passwd /etc/group /viya4-iac-gcp \
   && git config --system --add safe.directory /viya4-iac-gcp \
   && terraform init \
-  && gcloud components install gke-gcloud-auth-plugin alpha beta cloud_sql_proxy $INSTALL_COMPONENTS \
+  && gcloud components install gke-gcloud-auth-plugin alpha beta cloud-sql-proxy $INSTALL_COMPONENTS \
   && rm -rf /google-cloud-sdk/.install/.backup
 
 ENV TF_VAR_iac_tooling=docker
