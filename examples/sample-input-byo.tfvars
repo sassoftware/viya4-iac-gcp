@@ -39,12 +39,12 @@ postgres_servers = {
 # GKE config
 kubernetes_version         = "1.28"
 default_nodepool_min_nodes = 2
-default_nodepool_vm_type   = "e2-standard-8"
+default_nodepool_vm_type   = "n2-highmem-8"
 
 # Node Pools config
 node_pools = {
   cas = {
-    "vm_type"      = "n1-highmem-16"
+    "vm_type"      = "n2-highmem-16"
     "os_disk_size" = 200
     "min_nodes"    = 1
     "max_nodes"    = 1
@@ -52,12 +52,12 @@ node_pools = {
     "node_labels" = {
       "workload.sas.com/class" = "cas"
     }
-    "local_ssd_count"   = 0
+    "local_ssd_count"   = 2
     "accelerator_count" = 0
     "accelerator_type"  = ""
   },
   compute = {
-    "vm_type"      = "n1-highmem-16"
+    "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
     "min_nodes"    = 1
     "max_nodes"    = 1
@@ -66,15 +66,15 @@ node_pools = {
       "workload.sas.com/class"        = "compute"
       "launcher.sas.com/prepullImage" = "sas-programming-environment"
     }
-    "local_ssd_count"   = 0
+    "local_ssd_count"   = 1
     "accelerator_count" = 0
     "accelerator_type"  = ""
   },
   stateless = {
-    "vm_type"      = "e2-standard-16"
+    "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
     "min_nodes"    = 1
-    "max_nodes"    = 2
+    "max_nodes"    = 4
     "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "stateless"
@@ -84,10 +84,10 @@ node_pools = {
     "accelerator_type"  = ""
   },
   stateful = {
-    "vm_type"      = "e2-standard-8"
+    "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
     "min_nodes"    = 1
-    "max_nodes"    = 3
+    "max_nodes"    = 2
     "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "stateful"
@@ -108,4 +108,4 @@ storage_type = "standard"
 # required ONLY when storage_type is "standard" to create NFS Server VM
 create_nfs_public_ip = false
 nfs_vm_admin         = "nfsuser"
-nfs_raid_disk_size   = 128
+nfs_raid_disk_size   = 1000

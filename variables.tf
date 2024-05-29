@@ -158,13 +158,13 @@ variable "nfs_vm_admin" {
 variable "nfs_vm_type" {
   description = "NFS VM type"
   type        = string
-  default     = "n2-standard-4"
+  default     = "n2-highmem-4"
 }
 
 variable "nfs_raid_disk_size" {
   description = "Size in Gb for each disk of the RAID5 cluster"
   type        = number
-  default     = 128
+  default     = 1000
 }
 
 variable "create_nfs_public_ip" {
@@ -194,7 +194,7 @@ variable "minimum_initial_nodes" {
 variable "default_nodepool_vm_type" {
   description = "Type of the default nodepool VMs"
   type        = string
-  default     = "e2-standard-8"
+  default     = "n2-highmem-8"
 }
 
 variable "default_nodepool_local_ssd_count" {
@@ -255,7 +255,7 @@ variable "node_pools" {
   }))
   default = {
     cas = {
-      "vm_type"      = "n1-highmem-16"
+      "vm_type"      = "n2-highmem-16"
       "os_disk_size" = 200
       "min_nodes"    = 1
       "max_nodes"    = 5
@@ -263,29 +263,29 @@ variable "node_pools" {
       "node_labels" = {
         "workload.sas.com/class" = "cas"
       }
-      "local_ssd_count"   = 0
+      "local_ssd_count"   = 2
       "accelerator_count" = 0
       "accelerator_type"  = ""
     },
     compute = {
-      "vm_type"      = "n1-highmem-16"
+      "vm_type"      = "n2-highmem-4"
       "os_disk_size" = 200
       "min_nodes"    = 1
-      "max_nodes"    = 5
+      "max_nodes"    = 1
       "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class"        = "compute"
         "launcher.sas.com/prepullImage" = "sas-programming-environment"
       }
-      "local_ssd_count"   = 0
+      "local_ssd_count"   = 1
       "accelerator_count" = 0
       "accelerator_type"  = ""
     },
     stateless = {
-      "vm_type"      = "e2-standard-16"
+      "vm_type"      = "n2-highmem-4"
       "os_disk_size" = 200
       "min_nodes"    = 1
-      "max_nodes"    = 5
+      "max_nodes"    = 4
       "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class" = "stateless"
@@ -295,10 +295,10 @@ variable "node_pools" {
       "accelerator_type"  = ""
     },
     stateful = {
-      "vm_type"      = "e2-standard-8"
+      "vm_type"      = "n2-highmem-4"
       "os_disk_size" = 200
       "min_nodes"    = 1
-      "max_nodes"    = 3
+      "max_nodes"    = 2
       "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
       "node_labels" = {
         "workload.sas.com/class" = "stateful"
@@ -339,7 +339,7 @@ variable "cluster_autoscaling_max_cpu_cores" {
 }
 
 variable "cluster_autoscaling_max_memory_gb" {
-  description = "Max number of gb of memory in the cluster	"
+  description = "Max number of gb of memory in the cluster"
   type        = number
   default     = 10000
 }
@@ -357,8 +357,8 @@ variable "postgres_server_defaults" {
   description = "default values for a postgres server"
   type        = any
   default = {
-    machine_type                           = "db-custom-8-30720"
-    storage_gb                             = 10
+    machine_type                           = "db-custom-4-15360"
+    storage_gb                             = 128
     backups_enabled                        = true
     backups_start_time                     = "21:00"
     backups_location                       = null
