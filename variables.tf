@@ -357,7 +357,7 @@ variable "postgres_server_defaults" {
   description = "default values for a postgres server"
   type        = any
   default = {
-    machine_type                           = "db-custom-4-15360"
+    machine_type                           = "db-custom-4-16384"
     storage_gb                             = 128
     backups_enabled                        = true
     backups_start_time                     = "21:00"

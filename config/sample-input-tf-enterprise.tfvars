@@ -85,7 +85,7 @@ storage_type = "standard"
 create_nfs_public_ip = false
 nfs_vm_admin         = "nfsuser"
 nfs_vm_type          = "n2-highmem-4"
-nfs_raid_disk_size   = 128
+nfs_raid_disk_size   = 1000
 
 # Postgres config - By having this entry a database server is created. If you do not
 #                   need an external database server remove the 'postgres_servers'
