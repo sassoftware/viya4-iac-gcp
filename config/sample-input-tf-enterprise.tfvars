@@ -40,13 +40,13 @@ create_static_kubeconfig = true
 # GKE config
 kubernetes_version         = "1.28"
 default_nodepool_min_nodes = 1
-default_nodepool_vm_type   = "n2-standard-2"
+default_nodepool_vm_type   = "n2-highmem-8"
 
-## Cluster Node Pools config - mimimal
+## Cluster Node Pools config - minimal
 cluster_node_pool_mode = "minimal"
 node_pools = {
   cas = {
-    "vm_type"      = "n2-highmem-4"
+    "vm_type"      = "n2-highmem-16"
     "os_disk_size" = 200
     "min_nodes"    = 0
     "max_nodes"    = 5
@@ -54,12 +54,12 @@ node_pools = {
     "node_labels" = {
       "workload.sas.com/class" = "cas"
     }
-    "local_ssd_count"   = 0
+    "local_ssd_count"   = 2
     "accelerator_count" = 0
     "accelerator_type"  = ""
   },
   generic = {
-    "vm_type"      = "n2-standard-8"
+    "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
     "min_nodes"    = 0
     "max_nodes"    = 5
@@ -84,8 +84,8 @@ storage_type = "standard"
 # required ONLY when storage_type is "standard" to create NFS Server VM
 create_nfs_public_ip = false
 nfs_vm_admin         = "nfsuser"
-nfs_vm_type          = "n2-standard-4"
-nfs_raid_disk_size   = 128
+nfs_vm_type          = "n2-highmem-4"
+nfs_raid_disk_size   = 1000
 
 # Postgres config - By having this entry a database server is created. If you do not
 #                   need an external database server remove the 'postgres_servers'
