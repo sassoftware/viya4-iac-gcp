@@ -125,7 +125,7 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| default_nodepool_vm_type | Type of the default nodepool VMs | string | "e2-standard-8" | |
+| default_nodepool_vm_type | Type of the default nodepool VMs | string | "n2-highmem-8" | |
 | default_nodepool_os_disk_size | Disk size for default nodepool VMs in GB | number | 128 ||
 | default_nodepool_min_nodes | Minimum number of nodes for the default nodepool | number | 1 | |
 | default_nodepool_max_nodes | Maximum number of nodes for the default nodepool | number | 5 | |
@@ -153,7 +153,7 @@ The default values for the `node_pools` variable are:
 
 ```yaml
 cas = {
-  "vm_type"      = "n1-highmem-16"
+  "vm_type"      = "n2-highmem-16"
   "os_disk_size" = 200
   "min_nodes"    = 1
   "max_nodes"    = 5
@@ -161,12 +161,12 @@ cas = {
   "node_labels" = {
     "workload.sas.com/class" = "cas"
   }
-  "local_ssd_count"   = 0
+  "local_ssd_count"   = 2
   "accelerator_count" = 0
   "accelerator_type" = ""
 },
 compute = {
-  "vm_type"      = "n1-highmem-16"
+  "vm_type"      = "n2-highmem-4"
   "os_disk_size" = 200
   "min_nodes"    = 1
   "max_nodes"    = 5
@@ -175,12 +175,12 @@ compute = {
     "workload.sas.com/class"        = "compute"
     "launcher.sas.com/prepullImage" = "sas-programming-environment"
   }
-  "local_ssd_count"   = 0
+  "local_ssd_count"   = 1
   "accelerator_count" = 0
   "accelerator_type"  = ""
 },
 stateless = {
-  "vm_type"      = "e2-standard-16"
+  "vm_type"      = "n2-highmem-4"
   "os_disk_size" = 200
   "min_nodes"    = 1
   "max_nodes"    = 5
@@ -193,7 +193,7 @@ stateless = {
   "accelerator_type"  = ""
 },
 stateful = {
-  "vm_type"      = "e2-standard-8"
+  "vm_type"      = "n2-highmem-4"
   "os_disk_size" = 200
   "min_nodes"    = 1
   "max_nodes"    = 3
@@ -219,7 +219,7 @@ stateful = {
 | :--- | ---: | ---: | ---: | ---: |
 | create_nfs_public_ip | Add public ip to the NFS server VM | bool | false | The NFS server VM is only created when storage_type="standard" |
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
-| nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 128 | The NFS server VM is only created when storage_type="standard" |
+| nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
 ### For `storage_type=ha` only (Google Filestore)
 
@@ -256,8 +256,8 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-8-30720" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. |
-| storage_gb | Minimum storage allowed for the PostgreSQL server | number | 10 | |
+| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. |
+| storage_gb | Minimum storage allowed for the PostgreSQL server | number | 128 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
 | backups_location | TODO | string | null | |
@@ -280,8 +280,8 @@ postgres_servers = {
     administrator_password       = "D0ntL00kTh1sWay"
   },
   cds-postgres = {
-    machine_type                           = "db-custom-8-30720"
-    storage_gb                             = 10
+    machine_type                           = "db-custom-4-16384"
+    storage_gb                             = 128
     backups_enabled                        = true
     backups_start_time                     = "21:00"
     backups_location                       = null
