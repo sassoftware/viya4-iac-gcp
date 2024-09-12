@@ -8,7 +8,7 @@ When using the Terraform CLI, make sure you have all the necessary tools [instal
 
 ### Set Google Cloud Authentication
 
-Prepare a file with authentication info, as described in [Authenticating Terraform to access Google Cloud](./TerraformGCPAuthentication.md).
+Prepare a file with authentication information, as described in [Authenticating Terraform to access Google Cloud](./TerraformGCPAuthentication.md).
 
 ### Prepare Variable Definitions (.tfvars) File
 

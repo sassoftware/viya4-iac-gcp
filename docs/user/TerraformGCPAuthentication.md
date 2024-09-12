@@ -1,6 +1,6 @@
 # Authenticating Terraform to access Google Cloud
 
-Terraform creates and destroys resources in the Google Cloud on your behalf.
+Terraform creates and destroys resources in Google Cloud on your behalf.
 In order to do so, it needs to authenticate itself to Google Cloud with the appropriate permissions.
 
 This project uses a Google Cloud Service Account to authenticate with Google Cloud. You will need a Service Account with the appropriate permissions. You can use an existing Service Account, or preferably create a dedicated Service Account.
@@ -96,7 +96,7 @@ roles/resourcemanager.projectIamAdmin
 
 ## Create the Service Account Keyfile
 
-When running terraform on a workstation outside of the Google Cloud, you persist the Service Account information to a JSON file, and then [specify that file when running terraform](#Terraform-project-variables-to-authenticate-with-GCP).
+When running terraform on a workstation outside of Google Cloud, you store the Service Account information in a JSON file, and then [specify that file when running terraform](#Terraform-project-variables-to-authenticate-with-GCP).
 
 Managing key files using the Cloud Console: https://console.cloud.google.com/apis/credentials/serviceaccountkey
 

@@ -98,7 +98,7 @@ Note: The subnets for filestore and database can not the pre-created. Google Clo
 
 ## General
 
-The application of a Kubernetes version in Google Cloud has some limitations when assigning channels and versions to the cluster. The doc outlining on these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
+The application of a Kubernetes version in Google Cloud has some limitations when assigning channels and versions to the cluster. The documentation that describes these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |

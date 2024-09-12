@@ -33,7 +33,7 @@ docker build --build-arg INSTALL_COMPONENTS="cloud-spanner-emulator" -t viya4-ia
 
 ### Service Account Keyfile for Google Cloud Authentication 
 
-Prepare a file with Google Cloud authentication info, as described in [Authenticating Terraform to access Google Cloud](./TerraformGCPAuthentication.md) and store it outside of this repo in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
+Prepare a file with Google Cloud authentication information, as described in [Authenticating Terraform to access Google Cloud](./TerraformGCPAuthentication.md) and store it outside of this repository in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
 
 ### Docker Volume Mounts
 

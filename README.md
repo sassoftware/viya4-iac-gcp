@@ -13,7 +13,7 @@ This project contains Terraform scripts to provision Google Cloud infrastructure
 
 [<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)
 
-Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repo to deploy SAS Viya 4 platform products. If you need more information on the SAS Viya 4 platform products refer to the official [SAS&reg; Viya&reg; platform Operations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopswlcm&docsetTarget=home.htm) documentation for more details.
+Once the cloud resources are provisioned, see the [viya4-deployment](https://github.com/sassoftware/viya4-deployment) repository to deploy SAS Viya 4 platform products. If you need more information on the SAS Viya 4 platform products refer to the official [SAS&reg; Viya&reg; platform Operations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopswlcm&docsetTarget=home.htm) documentation for more details.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Operational knowledge of
 Run these commands in a Terminal session:
 
 ```bash
-# clone this repo
+# clone this repository
 git clone https://github.com/sassoftware/viya4-iac-gcp
 
 # move to directory
@@ -67,7 +67,7 @@ When using a variable definition file other than `terraform.tfvars`, see [Advanc
 
 ## Creating and Managing the Cloud Resources
 
-Create and manage the Google cloud resources by either
+Create and manage the Google Cloud resources by either
 
 - using [Terraform](docs/user/TerraformUsage.md) directly on your workstation, or
 - using a [Docker container](docs/user/DockerUsage.md). 
