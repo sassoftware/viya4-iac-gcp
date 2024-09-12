@@ -1,9 +1,9 @@
-# Authenticating Terraform to access GCP
+# Authenticating Terraform to access Google Cloud
 
-Terraform creates and destroys resources in the Google Cloud Platform on your behalf.
-In order to do so, it needs to authenticate itself to GCP with the appropriate permissions.
+Terraform creates and destroys resources in Google Cloud on your behalf.
+In order to do so, it needs to authenticate itself to Google Cloud with the appropriate permissions.
 
-This project uses a GCP Service Account to authenticate with GCP. You will need a Service Account with the appropriate permissions. You can use an existing Service Account, or preferably create a dedicated Service Account.
+This project uses a Google Cloud Service Account to authenticate with Google Cloud. You will need a Service Account with the appropriate permissions. You can use an existing Service Account, or preferably create a dedicated Service Account.
 
 ## Running Terraform outside Google Cloud
 
@@ -14,9 +14,9 @@ If you are running terraform outside of Google Cloud, generate a service account
 If you are running terraform on a VM in Google Cloud, you can [configure that VM instance to use your Service Account](https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#using). This will allow Terraform to authenticate to Google Cloud without having to bake in a separate credential/authentication file. Ensure that the scope of the VM is set to or includes https://www.googleapis.com/auth/cloud-platform.
 
 
-## Create a GCP Service Account
+## Create a Google Cloud Service Account
 
-How to create a GCP Service Account: https://cloud.google.com/iam/docs/creating-managing-service-accounts
+How to create a Google Cloud Service Account: https://cloud.google.com/iam/docs/creating-managing-service-accounts
 
 gcloud CLI Example:
 
@@ -44,7 +44,7 @@ The Service Account will need the following [IAM roles](https://cloud.google.com
 | `roles/iam.serviceAccountUser` | Service Account User | Terraform Kubernetes Engine Module |
 | `roles/resourcemanager.projectIamAdmin` | Project IAM Admin | Terraform Kubernetes Engine Module |
 
-How to modify IAM access to GCP resources:  https://cloud.google.com/iam/docs/granting-changing-revoking-access
+How to modify IAM access to Google Cloud resources:  https://cloud.google.com/iam/docs/granting-changing-revoking-access
 
 gcloud CLI Example:
 ```bash
@@ -96,7 +96,7 @@ roles/resourcemanager.projectIamAdmin
 
 ## Create the Service Account Keyfile
 
-When running terraform on a workstation outside of the Google Cloud Platform, you persist the Service Account information to a JSON file, and then [specify that file when running terraform](#Terraform-project-variables-to-authenticate-with-GCP).
+When running terraform on a workstation outside of Google Cloud, you store the Service Account information in a JSON file, and then [specify that file when running terraform](#Terraform-project-variables-to-authenticate-with-GCP).
 
 Managing key files using the Cloud Console: https://console.cloud.google.com/apis/credentials/serviceaccountkey
 
@@ -110,11 +110,11 @@ gcloud iam service-accounts keys create ${SA_KEY_FILE} --iam-account ${SA_NAME}@
 chmod 500 ${SA_KEY_FILE} # secure the keyfile
 ```
 
-## Terraform project variables to authenticate with GCP
+## Terraform project variables to authenticate with Google Cloud
 
 As part of your [Terraform input variables](../../README.md#customize-input-values), set these values:
 
 | Name | Description |
 | :--- | :--- |
-| project | The GCP Project to use |
-| service_account_keyfile | Filename of the Service Account JSON file. Alternatively, you can set the `GOOGLE_APPLICATION_CREDENTIAL` environment variable. Note that you do not need to set this variable when running on a GCP VM that is associated with the Service Account.  |
+| project | The Google Cloud Project to use |
+| service_account_keyfile | Filename of the Service Account JSON file. Alternatively, you can set the `GOOGLE_APPLICATION_CREDENTIAL` environment variable. Note that you do not need to set this variable when running on a Google Cloud VM that is associated with the Service Account.  |

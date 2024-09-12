@@ -1,6 +1,6 @@
 # Kubernetes Versions
 
-Setting versions within the Google Cloud Platform (GCP) environment is slightly different from setting a version within other cloud providers
+Setting versions within the Google Cloud environment is slightly different from setting a version within other cloud providers
 
 There are two scenarios that are supported. These are:
 
