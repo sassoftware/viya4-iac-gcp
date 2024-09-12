@@ -31,14 +31,14 @@ docker build --build-arg INSTALL_COMPONENTS="cloud-spanner-emulator" -t viya4-ia
 ```
 
 
-### Service Account Keyfile for GCP Authentication 
+### Service Account Keyfile for Google Cloud Authentication 
 
-Prepare a file with GCP authentication info, as described in [Authenticating Terraform to access GCP](./TerraformGCPAuthentication.md) and store it outside of this repo in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
+Prepare a file with Google Cloud authentication info, as described in [Authenticating Terraform to access Google Cloud](./TerraformGCPAuthentication.md) and store it outside of this repo in a secure file, for example `$HOME/.viya4-tf-gcp-service-account.json`.
 
 ### Docker Volume Mounts
 
 Add volume mounts to the `docker run` command for all files and directories that must be accessible from inside the container.
-- `--volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json` Service Account Key file for GCP authentication
+- `--volume=$HOME/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json` Service Account Key file for Google Cloud authentication
 - `--volume=$HOME/.ssh:/.ssh` for [`ssh_public_key`](../CONFIG-VARS.md#required-variables) variable in the `terraform.tfvars` file
 - `--volume=$(pwd):/workspace` for local directory where `terraform.tfvars` file resides and where `terraform.tfstate` file will be written. To grant Docker, permission to write to the local directory use [`--user` option](https://docs.docker.com/engine/reference/run/#user)
 

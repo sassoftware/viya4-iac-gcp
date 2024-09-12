@@ -1,8 +1,8 @@
-# SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud Platform (GCP)
+# SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud
 
 ## Overview
 
-This project contains Terraform scripts to provision Google GCP infrastructure resources required to deploy SAS Viya 4 platform products. Here is a list of resources this project can create -
+This project contains Terraform scripts to provision Google Cloud infrastructure resources required to deploy SAS Viya 4 platform products. Here is a list of resources this project can create -
 
   >- VPC Network and Network Firewalls
   >- Managed Google Kubernetes Engine (GKE) cluster
@@ -20,7 +20,7 @@ Once the cloud resources are provisioned, see the [viya4-deployment](https://git
 Operational knowledge of 
 - [Terraform](https://www.terraform.io/intro/index.html)
 - [Docker](https://www.docker.com/)
-- [Google Cloud Platform](https://cloud.google.com/)
+- [Google Cloud](https://cloud.google.com/)
 - [Kubernetes](https://kubernetes.io/docs/concepts/)
 
 ### Required
@@ -53,21 +53,21 @@ git clone https://github.com/sassoftware/viya4-iac-gcp
 cd viya4-iac-gcp
 ```
 
-### Authenticating Terraform to access GCP
+### Authenticating Terraform to access Google Cloud
 
-See [Terraform GCP Authentication](./docs/user/TerraformGCPAuthentication.md) for details.
+See [Terraform Google Cloud Authentication](./docs/user/TerraformGCPAuthentication.md) for details.
 
 ### Customize Input Values
 
 Create a file named `terraform.tfvars` to customize any input variable value documented in the [CONFIG-VARS.md](docs/CONFIG-VARS.md) file. For starters, you can copy one of the provided example variable definition files in `./examples` folder. For more details on the variables declared refer to the [CONFIG-VARS.md](docs/CONFIG-VARS.md) file.
 
-**NOTE:** You will need to update the `cidr_blocks` in the [variables.tf](variables.tf) file to allow traffic from your current network. Without these rules, access to the cluster will only be allowed via the GCP Console.
+**NOTE:** You will need to update the `cidr_blocks` in the [variables.tf](variables.tf) file to allow traffic from your current network. Without these rules, access to the cluster will only be allowed via the Google Cloud Console.
 
 When using a variable definition file other than `terraform.tfvars`, see [Advanced Terraform Usage](docs/user/AdvancedTerraformUsage.md) for additional command options.
 
 ## Creating and Managing the Cloud Resources
 
-Create and manage the GCP cloud resources by either 
+Create and manage the Google cloud resources by either
 
 - using [Terraform](docs/user/TerraformUsage.md) directly on your workstation, or
 - using a [Docker container](docs/user/DockerUsage.md). 
@@ -87,11 +87,11 @@ See [troubleshooting](./docs/Troubleshooting.md) page.
 
 ## Additional Resources
 
-### GCP
+### Google Cloud
 
 - Google Cloud CLI - https://cloud.google.com/sdk/gcloud
-- Terraform on GCP - https://cloud.google.com/docs/terraform
-- Terraform and GCP Service Accounts - https://medium.com/@gmusumeci/how-to-create-a-service-account-for-terraform-in-gcp-google-cloud-platform-f75a0cf918d1
+- Terraform on Google Cloud - https://cloud.google.com/docs/terraform
+- Terraform and Google Cloud Service Accounts - https://medium.com/@gmusumeci/how-to-create-a-service-account-for-terraform-in-gcp-google-cloud-platform-f75a0cf918d1
 - GKE intro - https://cloud.google.com/kubernetes-engine
 
 ### Terraform 

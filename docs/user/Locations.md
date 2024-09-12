@@ -1,6 +1,6 @@
 ## Resource Locations
 
-Google Cloud Platform resources are hosted in different data centers worldwide, divided into [Regions and Zones](https://cloud.google.com/compute/docs/regions-zones).
+Google Cloud resources are hosted in different data centers worldwide, divided into [Regions and Zones](https://cloud.google.com/compute/docs/regions-zones).
 
 You control the location of your Viya4 IAC resources by setting the `location` variable to either a Region or a Zone.
 

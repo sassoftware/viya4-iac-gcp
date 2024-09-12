@@ -7,7 +7,7 @@ Supported configuration variables are listed in the table below.  All variables 
 - [List of valid configuration variables](#list-of-valid-configuration-variables)
   - [Table of Contents](#table-of-contents)
   - [Required Variables](#required-variables)
-  - [GCP Authentication](#gcp-authentication)
+  - [Google Cloud Authentication](#gcp-authentication)
   - [Admin Access](#admin-access)
   - [Networking](#networking)
     - [Use Existing](#use-existing)
@@ -31,21 +31,21 @@ Terraform input variables can be set in the following ways:
 
 | Name | Description | Type | Default | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| prefix | A prefix used in the name of all the GCP resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only lowercase alphanumeric characters and dashes (-), but cannot end with a dash. |
-| location | The GCP Region (for example "us-east1") or GCP Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
-| project | The ID of the GCP Project to use | string | | |
+| prefix | A prefix used in the name of all the Google Cloud resources created by this script. | string | | The prefix string must start with a lowercase letter and contain only lowercase alphanumeric characters and dashes (-), but cannot end with a dash. |
+| location | The Google Cloud Region (for example "us-east1") or Google Cloud Zone (for example "us-east1-b") to provision all resources in this script. | string | | See [this topic](user/Locations.md) on how to chose a region or a zone.  |
+| project | The ID of the Google Cloud Project to use | string | | |
 | service_account_keyfile | Filename of the Service Account JSON file | string | Not required when running on a Google Cloud VM that is associated with the Service Account |
 
-## GCP Authentication
+## Google Cloud Authentication
 
-The Terraform process manages GCP resources on your behalf. In order to do so, it needs to know the credentials for a GCP identity with the required permissions.
+The Terraform process manages Google Cloud resources on your behalf. In order to do so, it needs to know the credentials for a Google Cloud identity with the required permissions.
 
-For more detailed information on what is needed see [Authenticating Terraform to access GCP](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/user/TerraformGCPAuthentication.md)
+For more detailed information on what is needed see [Authenticating Terraform to access Google Cloud](https://github.com/sassoftware/viya4-iac-gcp/blob/main/docs/user/TerraformGCPAuthentication.md)
 
 ## Admin Access
 
-By default, the API of the GCP resources that are being created are only accessible through authenticated GCP clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.)
-To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the GCP firewall to allow access from your source IPs.
+By default, the API of the Google Cloud resources that are being created are only accessible through authenticated Google Cloud clients (e.g. the Google Cloud Portal, the `gcloud` CLI, the Google Cloud Shell, etc.)
+To allow access for other administrative client applications (for example `kubectl`, `psql`, etc.), you need to open up the Google Cloud firewall to allow access from your source IPs.
 
 To do set these permissions as part of this Terraform script, specify ranges of IP addresses in [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing). Contact your Network Administrator to find the public CIDR range of your network.
 
@@ -94,11 +94,11 @@ subnet_names = {
 }
 ```
 
-Note: The subnets for filestore and database can not the pre-created. GCP creates the subnets as part of the services.
+Note: The subnets for filestore and database can not the pre-created. Google Cloud creates the subnets as part of the services.
 
 ## General
 
-The application of a Kubernetes version in GCP has some limitations when assigning channels and versions to the cluster. The doc outlining on these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
+The application of a Kubernetes version in Google Cloud has some limitations when assigning channels and versions to the cluster. The doc outlining on these limitations can be found in the [Kubernetes Versions](user/KubernetesVersions.md) guide.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
@@ -114,7 +114,7 @@ The application of a Kubernetes version in GCP has some limitations when assigni
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | |
 | jump_rwx_filestore_path | File store mount point on Jump server | string | "/viya-share" | |
-| tags | Map of common tags to be placed on all GCP resources created by this script | map | {} | |
+| tags | Map of common tags to be placed on all Google Cloud resources created by this script | map | {} | |
 | ssh_public_key | File name of public ssh key for jump and nfs VM | string | null | Required with `create_jump_vm=true` or `storage_type=standard` |
 | cluster_api_mode | Public or private IP for the cluster api| string|"public"|Valid Values: "public", "private" |
 
