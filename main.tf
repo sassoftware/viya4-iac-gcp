@@ -301,3 +301,11 @@ module "sql_proxy_sa" {
   project_roles = ["${var.project}=>roles/cloudsql.admin"]
   display_name  = "IAC-managed service account for cluster ${var.prefix} and sql-proxy integration."
 }
+
+module "google_netapp" {
+  source  = "./modules/google_netapp"
+  project = var.project
+  count   = var.storage_type == "standard" && var.storage_type_backend == "netapp" ? 1 : 0
+  name    = "${var.prefix}-netapp"
+  region  = local.region
+}

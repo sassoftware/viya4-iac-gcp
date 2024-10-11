@@ -184,6 +184,18 @@ variable "storage_type" {
   }
 }
 
+variable "storage_type_backend" {
+  description = "The storage backend used for the chosen storage type. Defaults to 'nfs' for storage_type='standard'. Defaults to 'filestore for storage_type='ha'. 'filestore' and 'netapp' are valid choices for storage_type='ha'."
+  type        = string
+  default     = "nfs"
+  # If storage_type is standard, this will be set to "nfs"
+
+  validation {
+    condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
+    error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp and none."
+  }
+}
+
 variable "minimum_initial_nodes" {
   description = "Number of initial nodes to aim for to overcome the Ingress quota limit of 100"
   type        = number

@@ -17,7 +17,7 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
     - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
-    - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
+    - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore) #TODO
   - [Google Artifact Registry (GAR) and Google Container Registry (GCR)](#google-artifact-registry-gar-and-google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
   - [Monitoring](#monitoring)

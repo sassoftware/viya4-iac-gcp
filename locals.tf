@@ -25,6 +25,12 @@ locals {
     : null
   )
 
+  # Storage
+  storage_type_backend = (var.storage_type == "none" ? "none"
+    : var.storage_type == "standard" ? "nfs"
+    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "netapp"
+  : var.storage_type == "ha" ? "filestore" : "none")
+
   # Kubernetes
   kubeconfig_path = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
 
