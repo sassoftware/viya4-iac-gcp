@@ -17,7 +17,7 @@ locals {
 module "nfs_server" {
   source           = "./modules/google_vm"
   project          = var.project
-  count            = var.storage_type == "standard" ? 1 : 0
+  count            = var.storage_type == "standard" && var.storage_type_backend == "nfs" ? 1 : 0
   create_public_ip = var.create_nfs_public_ip
 
   name         = "${var.prefix}-nfs-server"
