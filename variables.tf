@@ -438,6 +438,36 @@ variable "enable_registry_access" {
   default     = true
 }
 
+## Google NetApp Volumes
+variable "netapp_service_level" {
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
+  type        = string
+  default     = "PREMIUM"
+
+  validation {
+    condition     = var.netapp_service_level != null ? contains(["PREMIUM", "EXTREME", "STANDARD", "FLEX"], var.netapp_service_level) : null
+    error_message = "ERROR: netapp_service_level - Valid values include - PREMIUM, EXTREME, STANDARD, FLEX."
+  }
+}
+
+variable "netapp_protocols" {
+  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, SMB."
+  type        = list(string)
+  default     = ["NFSv4"]
+}
+
+variable "netapp_capacity_gib" {
+  description = "Capacity of the storage pool (in GiB)."
+  type        = string
+  default     = 1024
+}
+
+variable "netapp_volume_path" {
+  description = "A unique file path for the volume. Used when creating mount targets. Needs to be unique per location."
+  type        = string
+  default     = "export"
+}
+
 # GKE Monitoring
 variable "create_gke_monitoring_service" {
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."

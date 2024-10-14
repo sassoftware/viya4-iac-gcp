@@ -5,35 +5,32 @@
 # GitHub Repository  : https://github.com/terraform-google-modules
 #
 
-resource "google_netapp_storage_pool" "my-tf-pool" {
-  name          = "${var.name}-storage-pool"
+resource "google_netapp_storage_pool" "netapp-tf-pool" {
+  name          = "${var.prefix}-netapp-storage-pool"
   location      = var.region
-  service_level = "PREMIUM"
-  capacity_gib  = 2048
-  network       = data.google_compute_network.my-vpc.id
+  service_level = var.service_level
+  capacity_gib  = var.capacity_gib
+  network       = var.network
 }
 
-resource "google_netapp_volume" "my-nfsv3-volume" {
+resource "google_netapp_volume" "netapp-nfs-volume" {
   location         = var.region
-  name             = "${var.name}-volume"
+  name             = "${var.prefix}-netapp-volume"
   capacity_gib     = 1024 # Size can be up to space available in pool
-  share_name       = "my-nfsv3-volume"
-  storage_pool     = google_netapp_storage_pool.my-tf-pool.name
-  protocols        = ["NFSV4.1"]
+  share_name       = var.volume_path
+  storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
+  protocols        = var.protocols
   unix_permissions = "0777"
   export_policy {
-    # Order of rules matters! Go from most specific to most generic
     rules {
       access_type     = "READ_WRITE"
-      allowed_clients = "10.10.10.17"
+      allowed_clients = var.allowed_clients
       has_root_access = true
-      nfsv3           = true
-    }
-    rules {
-      access_type     = "READ_ONLY"
-      allowed_clients = "10.10.0.0/16"
-      has_root_access = false
-      nfsv3           = true
+      nfsv4           = true
     }
   }
+
+  depends_on = [
+    google_netapp_storage_pool.netapp-tf-pool
+  ]
 }
