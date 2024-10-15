@@ -20,7 +20,7 @@ variable "service_level" {
 variable "protocols" {
   description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, SMB."
   type        = list(string)
-  default     = ["NFSv4"]
+  default     = ["NFSV4"]
 }
 
 variable "capacity_gib" {
@@ -43,6 +43,6 @@ variable "network" {
 
 variable "allowed_clients" {
   description = "CIDR blocks allowed to mount nfs exports"
-  # type        = list(string)
-  # default     = ["0.0.0.0/0"]
+  type        = string
+  default     = "0.0.0.0/0"
 }

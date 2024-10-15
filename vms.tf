@@ -5,12 +5,12 @@ locals {
   rwx_filestore_endpoint = (var.storage_type == "none"
     ? ""
     : var.storage_type == "ha" && var.storage_type_backend == "filestore" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0]
-    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0] : module.nfs_server[0].private_ip # TODO
+    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? module.google_netapp[0].export_ip : module.nfs_server[0].private_ip
   )
   rwx_filestore_path = (var.storage_type == "none"
     ? ""
     : var.storage_type == "ha" && var.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
-    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}" : "/export" #TODO
+    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "/${module.google_netapp[0].mountpath}" : "/export"
   )
 }
 
