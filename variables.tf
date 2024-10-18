@@ -457,9 +457,9 @@ variable "netapp_protocols" {
 }
 
 variable "netapp_capacity_gib" {
-  description = "Capacity of the storage pool (in GiB)."
+  description = "Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB."
   type        = string
-  default     = 1024
+  default     = 2048
 }
 
 variable "netapp_volume_path" {
@@ -561,6 +561,11 @@ variable "database_subnet_cidr" {
   default     = "192.168.4.0/23"
 }
 
+# variable "netapp_subnet_cidr" {
+#   description = "Address space for Google NetApp Volumes subnet"
+#   type        = string
+#   default     = "192.168.5.0/24"
+# }
 
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."

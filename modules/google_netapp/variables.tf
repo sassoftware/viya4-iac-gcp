@@ -26,7 +26,7 @@ variable "protocols" {
 variable "capacity_gib" {
   description = "Capacity of the storage pool (in GiB)."
   type        = string
-  default     = 1024
+  default     = 2048
 }
 
 variable "volume_path" {
@@ -46,3 +46,9 @@ variable "allowed_clients" {
   type        = string
   default     = "0.0.0.0/0"
 }
+
+# variable "netapp_subnet_cidr" {
+#   description = "Address space for Google NetApp Volumes subnet"
+#   type        = string
+#   default     = "192.168.5.0/24"
+# }
