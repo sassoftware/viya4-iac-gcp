@@ -12,6 +12,8 @@ locals {
     : var.storage_type == "ha" && var.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
     : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "/${module.google_netapp[0].mountpath}" : "/export"
   )
+  protocol_version = var.storage_type == "ha" && var.storage_type_backend == "netapp" ? split("V", var.netapp_protocols[0])[1] == "4" ? "4.1" : "3" : "3"
+
 }
 
 module "nfs_server" {
@@ -70,7 +72,7 @@ module "jump_server" {
         ["${local.rwx_filestore_endpoint}:${local.rwx_filestore_path}",
           var.jump_rwx_filestore_path,
           "nfs",
-          "_netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=3,tcp,namlen=255,retrans=2,sec=sys,local_lock=none",
+          "_netdev,auto,x-systemd.automount,x-systemd.mount-timeout=10,timeo=14,x-systemd.idle-timeout=1min,relatime,hard,rsize=65536,wsize=65536,vers=${local.protocol_version},tcp,namlen=255,retrans=2,sec=sys,local_lock=none",
           "0",
           "0"
       ])

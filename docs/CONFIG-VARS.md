@@ -17,7 +17,8 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
     - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
-    - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore) #TODO
+    - [For `storage_type=ha` with Google Filestore](#for-storage_typeha-with-google-filestore)
+    - [For `storage_type=ha` with Google NetApp Volumes](#for-storage_typeha-with-google-netapp-volumes)
   - [Google Artifact Registry (GAR) and Google Container Registry (GCR)](#google-artifact-registry-gar-and-google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
   - [Monitoring](#monitoring)
@@ -212,6 +213,7 @@ stateful = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
+| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "filestore" | Valid Values: "nfs" if `storage_type=standard`; "filestore" or "netapp" if `storage_type=ha` |
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -221,12 +223,25 @@ stateful = {
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
-### For `storage_type=ha` only (Google Filestore)
+### For `storage_type=ha` with Google Filestore
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
 | filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
+
+### For `storage_type=ha` with Google NetApp Volumes
+
+When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
+- Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
+- Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values are: PREMIUM, EXTREME, STANDARD, FLEX. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported. |
+| netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
+| netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | "export" | |
 
 ## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 

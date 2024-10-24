@@ -94,5 +94,6 @@ jump_vm_admin         = "jumpuser"
 # Storage for Viya Compute Services
 # Supported storage_type values
 #    "standard" - Custom managed NFS Server VM and disks
-#    "ha"       - Google Filestore  
+#    "ha"       - Google Filestore  or Google NetApp Volumes
 storage_type = "ha"
+storage_type_backend = "filestore"  # "filestore" is the default, use "netapp" to create Google NetApp Volumes
