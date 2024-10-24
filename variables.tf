@@ -451,9 +451,14 @@ variable "netapp_service_level" {
 }
 
 variable "netapp_protocols" {
-  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, SMB."
+  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported."
   type        = list(string)
   default     = ["NFSV4"]
+
+  validation {
+    condition     = var.netapp_protocols != null ? startswith(var.netapp_protocols[0], "NFS") : null
+    error_message = "ERROR: Currently, only NFS protocol is supported."
+  }
 }
 
 variable "netapp_capacity_gib" {
