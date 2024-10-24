@@ -192,7 +192,7 @@ variable "storage_type_backend" {
 
   validation {
     condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
-    error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp and none."
+    error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp or none."
   }
 }
 
@@ -565,12 +565,6 @@ variable "database_subnet_cidr" {
   type        = string
   default     = "192.168.4.0/23"
 }
-
-# variable "netapp_subnet_cidr" {
-#   description = "Address space for Google NetApp Volumes subnet"
-#   type        = string
-#   default     = "192.168.5.0/24"
-# }
 
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."

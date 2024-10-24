@@ -12,14 +12,14 @@ locals {
     : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
     : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? "/${module.google_netapp[0].mountpath}" : "/export"
   )
-  protocol_version = var.storage_type == "ha" && var.storage_type_backend == "netapp" ? split("V", var.netapp_protocols[0])[1] == "4" ? "4.1" : "3" : "3"
+  protocol_version = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? split("V", var.netapp_protocols[0])[1] == "4" ? "4.1" : "3" : "3"
 
 }
 
 module "nfs_server" {
   source           = "./modules/google_vm"
   project          = var.project
-  count            = var.storage_type == "standard" && var.storage_type_backend == "nfs" ? 1 : 0
+  count            = var.storage_type == "standard" && local.storage_type_backend == "nfs" ? 1 : 0
   create_public_ip = var.create_nfs_public_ip
 
   name         = "${var.prefix}-nfs-server"
