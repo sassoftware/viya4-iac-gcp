@@ -20,9 +20,7 @@ resource "google_service_networking_connection" "default" {
   service                 = "netapp.servicenetworking.goog"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
 
-  depends_on = [
-    google_compute_global_address.private_ip_alloc
-  ]
+  deletion_policy = "ABANDON"
 }
 
 # Modify the PSA Connection to allow import/export of custom routes
@@ -64,6 +62,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
   }
 
   depends_on = [
-    google_netapp_storage_pool.netapp-tf-pool
+    google_netapp_storage_pool.netapp-tf-pool,
+    google_service_networking_connection.default
   ]
 }
