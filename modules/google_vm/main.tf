@@ -3,7 +3,7 @@
 
 module "address" {
   source       = "terraform-google-modules/address/google"
-  version      = "~> 4.0.0"
+  version      = "~> 4.1.0"
   project_id   = var.project
   region       = var.region
   address_type = "EXTERNAL"
