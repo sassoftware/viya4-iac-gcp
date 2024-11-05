@@ -32,7 +32,7 @@ Operational knowledge of
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v1.9.6
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.29.9
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.29.8
     - [jq](https://stedolan.github.io/jq/) - v1.7
     - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v496.0.0
     - [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin) - (optional - only for provider based Kubernetes configuration files) - >= v1.26
