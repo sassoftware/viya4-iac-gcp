@@ -453,7 +453,7 @@ variable "netapp_service_level" {
 variable "netapp_protocols" {
   description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported."
   type        = list(string)
-  default     = ["NFSV4"]
+  default     = ["NFSV3"]
 
   validation {
     condition     = var.netapp_protocols != null ? startswith(var.netapp_protocols[0], "NFS") : null

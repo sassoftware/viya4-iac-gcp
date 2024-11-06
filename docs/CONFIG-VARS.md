@@ -235,6 +235,7 @@ stateful = {
 When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
 - Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
 - Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
+- NetApp Volumes is available in several regions. For details about region availability, see [NetApp Volumes locations](https://cloud.google.com/netapp/volumes/docs/locations).
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
