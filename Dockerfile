@@ -1,12 +1,12 @@
 # Copyright © 2021-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-ARG TERRAFORM_VERSION=1.8.5
-ARG GCP_CLI_VERSION=479.0.0
+ARG TERRAFORM_VERSION=1.9.6
+ARG GCP_CLI_VERSION=496.0.0
 
-FROM hashicorp/terraform:$TERRAFORM_VERSION as terraform
+FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 FROM google/cloud-sdk:$GCP_CLI_VERSION-alpine
-ARG KUBECTL_VERSION=1.29.7
+ARG KUBECTL_VERSION=1.29.8
 ARG ENABLE_GKE_GCLOUD_AUTH_PLUGIN=True
 ARG INSTALL_COMPONENTS=""
 
