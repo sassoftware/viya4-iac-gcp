@@ -567,9 +567,9 @@ variable "database_subnet_cidr" {
 }
 
 variable "netapp_subnet_cidr" {
-  description = "Address space for Google Cloud SQL Postgres subnet"
+  description = "Address space for Google Cloud NetApp Volumes subnet"
   type        = string
-  default     = "192.168.5.0"
+  default     = "192.168.5.0/24"
 }
 
 variable "gke_network_policy" {

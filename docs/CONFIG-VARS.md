@@ -70,6 +70,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
+| netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.5.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"` and `storage_type_backend="netapp"` |
 
 ### Use Existing
 
@@ -240,9 +241,9 @@ When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values are: PREMIUM, EXTREME, STANDARD, FLEX. |
-| netapp_protocols | The target volume protocol expressed as a list. | list(string) | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
-| netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | "export" | |
+| netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
 
 ## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 
