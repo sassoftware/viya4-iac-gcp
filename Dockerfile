@@ -6,7 +6,7 @@ ARG GCP_CLI_VERSION=496.0.0
 
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 FROM google/cloud-sdk:$GCP_CLI_VERSION-alpine
-ARG KUBECTL_VERSION=1.29.8
+ARG KUBECTL_VERSION=1.30.6
 ARG ENABLE_GKE_GCLOUD_AUTH_PLUGIN=True
 ARG INSTALL_COMPONENTS=""
 
@@ -18,7 +18,7 @@ COPY . .
 RUN apk update \
   && apk upgrade --no-cache \
   && apk add --no-cache jq \
-  && curl -sLO https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl \
+  && curl -sLO https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl \
   && chmod 755 ./kubectl /viya4-iac-gcp/docker-entrypoint.sh \
   && mv ./kubectl /usr/local/bin/kubectl \
   && chmod g=u -R /etc/passwd /etc/group /viya4-iac-gcp \
