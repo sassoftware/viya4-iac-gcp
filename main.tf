@@ -307,12 +307,13 @@ module "google_netapp" {
 
   count = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? 1 : 0
 
-  prefix          = var.prefix
-  region          = local.region
-  network         = module.vpc.network_name
-  service_level   = var.netapp_service_level
-  capacity_gib    = var.netapp_capacity_gib
-  protocols       = var.netapp_protocols
-  volume_path     = "${var.prefix}-${var.netapp_volume_path}"
-  allowed_clients = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
+  prefix             = var.prefix
+  region             = local.region
+  network            = module.vpc.network_name
+  netapp_subnet_cidr = var.netapp_subnet_cidr
+  service_level      = var.netapp_service_level
+  capacity_gib       = var.netapp_capacity_gib
+  protocols          = var.netapp_protocols
+  volume_path        = "${var.prefix}-${var.netapp_volume_path}"
+  allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
 }

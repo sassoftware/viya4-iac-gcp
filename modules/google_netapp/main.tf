@@ -10,6 +10,7 @@ resource "google_compute_global_address" "private_ip_alloc" {
   name          = "${var.network}-ip-range"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
+  address       = var.netapp_subnet_cidr
   prefix_length = 24
   network       = var.network
 }

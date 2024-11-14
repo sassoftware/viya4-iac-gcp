@@ -46,3 +46,9 @@ variable "allowed_clients" {
   type        = string
   default     = "0.0.0.0/0"
 }
+
+variable "netapp_subnet_cidr" {
+  description = "Address space for Google Cloud SQL Postgres subnet"
+  type        = string
+  default     = "192.168.5.0"
+}

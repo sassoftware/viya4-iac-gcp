@@ -566,6 +566,12 @@ variable "database_subnet_cidr" {
   default     = "192.168.4.0/23"
 }
 
+variable "netapp_subnet_cidr" {
+  description = "Address space for Google Cloud SQL Postgres subnet"
+  type        = string
+  default     = "192.168.5.0"
+}
+
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."
   type        = bool
