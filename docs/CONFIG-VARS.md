@@ -241,7 +241,7 @@ When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values are: PREMIUM, EXTREME, STANDARD, FLEX. |
-| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFSV3 is supported by SAS Viya Platform. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
 
