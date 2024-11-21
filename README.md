@@ -8,7 +8,7 @@ This project contains Terraform scripts to provision Google Cloud infrastructure
   >- Managed Google Kubernetes Engine (GKE) cluster
   >- System and User GKE Node pools with required Labels and Taints
   >- Infrastructure to deploy SAS Viya platform CAS in SMP or MPP mode
-  >- Shared Storage options for SAS Viya platform -  Google Filestore (ha) or NFS Server (standard)
+  >- Shared Storage options for SAS Viya platform -  Google Filestore (ha), Google NetApp Volumes (ha) or NFS Server (standard)
   >- Google Cloud SQL for PostgreSQL instance, optional
 
 [<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)

@@ -66,7 +66,7 @@ EOT
 
 resource "google_filestore_instance" "rwx" {
   name     = "${var.prefix}-rwx-filestore"
-  count    = var.storage_type == "ha" ? 1 : 0
+  count    = var.storage_type == "ha" && local.storage_type_backend == "filestore" ? 1 : 0
   tier     = upper(var.filestore_tier)
   location = local.zone
   labels   = var.tags
@@ -300,4 +300,20 @@ module "sql_proxy_sa" {
   names         = ["sql-proxy-sa"]
   project_roles = ["${var.project}=>roles/cloudsql.admin"]
   display_name  = "IAC-managed service account for cluster ${var.prefix} and sql-proxy integration."
+}
+
+module "google_netapp" {
+  source = "./modules/google_netapp"
+
+  count = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? 1 : 0
+
+  prefix             = var.prefix
+  region             = local.region
+  network            = module.vpc.network_name
+  netapp_subnet_cidr = var.netapp_subnet_cidr
+  service_level      = var.netapp_service_level
+  capacity_gib       = var.netapp_capacity_gib
+  protocols          = var.netapp_protocols
+  volume_path        = "${var.prefix}-${var.netapp_volume_path}"
+  allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
 }

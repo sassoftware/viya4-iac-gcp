@@ -27,7 +27,8 @@ output "rwx_filestore_endpoint" {
   description = "Shared Storage private IP"
   value = (var.storage_type == "none"
     ? null
-    : var.storage_type == "ha" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0] : module.nfs_server[0].private_ip
+    : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0]
+    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].export_ip : module.nfs_server[0].private_ip
   )
 }
 
@@ -35,7 +36,8 @@ output "rwx_filestore_path" {
   description = "Shared Storage mount path"
   value = (var.storage_type == "none"
     ? null
-    : var.storage_type == "ha" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}" : "/export"
+    : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
+    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].mountpath : "/export"
   )
 }
 
