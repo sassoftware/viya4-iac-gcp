@@ -66,7 +66,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_subnet_cidr | Address space for the subnet for the GKE resources | string | "192.168.0.0/23" | This variable is ignored when `vpc_name` is set (aka bring your own vnet) |
 | gke_pod_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Pods | string | "10.0.0.0/17" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
 | gke_service_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
-| gke_control_plane_subnet_cidr |  Address space for the hosted master subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
+| gke_control_plane_subnet_cidr |  Address space for the hosted primary subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
@@ -284,8 +284,8 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
 | server_version | The version of the  PostgreSQL server instance | string | "15" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
-| availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
-| database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
+| availability_type | The availability type for the primary instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
+| database_flags | Database flags for the primary instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
 Multiple SAS offerings require a second PostgreSQL instance referred to as SAS Common Data Store, or CDS PostgreSQL. For more information, see [Common Customizations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). A list of SAS offerings that require CDS PostgreSQL is provided in [SAS Common Data Store Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa). To create and configure an external CDS PostgreSQL instance in addition to the external platform PostgreSQL instance named `default`, specify `cds-postgres` as a second PostgreSQL instance, as shown in the example below.
 
@@ -323,4 +323,4 @@ postgres_servers = {
 | gke_monitoring_enabled_components | List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (WORKLOADS deprecated in 1.24). | list of strings | ["SYSTEM_COMPONENTS"] | |
 | enable_managed_prometheus | Enable Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) for your cluster | boolean | false | |
 
-Note: For additional details about Google Kubernetes Engine (GKE) integration with Cloud Logging and Cloud Monitoring, including Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), view the ["Overview of Google Cloud's operations suite for GKE" documentation](https://cloud.google.com/stackdriver/docs/solutions/gke) 
+Note: For additional details about Google Kubernetes Engine (GKE) integration with Cloud Logging and Cloud Monitoring, including Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), view the ["Overview of Google Cloud's operations suite for GKE" documentation](https://cloud.google.com/stackdriver/docs/solutions/gke)
