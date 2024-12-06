@@ -12,9 +12,9 @@ variable "prefix" {
 
 variable "location" {
   description = <<EOF
-  The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script. 
-  Choosing a Region will make this a multi-zonal cluster. 
-  If you aren't sure which to choose, go with a ZONE instead of a region. 
+  The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script.
+  Choosing a Region will make this a multi-zonal cluster.
+  If you aren't sure which to choose, go with a ZONE instead of a region.
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
   type        = string
@@ -177,7 +177,7 @@ variable "storage_type" {
   description = "Type of storage to create"
   type        = string
   default     = "standard"
-  # NOTE: storage_type="none" is for internal use only 
+  # NOTE: storage_type="none" is for internal use only
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
     error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
@@ -549,7 +549,7 @@ variable "gke_service_subnet_cidr" {
 }
 
 variable "gke_control_plane_subnet_cidr" {
-  description = "Address space for the hosted master subnet"
+  description = "Address space for the hosted primary subnet"
   type        = string
   default     = "10.2.0.0/28"
 }
