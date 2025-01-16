@@ -27,7 +27,7 @@ postgres_servers = {
 }
 
 # GKE config
-kubernetes_version         = "1.29"
+kubernetes_version         = "1.30"
 default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
 
@@ -94,5 +94,6 @@ jump_vm_admin         = "jumpuser"
 # Storage for Viya Compute Services
 # Supported storage_type values
 #    "standard" - Custom managed NFS Server VM and disks
-#    "ha"       - Google Filestore  
+#    "ha"       - Google Filestore  or Google NetApp Volumes
 storage_type = "ha"
+storage_type_backend = "filestore"  # "filestore" is the default, use "netapp" to create Google NetApp Volumes

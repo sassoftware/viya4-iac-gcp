@@ -17,7 +17,8 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
     - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
-    - [For `storage_type=ha` only (Google Filestore)](#for-storage_typeha-only-google-filestore)
+    - [For `storage_type=ha` with Google Filestore](#for-storage_typeha-with-google-filestore)
+    - [For `storage_type=ha` with Google NetApp Volumes](#for-storage_typeha-with-google-netapp-volumes)
   - [Google Artifact Registry (GAR) and Google Container Registry (GCR)](#google-artifact-registry-gar-and-google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
   - [Monitoring](#monitoring)
@@ -65,10 +66,11 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_subnet_cidr | Address space for the subnet for the GKE resources | string | "192.168.0.0/23" | This variable is ignored when `vpc_name` is set (aka bring your own vnet) |
 | gke_pod_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Pods | string | "10.0.0.0/17" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
 | gke_service_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
-| gke_control_plane_subnet_cidr |  Address space for the hosted master subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
+| gke_control_plane_subnet_cidr |  Address space for the hosted primary subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
+| netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.5.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"` and `storage_type_backend="netapp"` |
 
 ### Use Existing
 
@@ -212,6 +214,7 @@ stateful = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
+| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "filestore" | Valid Values: "nfs" if `storage_type=standard`; "filestore" or "netapp" if `storage_type=ha` |
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -221,12 +224,26 @@ stateful = {
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
-### For `storage_type=ha` only (Google Filestore)
+### For `storage_type=ha` with Google Filestore
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | filestore_tier | The service tier for the Google Filestore Instance | string | "BASIC_HDD" | Valid Values: "BASIC_HDD", "BASIC_SSD" (previously called "STANDARD" and "PREMIUM" respectively.)  |
 | filestore_size_in_gb | Size in GB of Filesystem in the Google Filestore Instance | number | 1024 for BASIC_HDD, 2560 for BASIC_SDD | 2560 GB is the minimum size for the BASIC_SSD tier. The BASIC_HDD tier allows a minimum size of 1024 GB. |
+
+### For `storage_type=ha` with Google NetApp Volumes
+
+When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
+- Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
+- Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
+- NetApp Volumes is available in several regions. For details about region availability, see [NetApp Volumes locations](https://cloud.google.com/netapp/volumes/docs/locations).
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values are: PREMIUM, EXTREME, STANDARD, FLEX. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFSV3 is supported by SAS Viya Platform. |
+| netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
+| netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
 
 ## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 
@@ -267,8 +284,8 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
 | server_version | The version of the  PostgreSQL server instance | string | "15" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
-| availability_type | The availability type for the master instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
-| database_flags | Database flags for the master instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
+| availability_type | The availability type for the primary instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
+| database_flags | Database flags for the primary instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
 Multiple SAS offerings require a second PostgreSQL instance referred to as SAS Common Data Store, or CDS PostgreSQL. For more information, see [Common Customizations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). A list of SAS offerings that require CDS PostgreSQL is provided in [SAS Common Data Store Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa). To create and configure an external CDS PostgreSQL instance in addition to the external platform PostgreSQL instance named `default`, specify `cds-postgres` as a second PostgreSQL instance, as shown in the example below.
 
@@ -306,4 +323,4 @@ postgres_servers = {
 | gke_monitoring_enabled_components | List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (WORKLOADS deprecated in 1.24). | list of strings | ["SYSTEM_COMPONENTS"] | |
 | enable_managed_prometheus | Enable Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) for your cluster | boolean | false | |
 
-Note: For additional details about Google Kubernetes Engine (GKE) integration with Cloud Logging and Cloud Monitoring, including Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), view the ["Overview of Google Cloud's operations suite for GKE" documentation](https://cloud.google.com/stackdriver/docs/solutions/gke) 
+Note: For additional details about Google Kubernetes Engine (GKE) integration with Cloud Logging and Cloud Monitoring, including Google Cloud [Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), view the ["Overview of Google Cloud's operations suite for GKE" documentation](https://cloud.google.com/stackdriver/docs/solutions/gke)

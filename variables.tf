@@ -12,9 +12,9 @@ variable "prefix" {
 
 variable "location" {
   description = <<EOF
-  The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script. 
-  Choosing a Region will make this a multi-zonal cluster. 
-  If you aren't sure which to choose, go with a ZONE instead of a region. 
+  The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script.
+  Choosing a Region will make this a multi-zonal cluster.
+  If you aren't sure which to choose, go with a ZONE instead of a region.
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
   type        = string
@@ -177,10 +177,22 @@ variable "storage_type" {
   description = "Type of storage to create"
   type        = string
   default     = "standard"
-  # NOTE: storage_type="none" is for internal use only 
+  # NOTE: storage_type="none" is for internal use only
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
     error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
+  }
+}
+
+variable "storage_type_backend" {
+  description = "The storage backend used for the chosen storage type. Defaults to 'nfs' for storage_type='standard'. Defaults to 'filestore for storage_type='ha'. 'filestore' and 'netapp' are valid choices for storage_type='ha'."
+  type        = string
+  default     = "nfs"
+  # If storage_type is standard, this will be set to "nfs"
+
+  validation {
+    condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
+    error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp or none."
   }
 }
 
@@ -426,6 +438,41 @@ variable "enable_registry_access" {
   default     = true
 }
 
+## Google NetApp Volumes
+variable "netapp_service_level" {
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
+  type        = string
+  default     = "PREMIUM"
+
+  validation {
+    condition     = var.netapp_service_level != null ? contains(["PREMIUM", "EXTREME", "STANDARD", "FLEX"], var.netapp_service_level) : null
+    error_message = "ERROR: netapp_service_level - Valid values include - PREMIUM, EXTREME, STANDARD, FLEX."
+  }
+}
+
+variable "netapp_protocols" {
+  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported."
+  type        = list(string)
+  default     = ["NFSV3"]
+
+  validation {
+    condition     = var.netapp_protocols != null ? startswith(var.netapp_protocols[0], "NFS") : null
+    error_message = "ERROR: Currently, only NFS protocol is supported."
+  }
+}
+
+variable "netapp_capacity_gib" {
+  description = "Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB."
+  type        = string
+  default     = 2048
+}
+
+variable "netapp_volume_path" {
+  description = "A unique file path for the volume. Used when creating mount targets. Needs to be unique per location."
+  type        = string
+  default     = "export"
+}
+
 # GKE Monitoring
 variable "create_gke_monitoring_service" {
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
@@ -502,7 +549,7 @@ variable "gke_service_subnet_cidr" {
 }
 
 variable "gke_control_plane_subnet_cidr" {
-  description = "Address space for the hosted master subnet"
+  description = "Address space for the hosted primary subnet"
   type        = string
   default     = "10.2.0.0/28"
 }
@@ -519,6 +566,11 @@ variable "database_subnet_cidr" {
   default     = "192.168.4.0/23"
 }
 
+variable "netapp_subnet_cidr" {
+  description = "Address space for Google Cloud NetApp Volumes subnet"
+  type        = string
+  default     = "192.168.5.0/24"
+}
 
 variable "gke_network_policy" {
   description = "Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are true (calico) and false (kubenet). Changing this forces a new resource to be created."

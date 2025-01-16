@@ -11,7 +11,7 @@ data "google_compute_address" "nat_address" {
 module "nat_address" {
   count        = length(var.nat_address_name) == 0 ? 1 : 0
   source       = "terraform-google-modules/address/google"
-  version      = "~> 4.0.0"
+  version      = "~> 4.1.0"
   project_id   = var.project
   region       = local.region
   address_type = "EXTERNAL"
@@ -23,7 +23,7 @@ module "nat_address" {
 module "cloud_nat" {
   count         = length(var.nat_address_name) == 0 ? 1 : 0
   source        = "terraform-google-modules/cloud-nat/google"
-  version       = "~> 5.1.0"
+  version       = "~> 5.3.0"
   project_id    = var.project
   name          = "${var.prefix}-cloud-nat"
   region        = local.region
@@ -72,7 +72,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   # required as of hashicorp/google v5.12.0 when using google_service_networking_connection in
   # conjunction with CloudSQL instances in order to cleanly delete resources
   # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_networking_connection
-  deletion_policy         = "ABANDON"
+  deletion_policy = "ABANDON"
 }
 
 resource "google_compute_firewall" "nfs_vm_cluster_firewall" {
