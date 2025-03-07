@@ -15,15 +15,15 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.32" # Constrained by Google
+      version = "~> 2.36" # Constrained by Google
     }
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.5"
+      version = "~> 2.5.2"  
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6" # Constrained by Google
+      version = "~> 3.7.1" # Constrained by Google
     }
     null = {
       source  = "hashicorp/null"
@@ -31,7 +31,7 @@ terraform {
     }
     external = {
       source  = "hashicorp/external"
-      version = "~> 2.3" # Constrained by Google
+      version = "~> 2.3.4" # Constrained by Google
     }
     time = {
       source  = "hashicorp/time"
