@@ -316,4 +316,5 @@ module "google_netapp" {
   protocols          = var.netapp_protocols
   volume_path        = "${var.prefix}-${var.netapp_volume_path}"
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
+  depends_on         = [ module.gke ]
 }

@@ -1,7 +1,7 @@
 name: Linter Analysis
 on:
   push:
-    branches: [ '**' ] # '**' will cause the workflow to run on all commits to all branches, including those with path separators
+    branches: ['**']  # '**' will cause the workflow to run on all commits to all branches.
 
 jobs:
   # Hadolint: Job-1
@@ -32,7 +32,7 @@ jobs:
         with:
           severity: error
 
-  # TFLint: Job-3
+  # TFLint: Job-3 (For GCP)
   TFLint:
     name: TFLint
     runs-on: ubuntu-latest
@@ -46,6 +46,12 @@ jobs:
           path: ~/.tflint.d/plugins
           key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "^1.10.5"
+          terraform_wrapper: false
+
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v3.0.0
         with:
@@ -55,8 +61,6 @@ jobs:
       - name: Initializing viya4-iac-gcp
         run: terraform init
 
-        # Necessary so we can recursively tflint our modules folder
-        # not needed for regular project use.
       - name: Initializing viya4-iac-gcp/modules/google_vm
         run: terraform -chdir=modules/google_vm init
 
