@@ -241,7 +241,7 @@ resource "local_file" "kubeconfig" {
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/12.0.0/submodules/postgresql
 module "postgresql" {
   source     = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version    = "~> 22.1.0"
+  version    = "~> 25.2.2"
   project_id = var.project
 
   for_each = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
