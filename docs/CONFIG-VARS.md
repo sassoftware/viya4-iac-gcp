@@ -309,7 +309,7 @@ postgres_servers = {
     server_version                         = "15"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
-    database_flags                         = [{ name = "foo" value = "true"}, { name = "bar", value = "false"}]
+    database_flags                         = [{ name = "cloudsql.enable_pg_cron", value = "true"}, { name = "cloudsql.enable_pgaudit", value = "true"}]
   }
 }
 ```
