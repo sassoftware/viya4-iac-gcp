@@ -91,7 +91,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "~> 33.1.0"
+  version                       = "~> 36.2.0"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
