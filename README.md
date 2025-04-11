@@ -1,5 +1,24 @@
 # SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+  - [Required](#required)
+    - [Terraform](#terraform)
+    - [Docker](#docker)
+- [Getting Started](#getting-started)
+  - [Clone this project](#clone-this-project)
+  - [Authenticating Terraform to access Google Cloud](#authenticating-terraform-to-access-google-cloud)
+  - [Customize Input Values](#customize-input-values)
+- [Creating and Managing the Cloud Resources](#creating-and-managing-the-cloud-resources)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Additional Resources](#additional-resources)
+  - [Google Cloud](#google-cloud)
+  - [Terraform](#terraform-1)
+
 ## Overview
 
 This project contains Terraform scripts to provision Google Cloud infrastructure resources required to deploy SAS Viya 4 platform products. Here is a list of resources this project can create -
