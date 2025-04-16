@@ -1,5 +1,24 @@
 # SAS Viya 4 Infrastructure as Code (IaC) for Google Cloud
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+  - [Required](#required)
+    - [Terraform](#terraform)
+    - [Docker](#docker)
+- [Getting Started](#getting-started)
+  - [Clone this project](#clone-this-project)
+  - [Authenticating Terraform to access Google Cloud](#authenticating-terraform-to-access-google-cloud)
+  - [Customize Input Values](#customize-input-values)
+- [Creating and Managing the Cloud Resources](#creating-and-managing-the-cloud-resources)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Additional Resources](#additional-resources)
+  - [Google Cloud](#google-cloud)
+  - [Terraform](#terraform-1)
+
 ## Overview
 
 This project contains Terraform scripts to provision Google Cloud infrastructure resources required to deploy SAS Viya 4 platform products. Here is a list of resources this project can create -
@@ -32,7 +51,7 @@ Operational knowledge of
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v1.10.5
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.30.10
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.31.7
     - [jq](https://stedolan.github.io/jq/) - v1.7
     - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v513.0.0
     - [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin) - (optional - only for provider based Kubernetes configuration files) - >= v1.26
