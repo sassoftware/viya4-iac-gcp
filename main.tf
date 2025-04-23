@@ -269,7 +269,7 @@ tier = (
 ) || (
   tonumber(each.value.server_version) < 16 && !can(regex("^db-custom-", each.value.machine_type))
 ) ? (
-  tonumber(each.value.server_version) >= 16 ? "db-perf-optimized-N-8" : "db-custom-2-7680"
+  tonumber(each.value.server_version) >= 16 ? "db-perf-optimized-N-8" : "db-custom-4-16384"
 ) : each.value.machine_type
 
   disk_size = each.value.storage_gb

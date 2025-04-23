@@ -270,8 +270,8 @@ postgres_servers = {
 **NOTE**: The `default = {}` elements is always required when creating external databases. This is the systems default database server.
 
 Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below. If `machine_type` or `edition` are not provided, default values will be applied based on the `server_version`. For example:
-- If `server_version >= 16`, defaults to `edition = "ENTERPRISE_PLUS"` and `machine_type = "db-perf-optimized-N-8"`
-- If `server_version < 16`, defaults to `edition = "ENTERPRISE"` and `machine_type = "db-custom-2-7680"`
+- If `server_version >= 16`, defaults to `edition = "ENTERPRISE_PLUS"` and `machine_type = "db-perf-optimized-N-*"`
+- If `server_version < 16`, defaults to `edition = "ENTERPRISE"` and `machine_type = "db-custom-*"`
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |

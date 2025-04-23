@@ -362,7 +362,7 @@ variable "cluster_autoscaling_profile" {
   default     = "BALANCED"
 }
 
-# # PostgreSQL
+# PostgreSQL
 
 # Defaults
 variable "postgres_server_defaults" {
