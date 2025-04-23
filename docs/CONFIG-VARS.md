@@ -269,11 +269,14 @@ postgres_servers = {
 
 **NOTE**: The `default = {}` elements is always required when creating external databases. This is the systems default database server.
 
-Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below:
+Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below. If `machine_type` or `edition` are not provided, default values will be applied based on the `server_version`. For example:
+- If `server_version >= 16`, defaults to `edition = "ENTERPRISE_PLUS"` and `machine_type = "db-perf-optimized-N-8"`
+- If `server_version < 16`, defaults to `edition = "ENTERPRISE"` and `machine_type = "db-custom-2-7680"`
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. |
+| edition | Cloud SQL edition type | string | *(auto-determined)* | Accepts `"ENTERPRISE"` or `"ENTERPRISE_PLUS"`. Automatically set based on `server_version` if omitted. |
 | storage_gb | Minimum storage allowed for the PostgreSQL server | number | 128 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |

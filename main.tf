@@ -256,7 +256,22 @@ module "postgresql" {
   deletion_protection = false
   module_depends_on   = [google_service_networking_connection.private_vpc_connection]
 
-  tier      = each.value.machine_type
+edition = (
+  tonumber(each.value.server_version) >= 16 && each.value.edition != "ENTERPRISE_PLUS"
+) || (
+  tonumber(each.value.server_version) < 16 && each.value.edition != "ENTERPRISE"
+) ? (
+  tonumber(each.value.server_version) >= 16 ? "ENTERPRISE_PLUS" : "ENTERPRISE"
+) : each.value.edition
+
+tier = (
+  tonumber(each.value.server_version) >= 16 && !can(regex("^db-perf-optimized-", each.value.machine_type))
+) || (
+  tonumber(each.value.server_version) < 16 && !can(regex("^db-custom-", each.value.machine_type))
+) ? (
+  tonumber(each.value.server_version) >= 16 ? "db-perf-optimized-N-8" : "db-custom-2-7680"
+) : each.value.machine_type
+
   disk_size = each.value.storage_gb
 
   enable_default_db        = false

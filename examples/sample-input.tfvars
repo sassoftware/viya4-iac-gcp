@@ -23,8 +23,13 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 #                   need an external database server remove the 'postgres_servers'
 #                   block below.
 postgres_servers = {
-  default = {},
-}
+  default = {
+    server_version = "16"              # Specify PostgreSQL version here
+    machine_type   = "db-custom-4-15360"  # Specify the machine type here
+    edition        = "ENTERPRISE_PLUS"  # Specify the edition here (e.g., ENTERPRISE, ENTERPRISE_PLUS)
+  }
+},
+
 
 # GKE config
 kubernetes_version         = "1.31"

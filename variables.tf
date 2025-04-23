@@ -362,14 +362,14 @@ variable "cluster_autoscaling_profile" {
   default     = "BALANCED"
 }
 
-# PostgreSQL
+# QL
 
 # Defaults
 variable "postgres_server_defaults" {
   description = "default values for a postgres server"
   type        = any
   default = {
-    machine_type                           = "db-custom-4-16384"
+    machPostgreSine_type                           = "db-custom-4-16384"
     storage_gb                             = 128
     backups_enabled                        = true
     backups_start_time                     = "21:00"
@@ -382,6 +382,7 @@ variable "postgres_server_defaults" {
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
+    edition                                = null
   }
 }
 
@@ -589,4 +590,10 @@ variable "cluster_node_pool_mode" {
   description = "Flag for predefined cluster node configurations - Values : default, minimal"
   type        = string
   default     = "default"
+}
+
+variable "edition" {
+  description = "The edition of the PostgreSQL instance (ENTERPRISE or ENTERPRISE_PLUS)."
+  type        = string
+  default     = null
 }
