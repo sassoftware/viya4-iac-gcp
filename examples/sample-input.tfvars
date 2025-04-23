@@ -24,9 +24,7 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 #                   block below.
 postgres_servers = {
   default = {
-    server_version = ""              # Specify PostgreSQL version here
-    machine_type   = ""  # Specify the machine type here
-    edition        = ""  # Specify the edition here (e.g., ENTERPRISE, ENTERPRISE_PLUS)
+
   }
 },
 

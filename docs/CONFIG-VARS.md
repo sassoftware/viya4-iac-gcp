@@ -298,6 +298,9 @@ Here is an example of the `postgres_servers` variable with the `default` server 
 postgres_servers = {
   default = {
     administrator_password       = "D0ntL00kTh1sWay"
+    server_version               = ""  # Specify PostgreSQL version here
+    machine_type                 = ""  # Specify the machine type here
+    edition                      = ""  # Specify the edition here (e.g., ENTERPRISE, ENTERPRISE_PLUS)
   },
   cds-postgres = {
     machine_type                           = "db-custom-4-16384"
