@@ -256,7 +256,7 @@ module "postgresql" {
   deletion_protection = false
   module_depends_on   = [google_service_networking_connection.private_vpc_connection]
 
-edition = (
+ edition = (
   tonumber(each.value.server_version) >= 16 && each.value.edition != "ENTERPRISE_PLUS"
 ) || (
   tonumber(each.value.server_version) < 16 && each.value.edition != "ENTERPRISE"
