@@ -24,7 +24,7 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 #                   block below.
 
 postgres_servers = {
-default = {},
+  default = {},
 },
 
 # GKE config
