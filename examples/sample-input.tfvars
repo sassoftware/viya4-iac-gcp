@@ -22,12 +22,10 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 # Postgres config - By having this entry a database server is created. If you do not
 #                   need an external database server remove the 'postgres_servers'
 #                   block below.
+
 postgres_servers = {
-  default = {
-
-  }
+default = {},
 },
-
 
 # GKE config
 kubernetes_version         = "1.31"
