@@ -256,21 +256,18 @@ module "postgresql" {
   deletion_protection = false
   module_depends_on   = [google_service_networking_connection.private_vpc_connection]
 
- edition = (
-  tonumber(each.value.server_version) >= 16 && each.value.edition != "ENTERPRISE_PLUS"
-) || (
-  tonumber(each.value.server_version) < 16 && each.value.edition != "ENTERPRISE"
-) ? (
-  tonumber(each.value.server_version) >= 16 ? "ENTERPRISE_PLUS" : "ENTERPRISE"
-) : each.value.edition
+  edition = tonumber(each.value.server_version) >= 16 ? "ENTERPRISE_PLUS" : "ENTERPRISE"
 
-tier = (
-  tonumber(each.value.server_version) >= 16 && !can(regex("^db-perf-optimized-", each.value.machine_type))
-) || (
-  tonumber(each.value.server_version) < 16 && !can(regex("^db-custom-", each.value.machine_type))
-) ? (
-  tonumber(each.value.server_version) >= 16 ? "db-perf-optimized-N-8" : "db-custom-4-16384"
-) : each.value.machine_type
+  // If semver is 16+ and machine_type is not db-perf-optimized-*, then use db-perf-optimized-N-8
+  // If semver is < 16 and machine_type is not db-custom-*, then use db-custom-4-16384
+  // Otherwise, use the machine_type from the input
+  tier = (
+    tonumber(each.value.server_version) >= 16 && !can(regex("^db-perf-optimized-", each.value.machine_type))
+  ) || (
+    tonumber(each.value.server_version) < 16 && !can(regex("^db-custom-", each.value.machine_type))
+  ) ? (
+    tonumber(each.value.server_version) >= 16 ? "db-perf-optimized-N-8" : "db-custom-4-16384"
+  ) : each.value.machine_type
 
   disk_size = each.value.storage_gb
 
