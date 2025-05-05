@@ -410,9 +410,18 @@ variable "postgres_servers" {
     error_message = "ERROR: The database server name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphens, letters, and numbers."
   }
 
-  # Checking user provided login
-
-  # Checking user provided password
+  # Validate edition and machine type based on PostgreSQL version
+  validation {
+    condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? alltrue([
+      for k, v in var.postgres_servers : (
+        v.server_version != null && (
+          (tonumber(v.server_version) >= 16 && v.edition == "ENTERPRISE_PLUS" && can(regex("^db-perf-optimized-N-", v.machine_type))) ||
+          (tonumber(v.server_version) < 16 && v.edition == "ENTERPRISE" && can(regex("^db-custom-", v.machine_type)))
+        )
+      )
+    ]) : false : true
+    error_message = "ERROR: Invalid PostgreSQL configuration:\n* PostgreSQL 16+ requires ENTERPRISE_PLUS edition and db-perf-optimized-N-* machine type\n* PostgreSQL < 16 requires ENTERPRISE edition and db-custom-* machine type"
+  }
 }
 
 ## filestore
