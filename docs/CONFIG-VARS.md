@@ -278,6 +278,18 @@ Each server element, like `foo = {}`, can contain none, some, or all of the para
   - `edition` must be `"ENTERPRISE"`
   - `machine_type` must start with `"db-custom-"`
 
+*NOTE*: The default = {} elements is always required when creating external databases. This is the systems default database server.
+
+If you provide an empty block for default, the following default values will be used:
+terraform
+postgres_servers = {
+  default = {
+    server_version = "15"
+    edition        = "ENTERPRISE"
+    machine_type   = "db-custom-4-16384"
+  }
+}
+
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |

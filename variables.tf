@@ -390,7 +390,13 @@ variable "postgres_server_defaults" {
 variable "postgres_servers" {
   description = "Map of PostgreSQL server objects"
   type        = any
-  default     = null
+  default     = {
+    default = {
+      server_version = "15"
+      edition        = "ENTERPRISE"
+      machine_type   = "db-custom-4-16384"
+    }
+  }
 
   # Checking for user provided "default" server
   validation {
@@ -414,9 +420,14 @@ variable "postgres_servers" {
   validation {
     condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? alltrue([
       for k, v in var.postgres_servers : (
-        v.server_version != null && (
-          (tonumber(v.server_version) >= 16 && v.edition == "ENTERPRISE_PLUS" && can(regex("^db-perf-optimized-N-", v.machine_type))) ||
-          (tonumber(v.server_version) < 16 && v.edition == "ENTERPRISE" && can(regex("^db-custom-", v.machine_type)))
+        # If the object is empty, use default values
+        length(keys(v)) == 0 ? true : (
+          can(try(v.server_version, null)) && 
+          can(try(v.edition, null)) && 
+          can(try(v.machine_type, null)) && (
+            (tonumber(try(v.server_version, "15")) >= 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE_PLUS" && can(regex("^db-perf-optimized-N-", try(v.machine_type, "")))) ||
+            (tonumber(try(v.server_version, "15")) < 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE" && can(regex("^db-custom-", try(v.machine_type, ""))))
+          )
         )
       )
     ]) : false : true
