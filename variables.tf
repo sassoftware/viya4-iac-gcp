@@ -332,6 +332,7 @@ variable "node_pools" {
 #   Potentially we upgrade Terraform modules and versions and we bump our minimum required terraform version to be >1.3
 #   then at that time I can deprecate this variable and instead allow the user to configure node_locations per node pool.
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
+
 variable "nodepools_locations" {
   description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
   type        = string
@@ -382,7 +383,7 @@ variable "postgres_server_defaults" {
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
-    edition                                = null
+    edition                                = "ENTERPRISE"
   }
 }
 
@@ -391,13 +392,9 @@ variable "postgres_servers" {
   description = "Map of PostgreSQL server objects"
   type        = any
   default     = {
-    default = {
-      server_version = "15"
-      edition        = "ENTERPRISE"
-      machine_type   = "db-custom-4-16384"
-    }
+    default = {}
   }
-
+ 
   # Checking for user provided "default" server
   validation {
     condition     = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
@@ -598,7 +595,6 @@ variable "gke_network_policy" {
   type        = bool
   default     = false
 }
-
 
 variable "create_static_kubeconfig" {
   description = "Allows the user to create a provider / service account based kube config file"
