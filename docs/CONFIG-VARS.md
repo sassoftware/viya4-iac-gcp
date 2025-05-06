@@ -293,7 +293,7 @@ postgres_servers = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |
-| edition | Cloud SQL edition type | string | null | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
+| edition | Cloud SQL edition type | string | "ENTERPRISE" | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
 | storage_gb | Minimum storage allowed for the PostgreSQL server | number | 128 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
