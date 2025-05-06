@@ -383,7 +383,7 @@ variable "postgres_server_defaults" {
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
-    edition                                = "ENTERPRISE"
+    edition                                = null
   }
 }
 
