@@ -256,7 +256,9 @@ module "postgresql" {
   deletion_protection = false
   module_depends_on   = [google_service_networking_connection.private_vpc_connection]
 
-  tier      = each.value.machine_type
+  edition = each.value.edition
+  tier    = each.value.machine_type
+
   disk_size = each.value.storage_gb
 
   enable_default_db        = false

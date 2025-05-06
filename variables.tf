@@ -332,6 +332,7 @@ variable "node_pools" {
 #   Potentially we upgrade Terraform modules and versions and we bump our minimum required terraform version to be >1.3
 #   then at that time I can deprecate this variable and instead allow the user to configure node_locations per node pool.
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
+
 variable "nodepools_locations" {
   description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
   type        = string
@@ -382,6 +383,7 @@ variable "postgres_server_defaults" {
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
+    edition                                = "ENTERPRISE"
   }
 }
 
@@ -390,7 +392,7 @@ variable "postgres_servers" {
   description = "Map of PostgreSQL server objects"
   type        = any
   default     = null
-
+ 
   # Checking for user provided "default" server
   validation {
     condition     = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
@@ -409,9 +411,23 @@ variable "postgres_servers" {
     error_message = "ERROR: The database server name must start with a letter, cannot end with a hyphen, must be between 1-88 characters in length, and can only contain hyphens, letters, and numbers."
   }
 
-  # Checking user provided login
-
-  # Checking user provided password
+  # Validate edition and machine type based on PostgreSQL version
+  validation {
+    condition = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? alltrue([
+      for k, v in var.postgres_servers : (
+        # If the object is empty, use default values
+        length(keys(v)) == 0 ? true : (
+          can(try(v.server_version, null)) && 
+          can(try(v.edition, null)) && 
+          can(try(v.machine_type, null)) && (
+            (tonumber(try(v.server_version, "15")) >= 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE_PLUS" && can(regex("^db-perf-optimized-N-", try(v.machine_type, "")))) ||
+            (tonumber(try(v.server_version, "15")) < 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE" && can(regex("^db-custom-", try(v.machine_type, ""))))
+          )
+        )
+      )
+    ]) : false : true
+    error_message = "ERROR: Invalid PostgreSQL configuration:\n* PostgreSQL 16+ requires ENTERPRISE_PLUS edition and db-perf-optimized-N-* machine type\n* PostgreSQL < 16 requires ENTERPRISE edition and db-custom-* machine type"
+  }
 }
 
 ## filestore
@@ -577,7 +593,6 @@ variable "gke_network_policy" {
   type        = bool
   default     = false
 }
-
 
 variable "create_static_kubeconfig" {
   description = "Allows the user to create a provider / service account based kube config file"
