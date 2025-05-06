@@ -383,7 +383,7 @@ variable "postgres_server_defaults" {
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
-    edition                                = null
+    edition                                = "ENTERPRISE"
   }
 }
 
@@ -391,9 +391,7 @@ variable "postgres_server_defaults" {
 variable "postgres_servers" {
   description = "Map of PostgreSQL server objects"
   type        = any
-  default     = {
-    default = {}
-  }
+  default     = null
  
   # Checking for user provided "default" server
   validation {
