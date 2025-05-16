@@ -30,6 +30,6 @@ jobs:
       - name: Run Tests
         run: |
           docker run \
-            -v .viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+            -v $(pwd)/test/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
             -v $(pwd):/viya4-iac-gcp \
             viya4-iac-gcp:terratest -v
