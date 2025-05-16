@@ -26,7 +26,7 @@ jobs:
           GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
           GCP_CLIENT_ID: ${{ secrets.GCP_CLIENT_ID }}
           GCP_CLIENT_CERT_URL: ${{ secrets.GCP_CLIENT_CERT_URL }}
-        working-directory: viya4-iac-gcp/test
+        working-directory: test
       - name: Run Tests
         run: |
           docker run \
