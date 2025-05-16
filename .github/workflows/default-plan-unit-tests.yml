@@ -16,20 +16,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Docker Image
         run: docker build -t viya4-iac-gcp:terratest -f Dockerfile.terratest .
-      # We will need to figure out how to do this since it expects a file
-      # and github only uses strings for secrets
-      # - name: Run Tests
-      #   run: |
-      #     docker run \
-      #       -e TF_VAR_subscription_id=$TF_VAR_subscription_id \
-      #       -e TF_VAR_tenant_id=$TF_VAR_tenant_id \
-      #       -e TF_VAR_client_id=$TF_VAR_client_id \
-      #       -e TF_VAR_client_secret=$TF_VAR_client_secret \
-      #       -v $(pwd):/viya4-iac-gcp \
-      #       viya4-iac-gcp:terratest -v
-      #   env:
-      #     # TF ENVIRONMENT
-      #     TF_VAR_subscription_id: "${{ secrets.TF_VAR_SUBSCRIPTION_ID }}"
-      #     TF_VAR_tenant_id: "${{ secrets.TF_VAR_TENANT_ID }}"
-      #     TF_VAR_client_id: "${{ secrets.TF_VAR_CLIENT_ID }}"
-      #     TF_VAR_client_secret: "${{ secrets.TF_VAR_CLIENT_SECRET }}"
+      - name: Construct Credential File
+        run: |
+          go run create_credentials_file.go > /dev/null || true
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_PRIVATE_KEY_ID: ${{ secrets.GCP_PRIVATE_KEY_ID }}
+          GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
+          GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
+          GCP_CLIENT_ID: ${{ secrets.GCP_CLIENT_ID }}
+          GCP_CLIENT_CERT_URL: ${{ secrets.GCP_CLIENT_CERT_URL }}
+      - name: Run Tests
+        run: |
+          docker run \
+            -v .viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+            -v $(pwd):/viya4-iac-gcp \
+            viya4-iac-gcp:terratest -v

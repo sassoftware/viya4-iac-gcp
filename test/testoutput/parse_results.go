@@ -1,7 +1,7 @@
 // Copyright © 2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package ParseResults
+package main
 
 import (
 	"encoding/xml"
@@ -34,7 +34,7 @@ type Failure struct {
 }
 
 func ParseResults() {
-	xmlFile := "testoutput/report.xml"
+	xmlFile := "report.xml"
 
 	// Read the XML file
 	file, err := os.Open(xmlFile)
@@ -74,4 +74,8 @@ func ParseResults() {
 		// Send a non-zero exit code
 		os.Exit(1)
 	}
+}
+
+func main() {
+	ParseResults()
 }

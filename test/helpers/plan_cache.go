@@ -20,6 +20,7 @@ import (
 var lock = &sync.Mutex{}
 var CACHE *PlanCache
 var credentialsFile string
+var credentialsContents map[string]string
 
 type PlanCache struct {
 	plans map[string]*terraform.PlanStruct
@@ -70,19 +71,33 @@ func GetPlan(t *testing.T, variables map[string]interface{}) *terraform.PlanStru
 }
 
 // Validate that the credentials file exists
-func ValidateCredentialsFile(t *testing.T) string {
+func GetCredentials(t *testing.T) (string, map[string]string, error) {
 	if credentialsFile != "" {
-		return credentialsFile
+		return credentialsFile, credentialsContents, nil
 	}
 	credentialsFile = os.Getenv("TF_VAR_service_account_keyfile")
 	if credentialsFile == "" {
 		t.Log("Environment variable TF_VAR_service_account_keyfile is not set. Defaulting to /.viya4-tf-gcp-service-account.json")
 		credentialsFile = "/.viya4-tf-gcp-service-account.json"
 	}
+
 	if _, err := os.Stat(credentialsFile); os.IsNotExist(err) {
 		t.Fatalf("Credentials file %s does not exist", credentialsFile)
 	}
-	return credentialsFile
+
+	file, err := os.Open(credentialsFile)
+	if err != nil {
+		return "", nil, err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&credentialsContents)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return credentialsFile, credentialsContents, nil
 }
 
 // InitPlanWithVariables returns a *terraform.PlanStruct
@@ -112,18 +127,10 @@ func InitPlanWithVariables(t *testing.T, variables map[string]interface{}) (*ter
 
 // GetDefaultPlanVars returns a map of default terratest variables
 func GetDefaultPlanVars(t *testing.T) map[string]interface{} {
-	credentialsFile := ValidateCredentialsFile(t)
-	// read the file and parse the json
-	credentialsFileJson := make(map[string]interface{})
-	credentialsFileString, err := os.ReadFile(credentialsFile)
+	_, credsFileContents, err := GetCredentials(t)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = json.Unmarshal([]byte(credentialsFileString), &credentialsFileJson)
-	if err != nil {
-		t.Fatalf("Error parsing credentials file: %v", err)
-	}
-
 	tfVarsPath := "../../examples/sample-input-defaults.tfvars"
 
 	variables := make(map[string]interface{})
@@ -133,8 +140,8 @@ func GetDefaultPlanVars(t *testing.T) map[string]interface{} {
 	variables["prefix"] = "default"
 	variables["location"] = "us-east1-b"
 	variables["default_public_access_cidrs"] = []string{"123.45.67.89/16"}
-	variables["project"] = credentialsFileJson["project_id"]
-	variables["service_account_keyfile"] = "~/.viya4-tf-gcp-service-account.json"
+	variables["project"] = credsFileContents["project_id"]
+	variables["service_account_keyfile"] = "/.viya4-tf-gcp-service-account.json"
 	variables["kubernetes_version"] = "1.31"
 
 	return variables
