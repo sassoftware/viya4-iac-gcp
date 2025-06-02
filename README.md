@@ -72,7 +72,7 @@ git clone -b v7.5.0 https://github.com/sassoftware/viya4-iac-gcp
 cd viya4-iac-gcp
 
 ```
-*Note:* Always use a tagged release version instead of the main branch. You can find the latest release version in the [releases page](https://github.com/sassoftware/viya4-iac-gcp/releases).
+**NOTE:** Always use a tagged release version instead of the main branch. You can find the latest release version in the [releases page](https://github.com/sassoftware/viya4-iac-gcp/releases).
 
 ### Authenticating Terraform to access Google Cloud
 
