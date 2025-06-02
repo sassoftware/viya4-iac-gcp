@@ -66,7 +66,7 @@ Run these commands in a Terminal session:
 
 ```bash
 # clone this repository
-git clone -b v7.5.0 https://github.com/sassoftware/viya4-iac-gcp
+git clone -b <release-version-tag> https://github.com/sassoftware/viya4-iac-gcp
 
 # move to directory
 cd viya4-iac-gcp
