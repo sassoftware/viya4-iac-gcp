@@ -66,10 +66,12 @@ Run these commands in a Terminal session:
 
 ```bash
 # clone this repository
-git clone https://github.com/sassoftware/viya4-iac-gcp
+git clone -b v7.5.0 https://github.com/sassoftware/viya4-iac-gcp
 
 # move to directory
 cd viya4-iac-gcp
+
+*Note:* Always use a tagged release version instead of the main branch. You can find the latest release version in the [releases page](https://github.com/sassoftware/viya4-iac-gcp/releases).
 ```
 
 ### Authenticating Terraform to access Google Cloud
