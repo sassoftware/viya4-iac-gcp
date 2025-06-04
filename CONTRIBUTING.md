@@ -1,10 +1,13 @@
 # How to Contribute
-We'd love to accept your patches and contributions to this project.
-We just ask that you follow our contribution guidelines when you do.
+This project is community-driven, and we'd love to accept your patches and contributions.
+We just ask that you follow our contribution guidelines when you do. Refer
+to the [Contributor Handbook](https://sassoftware.github.io/contributor-handbook.html)
+for guidance.
 
 ## Contributor License Agreement
 Contributions to this project must be accompanied by a signed [Contributor Agreement](ContributorAgreement.txt).
-You (or your employer) retain the copyright to your contribution; this simply grants us permission to use and redistribute your contributions as part of the project.
+You (or your employer) retain the copyright to your contribution; this agreement simply grants
+us permission to use and redistribute your contributions as part of the project.
 
 ## Code Reviews
 All submissions to this project—including submissions from project members—require
@@ -12,6 +15,16 @@ review. Our review process typically involves performing unit tests, development
 tests, integration tests, and security scans.
 
 ## Pull Request Requirement
+
+### Automated Tests
+All contributors are expected to include appropriate tests to ensure code quality
+and maintainability. This may include unit and/or integration tests as applicable
+to the scope of the changes.  We have a developed a Golang testing framework using
+[Terratest](https://terratest.gruntwork.io/) for unit tests and are in the process
+of developing integration tests. Please refer to our [Testing Philosopy](./docs/user/TestingPhilosophy.md)
+documentation for more information on our testing framework. If you need additional
+help and guidance, we are happy to help you navigate it by providing continuous
+collaboration within the pull request.
 
 ### Conventional Commits
 All pull requests must follow the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)

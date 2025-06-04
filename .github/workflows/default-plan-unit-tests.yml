@@ -1,0 +1,35 @@
+# Copyright © 2025, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Default Plan Unit Tests
+on:
+  push:
+    branches: ['**'] # '*' will cause the workflow to run on all commits to all branches.
+
+jobs:
+  go-tests:
+    name: Default Plan Unit Tests
+    runs-on: ubuntu-latest
+    environment: terraformSecrets
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Build Docker Image
+        run: docker build -t viya4-iac-gcp:terratest -f Dockerfile.terratest .
+      - name: Construct Credential File
+        run: |
+          go run create_credentials_file.go > /dev/null || true
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_PRIVATE_KEY_ID: ${{ secrets.GCP_PRIVATE_KEY_ID }}
+          GCP_PRIVATE_KEY: ${{ secrets.GCP_PRIVATE_KEY }}
+          GCP_CLIENT_EMAIL: ${{ secrets.GCP_CLIENT_EMAIL }}
+          GCP_CLIENT_ID: ${{ secrets.GCP_CLIENT_ID }}
+          GCP_CLIENT_CERT_URL: ${{ secrets.GCP_CLIENT_CERT_URL }}
+        working-directory: test
+      - name: Run Tests
+        run: |
+          docker run \
+            -v $(pwd)/test/.viya4-tf-gcp-service-account.json:/.viya4-tf-gcp-service-account.json \
+            -v $(pwd):/viya4-iac-gcp \
+            viya4-iac-gcp:terratest -v
