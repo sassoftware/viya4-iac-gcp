@@ -65,7 +65,7 @@ variable "ssh_public_key" {
 variable "os_image" {
   description = "OS Image to configure the VM with"
   type        = string
-  default     = "ubuntu-os-cloud/ubuntu-2404-lts-amd64" # FAMILY/PROJECT glcoud compute images list
+  default     = "ubuntu-os-cloud/ubuntu-2004-lts" # FAMILY/PROJECT glcoud compute images list
 }
 
 
