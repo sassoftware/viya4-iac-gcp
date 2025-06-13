@@ -51,8 +51,8 @@ resource "google_compute_instance" "google_vm" {
   # Lifecycle settings for the resource
   lifecycle {
     ignore_changes = [
-      # Ignore changes to tags, e.g. because a management agent
-      # updates these based on some ruleset managed elsewhere.
+      # Ignore changes to boot disk, as it could cause
+      # the VM to be recreated if the image is updated.
       boot_disk,
     ]
   }
