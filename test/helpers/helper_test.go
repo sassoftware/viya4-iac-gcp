@@ -4,11 +4,12 @@
 package helpers
 
 import (
+	"testing"
+
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2020-10-01/resources"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TestRetrieveFromStruct tests the RetrieveFromStruct function, ensuring that values are correctly retrieved and
@@ -66,7 +67,7 @@ func TestRetrieveFromStruct(t *testing.T) {
 				ImageReference: &compute.ImageReference{
 					Offer:     to.StringPtr("0001-com-ubuntu-server-focal"),
 					Publisher: to.StringPtr("Canonical"),
-					Sku:       to.StringPtr("20_04-lts"),
+					Sku:       to.StringPtr("24_04-lts-amd64"),
 					Version:   to.StringPtr("latest"),
 				},
 			},
@@ -110,7 +111,7 @@ func TestRetrieveFromStruct(t *testing.T) {
 	publisher := RetrieveFromStruct(nfsVM, "VirtualMachineProperties", "StorageProfile", "ImageReference", "Publisher")()
 	assert.Equal(t, "Canonical", publisher)
 	sku := RetrieveFromStruct(nfsVM, "VirtualMachineProperties", "StorageProfile", "ImageReference", "Sku")()
-	assert.Equal(t, "20_04-lts", sku)
+	assert.Equal(t, "24_04-lts-amd64", sku)
 	version := RetrieveFromStruct(nfsVM, "VirtualMachineProperties", "StorageProfile", "ImageReference", "Version")()
 	assert.Equal(t, "latest", version)
 }

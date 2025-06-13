@@ -48,6 +48,15 @@ resource "google_compute_instance" "google_vm" {
     }
   }
 
+  # Lifecycle settings for the resource
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to boot disk, as it could cause
+      # the VM to be recreated if the image is updated.
+      boot_disk,
+    ]
+  }
+
   allow_stopping_for_update = true
 }
 
