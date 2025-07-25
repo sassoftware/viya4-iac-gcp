@@ -7,6 +7,8 @@
 
 # Reserve compute address CIDR for NetApp Volumes to use
 resource "google_compute_global_address" "private_ip_alloc" {
+  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+
   name          = "${var.network}-ip-range"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
@@ -17,16 +19,20 @@ resource "google_compute_global_address" "private_ip_alloc" {
 
 # Create the PSA peering
 resource "google_service_networking_connection" "default" {
+  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+
   network                 = var.network
   service                 = "netapp.servicenetworking.goog"
-  reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
+  reserved_peering_ranges = [google_compute_global_address.private_ip_alloc[0].name]
 
   deletion_policy = "ABANDON"
 }
 
 # Modify the PSA Connection to allow import/export of custom routes
 resource "google_compute_network_peering_routes_config" "route_updates" {
-  peering = google_service_networking_connection.default.peering
+  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+
+  peering = google_service_networking_connection.default[0].peering
   network = var.network
 
   import_custom_routes = true

@@ -605,3 +605,10 @@ variable "cluster_node_pool_mode" {
   type        = string
   default     = "default"
 }
+
+# Community Contribution
+variable "community_netapp_networking_components_enabled" {
+  description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
+  type        = bool
+  default     = true
+}

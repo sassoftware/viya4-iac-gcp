@@ -52,3 +52,10 @@ variable "netapp_subnet_cidr" {
   type        = string
   default     = "192.168.5.0/24"
 }
+
+# Community Contribution
+variable "community_netapp_networking_components_enabled" {
+  description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
+  type        = bool
+  default     = true
+}
