@@ -605,3 +605,14 @@ variable "cluster_node_pool_mode" {
   type        = string
   default     = "default"
 }
+
+# Community Contribution
+# Disabling this feature will prevent the deployment of a new private IP range and network peeering when utilizing
+# HA storage with Netapp Volumes. This should be utilized when a project has pre-existing networking components that 
+# include the network peering configuration for Netapp. Otherwise, this feature should remain a True to allow the 
+# networking configuration to be deployed.
+variable "community_netapp_networking_components_enabled" {
+  description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
+  type        = bool
+  default     = true
+}
