@@ -32,6 +32,8 @@ Here is a table with the variables you would use to configure it
 
 Netapp Networking Components Enabling allows for control of the deployment of Netapp networking components when deploying HA with Netapp Volumes as the backend. This leaves the expectation that the Network Peering and IP ranges for Netapp have already been configured for the subscription and this Terraform project is just deploying some extra volumes. 
 
+An example case where this would be necessary: two clusters using HA with Netapp Volumes are being deployed to the same project. In this case, the first cluster will be able to register the private IP range and the peering. The second cluster will need to disable the deployment of these components.
+
 There are no checks that the Netapp Peering and IP Ranges have been properly configured. That is left to the Terraform Apply to detect any deployment issues or the usability of the resulting platform to determine any permission issues.
 
 | Name | Description | Type | Default | Release Added | Notes |
