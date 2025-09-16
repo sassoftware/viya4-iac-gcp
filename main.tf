@@ -14,6 +14,9 @@
 provider "google" {
   credentials = var.service_account_keyfile != null ? can(file(var.service_account_keyfile)) ? file(var.service_account_keyfile) : null : null
   project     = var.project
+  default_labels = {
+    goog-partner-solution = "isol_plb32_0014m00001h35jvqaa_qxe2gvexrm4ooh7tfz7tvel7ffjdujvk"
+  }
 }
 
 provider "google-beta" {
