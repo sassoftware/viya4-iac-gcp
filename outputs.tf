@@ -108,3 +108,12 @@ output "cluster_api_mode" {
 output "gke_pod_subnet_cidr" {
   value = var.gke_pod_subnet_cidr
 }
+
+output "storage_type_backend" {
+  value       = var.storage_type_backend
+  description = "If storage_type=standard the default is nfs. If storage_type=ha the default is filestore"
+}
+
+output "netapp_volume_path" {
+  value       = var.storage_type_backend == "netapp" ? var.netapp_volume_path : "export"
+}
