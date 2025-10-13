@@ -89,7 +89,7 @@ node_pools = {
   singlestore = {
     "vm_type" = "n2-highmem-16"
     "os_disk_size" = 200
-    "min_nodes" = 0
+    "min_nodes" = 2
     "max_nodes" = 7
     "node_taints" = ["workload.sas.com/class=singlestore:NoSchedule"]
     "node_labels" = {
