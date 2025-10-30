@@ -56,6 +56,7 @@ variable "netapp_subnet_cidr" {
 variable "default_nodepool_locations" {
   description = "Comma-separated list of default node pool locations"
   type        = string
+}
 
 # Community Contribution
 variable "community_netapp_networking_components_enabled" {
