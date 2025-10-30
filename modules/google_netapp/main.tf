@@ -46,6 +46,10 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   capacity_gib  = var.capacity_gib
   network       = var.network
 
+  # Conditionally assign zone attributes only if multizone detected
+  zone         = local.is_multizone && local.primary_zone != null ? local.primary_zone : null
+  replica_zone = local.is_multizone && local.replica_zone != null ? local.replica_zone : null
+
   lifecycle {
     ignore_changes = [network]
   }

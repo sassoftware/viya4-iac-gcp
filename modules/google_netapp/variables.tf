@@ -53,6 +53,10 @@ variable "netapp_subnet_cidr" {
   default     = "192.168.5.0/24"
 }
 
+variable "default_nodepool_locations" {
+  description = "Comma-separated list of default node pool locations"
+  type        = string
+
 # Community Contribution
 variable "community_netapp_networking_components_enabled" {
   description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
