@@ -134,6 +134,7 @@ The application of a Kubernetes version in Google Cloud has some limitations whe
 | default_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
 | default_nodepool_taints | Taints for the default nodepool VMs | list of strings | [] | |
 | default_nodepool_labels | Labels to add to the default nodepool VMs | map | {} | |
+| default_nodepool_locations | Comma-separated list of zones for the default node pool. Ensures nodes are distributed across multiple zones | map | null | Use multiple values to enable multi-zone (multi-AZ) deployment for node pools. Example: `default_nodepool_locations = "us-east1-b,us-east1-c,us-east1-d"` |
 
 ### Additional Nodepools
 
