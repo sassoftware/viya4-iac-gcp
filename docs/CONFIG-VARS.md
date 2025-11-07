@@ -151,6 +151,7 @@ Additional node pools can be created separate from the default nodepool. This is
 | local_ssd_count | Number of 375 GB local ssd disks to provision  | number | |
 | accelerator_count | Number of GPU accelerators associated with this nodepool | number | |
 | accelerator_type | Type of GPU accelerator associated with this nodepool | string | To list the available accelerators in your zone use the following command `gcloud compute accelerator-types list --filter="zone:( <your zone> )"` |
+| nodepools_locations | Comma-separated list of zones for additional node pools. Ensures new pools are deployed across multiple zones | string | Use multiple values to enable multi-zone (multi-AZ) deployment for node pools. Example: `nodepools_locations = "us-east1-b,us-east1-c,us-east1-d"` |
 
 The default values for the `node_pools` variable are:
 
