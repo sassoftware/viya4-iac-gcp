@@ -71,6 +71,8 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
 | netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.5.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"` and `storage_type_backend="netapp"` |
+| gke_network_policy | Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. | string | false | Supported values are true (calico) and false (kubenet). |
+
 
 ### Use Existing
 
