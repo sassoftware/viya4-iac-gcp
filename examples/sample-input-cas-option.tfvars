@@ -33,6 +33,15 @@ default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
 
 # Node Pools config
+# ****************  OPTIONAL CAS CONFIGURATION  ****************
+# This configuration is optimized for SAS Viya Programming-only deployments.
+# 
+# Two options for making CAS optional:
+# 1. Keep the cas block commented out (no CAS node pool created)
+#    - No CAS node pool created
+#    - CAS cannot be deployed without infrastructure changes
+#
+# ******************************************************************
 node_pools = {
 #  cas = {
 #    "vm_type"      = "n2-highmem-16"
