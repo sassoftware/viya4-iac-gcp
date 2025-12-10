@@ -36,8 +36,8 @@ default_nodepool_vm_type   = "n2-highmem-8"
 # ****************  OPTIONAL CAS CONFIGURATION  ****************
 # This configuration is optimized for SAS Viya Programming-only deployments.
 # 
-# Two options for making CAS optional:
-# 1. Keep the cas block commented out (no CAS node pool created)
+#
+# Keep the cas block commented out (no CAS node pool created)
 #    - No CAS node pool created
 #    - CAS cannot be deployed without infrastructure changes
 #
