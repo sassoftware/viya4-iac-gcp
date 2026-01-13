@@ -3,11 +3,14 @@
 
 locals {
   # Conditional image selection based on FIPS requirement
-  # When FIPS is enabled, use Ubuntu Pro FIPS 22.04 LTS; otherwise use the provided os_image
+  # When FIPS is enabled, use Ubuntu Pro FIPS Updates 22.04 LTS; otherwise use the provided os_image
+  # The "ubuntu-pro-fips-updates-2204-lts" image family provides:
+  #   - FIPS 140-2 validated cryptographic modules
+  #   - Ongoing security updates while maintaining FIPS compliance
   # Note: Ubuntu 22.04 is used because FIPS 140-2 certification for Ubuntu 24.04 may not be available yet.
   #       FIPS certification takes 12-18 months, so validated images are typically 1-2 LTS versions behind.
-  # Verify available images: gcloud compute images list --project=ubuntu-os-pro-cloud --filter="name:fips"
-  selected_os_image = var.fips_enabled ? "ubuntu-os-pro-cloud/ubuntu-pro-fips-2204-lts-amd64" : var.os_image
+  # Verify available images: gcloud compute images list --project=ubuntu-os-pro-cloud --filter="family:ubuntu-pro-fips"
+  selected_os_image = var.fips_enabled ? "ubuntu-os-pro-cloud/ubuntu-pro-fips-updates-2204-lts" : var.os_image
 }
 
 module "address" {
