@@ -81,7 +81,7 @@ For Jump and NFS VMs (created via `modules/google_vm`), implement similar logic 
 
 1. **Add Ubuntu Pro FIPS Image Support**:
    - Google Cloud Marketplace offers Ubuntu Pro FIPS images
-   - Image family: `ubuntu-pro-fips-2204-lts-amd64`
+   - Image family: `ubuntu-pro-fips-updates-2204-lts`
    - Project: `ubuntu-os-pro-cloud`
    - **Note**: Ubuntu 22.04 LTS is used because FIPS 140-2 certification for Ubuntu 24.04 may not yet be available. FIPS certification requires 12-18 months of NIST validation, so certified images are typically 1-2 LTS versions behind the latest Ubuntu release.
 
@@ -89,7 +89,7 @@ For Jump and NFS VMs (created via `modules/google_vm`), implement similar logic 
    ```hcl
    # In modules/google_vm/main.tf
    data "google_compute_image" "vm_image" {
-     family  = var.fips_enabled ? "ubuntu-pro-fips-2204-lts" : var.os_image_family
+     family  = var.fips_enabled ? "ubuntu-pro-fips-updates-2204-lts" : var.os_image_family
      project = var.fips_enabled ? "ubuntu-os-pro-cloud" : var.os_image_project
    }
    
@@ -152,7 +152,7 @@ variable "os_image_project" {
 Implement conditional image selection:
 ```hcl
 data "google_compute_image" "vm_image" {
-  family  = var.fips_enabled ? "ubuntu-pro-fips-2204-lts" : var.os_image_family
+  family  = var.fips_enabled ? "ubuntu-pro-fips-updates-2204-lts" : var.os_image_family
   project = var.fips_enabled ? "ubuntu-os-pro-cloud" : var.os_image_project
 }
 
@@ -199,7 +199,7 @@ The Federal Information Processing Standard (FIPS) 140 is a US government standa
 To enable FIPS support for Jump and NFS VMs, set the `fips_enabled` variable to `true`. This will use Ubuntu Pro FIPS 22.04 LTS images for these VMs.
 
 **Note:** You must accept the terms for Ubuntu Pro FIPS images before deploying. You can do this via:
-1. Google Cloud Console: Visit the [Ubuntu Pro FIPS 22.04 LTS](https://console.cloud.google.com/marketplace/product/ubuntu-os-pro-cloud/ubuntu-pro-fips-2204-lts) marketplace page
+1. Google Cloud Console: Visit the [Ubuntu Pro FIPS Updates 22.04 LTS](https://console.cloud.google.com/marketplace/product/ubuntu-os-pro-cloud/ubuntu-pro-fips-updates-2204-lts) marketplace page
 2. Or use gcloud CLI (if available for programmatic acceptance)
 
 | Name | Description | Type | Default | Notes |
@@ -233,7 +233,7 @@ Create comprehensive FIPS support documentation.
      ```go
      func TestFIPSEnabled(t *testing.T) {
        // Verify FIPS image is selected when fips_enabled=true
-       expectedImageFamily := "ubuntu-pro-fips-2204-lts"
+       expectedImageFamily := "ubuntu-pro-fips-updates-2204-lts"
        expectedImageProject := "ubuntu-os-pro-cloud"
        // ... assertions
      }
@@ -311,11 +311,11 @@ gcloud compute images list \
   --format="table(name,family,creationTimestamp)"
 
 # Check specific image family
-gcloud compute images describe-from-family ubuntu-pro-fips-2204-lts-amd64 \
+gcloud compute images describe-from-family ubuntu-pro-fips-updates-2204-lts \
   --project=ubuntu-os-pro-cloud
 ```
 
-**Expected image format**: `ubuntu-os-pro-cloud/ubuntu-pro-fips-2204-lts-amd64`
+**Expected image format**: `ubuntu-os-pro-cloud/ubuntu-pro-fips-updates-2204-lts`
 
 **Why Ubuntu 22.04 and not 24.04?**
 - FIPS 140-2 certification requires 12-18 months of NIST validation
@@ -334,7 +334,7 @@ gcloud compute images describe-from-family ubuntu-pro-fips-2204-lts-amd64 \
 - [GKE FIPS Compliance](https://cloud.google.com/kubernetes-engine/docs/how-to/fips-compliance)
 - [Ubuntu Pro FIPS on GCP](https://ubuntu.com/gcp/pro)
 - [FIPS 140-2 Standard](https://csrc.nist.gov/pubs/fips/140-2/upd2/final)
-- [Google Cloud Marketplace - Ubuntu Pro FIPS](https://console.cloud.google.com/marketplace/product/ubuntu-os-pro-cloud/ubuntu-pro-fips-2204-lts)
+- [Google Cloud Marketplace - Ubuntu Pro FIPS Updates](https://console.cloud.google.com/marketplace/product/ubuntu-os-pro-cloud/ubuntu-pro-fips-updates-2204-lts)
 
 ## Next Steps
 
