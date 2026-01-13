@@ -11,6 +11,7 @@ Supported configuration variables are listed in the table below.  All variables 
   - [Admin Access](#admin-access)
   - [Networking](#networking)
     - [Use Existing](#use-existing)
+  - [Security](#security)
   - [General](#general)
   - [Nodepools](#nodepools)
     - [Default Nodepool](#default-nodepool)
@@ -99,6 +100,12 @@ subnet_names = {
 ```
 
 Note: The subnets for filestore and database can not the pre-created. Google Cloud creates the subnets as part of the services.
+
+## Security
+
+| Name | Description | Type | Default | Notes |
+| :--- | ---: | ---: | ---: | ---: |
+| fips_enabled | Enables the Federal Information Processing Standard (FIPS 140-2) for Jump and NFS VMs | bool | false | When enabled, uses Ubuntu Pro FIPS 22.04 LTS images from `ubuntu-os-pro-cloud` project. **Ubuntu Pro is a premium image with additional costs beyond standard VM pricing.** FIPS applies only to Jump and NFS VMs. GKE nodes use Container-Optimized OS (COS) which includes FIPS-validated kernel crypto modules by default. Changing this value after VM creation will force VM recreation. See [Ubuntu Pro on GCP](https://cloud.google.com/compute/docs/images/os-details#ubuntu_pro) for pricing details. |
 
 ## General
 

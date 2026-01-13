@@ -33,6 +33,7 @@ module "nfs_server" {
 
   vm_admin       = var.nfs_vm_admin
   ssh_public_key = local.ssh_public_key
+  fips_enabled   = var.fips_enabled
 
   user_data = var.storage_type == "standard" ? templatefile("${path.module}/files/cloud-init/nfs/cloud-config", {
     misc_subnet_cidr = local.misc_subnet_cidr
@@ -64,6 +65,7 @@ module "jump_server" {
 
   vm_admin       = var.jump_vm_admin
   ssh_public_key = local.ssh_public_key
+  fips_enabled   = var.fips_enabled
 
   user_data = templatefile("${path.module}/files/cloud-init/jump/cloud-config", {
     mounts = (var.storage_type == "none"

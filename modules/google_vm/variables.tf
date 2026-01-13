@@ -68,6 +68,12 @@ variable "os_image" {
   default     = "ubuntu-os-cloud/ubuntu-2404-lts-amd64" # FAMILY/PROJECT glcoud compute images list
 }
 
+variable "fips_enabled" {
+  description = "Enables the Federal Information Processing Standard (FIPS 140-2) for this VM. When true, uses Ubuntu Pro FIPS 22.04 LTS image."
+  type        = bool
+  default     = false
+}
+
 
 variable "data_disk_count" {
   description = "Number of compute disks to associated with the VM"

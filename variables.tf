@@ -49,6 +49,13 @@ variable "iac_tooling" {
   default     = "terraform"
 }
 
+## Enable FIPS support
+variable "fips_enabled" {
+  description = "Enables the Federal Information Processing Standard (FIPS 140-2) for Jump and NFS VMs. When true, uses Ubuntu Pro FIPS 22.04 LTS images. Changing this forces VM recreation."
+  type        = bool
+  default     = false
+}
+
 ## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID
 variable "kubernetes_channel" {
   description = "The GKE cluster channel for auto-updates"

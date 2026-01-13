@@ -1,6 +1,15 @@
 # Copyright © 2021-2024, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+locals {
+  # Conditional image selection based on FIPS requirement
+  # When FIPS is enabled, use Ubuntu Pro FIPS 22.04 LTS; otherwise use the provided os_image
+  # Note: Ubuntu 22.04 is used because FIPS 140-2 certification for Ubuntu 24.04 may not be available yet.
+  #       FIPS certification takes 12-18 months, so validated images are typically 1-2 LTS versions behind.
+  # Verify available images: gcloud compute images list --project=ubuntu-os-pro-cloud --filter="name:fips"
+  selected_os_image = var.fips_enabled ? "ubuntu-os-pro-cloud/ubuntu-pro-fips-2204-lts-amd64" : var.os_image
+}
+
 module "address" {
   source       = "terraform-google-modules/address/google"
   version      = "~> 4.1.0"
@@ -20,7 +29,7 @@ resource "google_compute_instance" "google_vm" {
 
   boot_disk {
     initialize_params {
-      image = var.os_image
+      image = local.selected_os_image
     }
   }
 
