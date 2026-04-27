@@ -469,9 +469,9 @@ variable "enable_registry_access" {
 
 ## Google NetApp Volumes
 variable "netapp_service_level" {
-  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Note: PREMIUM and EXTREME are not available in all regions (e.g. us-east1 only supports STANDARD and FLEX)."
   type        = string
-  default     = "PREMIUM"
+  default     = "STANDARD"
 
   validation {
     condition     = var.netapp_service_level != null ? contains(["PREMIUM", "EXTREME", "STANDARD", "FLEX"], var.netapp_service_level) : null
@@ -596,9 +596,9 @@ variable "database_subnet_cidr" {
 }
 
 variable "netapp_subnet_cidr" {
-  description = "Address space for Google Cloud NetApp Volumes subnet"
+  description = "Address space for Google Cloud NetApp Volumes subnet. Must not overlap with other allocated IP ranges in the VPC. Needs to be at least a /24 range."
   type        = string
-  default     = "192.168.5.0/24"
+  default     = "192.168.6.0/24"
 }
 
 variable "gke_network_policy" {
