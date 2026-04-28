@@ -32,6 +32,9 @@ default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
 
 # Node Pools config
+# Per-nodepool zone control is supported via the optional "node_locations" attribute.
+# This is the GCP equivalent of Azure's "availability_zones" per nodepool.
+# Priority: node_locations (per pool) > nodepools_locations (global) > single zone
 node_pools = {
   cas = {
     "vm_type"      = "n2-highmem-16"
@@ -45,6 +48,7 @@ node_pools = {
     "local_ssd_count"   = 2
     "accelerator_count" = 0
     "accelerator_type"  = ""
+    # "node_locations" = "us-east1-b,us-east1-c,us-east1-d"  # Optional: overrides nodepools_locations for CAS only
   },
   compute = {
     "vm_type"      = "n2-highmem-4"
@@ -59,6 +63,7 @@ node_pools = {
     "local_ssd_count"   = 1
     "accelerator_count" = 0
     "accelerator_type"  = ""
+    # "node_locations" = "us-east1-b"  # Optional: single zone for compute (sas-compute-server does not support multi-zone)
   },
   stateless = {
     "vm_type"      = "n2-highmem-4"
@@ -72,6 +77,7 @@ node_pools = {
     "local_ssd_count"   = 0
     "accelerator_count" = 0
     "accelerator_type"  = ""
+    # "node_locations" = "us-east1-b,us-east1-c,us-east1-d"  # Optional: overrides nodepools_locations for stateless only
   },
   stateful = {
     "vm_type"      = "n2-highmem-4"
@@ -85,6 +91,7 @@ node_pools = {
     "local_ssd_count"   = 0
     "accelerator_count" = 0
     "accelerator_type"  = ""
+    # "node_locations" = "us-east1-b,us-east1-c,us-east1-d"  # Optional: overrides nodepools_locations for stateful only
   }
 }
 # Jump Box
@@ -107,8 +114,12 @@ storage_type = "ha"
 regional = true # e.g., true for regional (multi-zone) control plane, false for zonal
 
 # Default node pool zone locations (comma-separated string)
-default_nodepool_locations = "" # e.g., "us-east1-b,us-east1-c,us-east1-d"
+# These zones control where the default nodepool nodes are deployed across zones
+# for zone-redundant node distribution. Equivalent to Azure availability_zones.
+default_nodepool_locations = "us-east1-b,us-east1-c,us-east1-d" # e.g., "us-east1-b,us-east1-c,us-east1-d"
 
 # Additional node pool zone locations (comma-separated string)
-nodepools_locations = "" # e.g., "us-east1-b,us-east1-c,us-east1-d"
+# These zones apply to ALL additional nodepools (cas, compute, stateless, stateful).
+# All nodepools share the same zone list. For per-nodepool zone control, see Jira story.
+nodepools_locations = "us-east1-b,us-east1-c,us-east1-d" # e.g., "us-east1-b,us-east1-c,us-east1-d"
 

@@ -277,6 +277,11 @@ variable "node_pools" {
     local_ssd_count   = number
     accelerator_count = number
     accelerator_type  = string
+    # Optional: per-nodepool zone locations (comma-separated string).
+    # If set, overrides nodepools_locations for this specific nodepool.
+    # e.g., "us-east1-b,us-east1-c" for multi-zone or "us-east1-b" for single-zone.
+    # Equivalent to Azure availability_zones per nodepool.
+    node_locations    = optional(string, "")
   }))
   default = {
     cas = {
@@ -336,18 +341,14 @@ variable "node_pools" {
 }
 
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
-# TODO - NOTE
-#   This was made external to the node_pools map variable since a requirement of terraform v1.0.0 (the minimum version
-#   we require, see versions.tf) is that for variables with nested fields, all attributes are required otherwise
-#   execution fails.
-#   In Terraform v1.3+ you can mark nested attributes as optional.
-#   Since this is an experimental change, at the moment I do no want to impose new requirements on existing users.
-#   Potentially we upgrade Terraform modules and versions and we bump our minimum required terraform version to be >1.3
-#   then at that time I can deprecate this variable and instead allow the user to configure node_locations per node pool.
+# NOTE: Per-nodepool zone control is now supported via the optional `node_locations`
+#       attribute in the node_pools variable (requires Terraform >= 1.3).
+#       nodepools_locations acts as a global fallback for nodepools that do not
+#       specify their own node_locations.
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
 
 variable "nodepools_locations" {
-  description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
+  description = "Global fallback GCP zone(s) for all additional node pools that do not specify their own node_locations. Comma separated list. Per-nodepool zones can be set via node_pools.<name>.node_locations."
   type        = string
   default     = ""
 }
