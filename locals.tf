@@ -58,7 +58,7 @@ locals {
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
       initial_node_count = max(local.initial_node_count, settings.min_nodes)
-      # Per-nodepool zone control (equivalent to Azure availability_zones per nodepool):
+      # Per-nodepool zone control :
       # 1. Use node_locations from the nodepool's own settings if set
       # 2. Fall back to global nodepools_locations if set
       # 3. Fall back to single local.zone

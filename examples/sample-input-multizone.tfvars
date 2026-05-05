@@ -33,7 +33,6 @@ default_nodepool_vm_type   = "n2-highmem-8"
 
 # Node Pools config
 # Per-nodepool zone control is supported via the optional "node_locations" attribute.
-# This is the GCP equivalent of Azure's "availability_zones" per nodepool.
 # Priority: node_locations (per pool) > nodepools_locations (global) > single zone
 node_pools = {
   cas = {
