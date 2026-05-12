@@ -29,7 +29,7 @@ func TestPlanNetApp(t *testing.T) {
 			AssertFunction:    assert.NotEqual,
 		},
 		"poolServiceLevel": {
-			Expected:          `PREMIUM`,
+			Expected:          `STANDARD`,
 			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
 			AttributeJsonPath: "{$.service_level}",
 		},
