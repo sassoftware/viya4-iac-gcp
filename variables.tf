@@ -174,10 +174,18 @@ variable "create_nfs_public_ip" {
 }
 
 variable "storage_type" {
-  description = "Type of storage to create"
-  type        = string
-  default     = "standard"
-  # NOTE: storage_type="none" is for internal use only
+  description = <<-EOF
+    Type of storage to provision for RWX volumes.
+    - "standard" : Provisions Google Filestore (ZONAL - single zone only, NOT zone-redundant).
+                   Suitable for single-zone GKE deployments only.
+    - "ha"        : Provisions Google NetApp Volumes (Zone-Redundant).
+                   Required for Multi-Zone GKE deployments.
+    NOTE: Google Filestore is ZONAL and does NOT provide zone-redundant storage.
+          For Multi-Zone GKE deployments, always use storage_type = "ha" (NetApp Volumes).
+    NOTE: storage_type="none" is for internal use only.
+  EOF
+  type    = string
+  default = "standard"
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
     error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
@@ -185,10 +193,15 @@ variable "storage_type" {
 }
 
 variable "storage_type_backend" {
-  description = "The storage backend used for the chosen storage type. Defaults to 'nfs' for storage_type='standard'. Defaults to 'filestore for storage_type='ha'. 'filestore' and 'netapp' are valid choices for storage_type='ha'."
-  type        = string
-  default     = "nfs"
-  # If storage_type is standard, this will be set to "nfs"
+  description = <<-EOF
+    The storage backend used for the chosen storage type.
+    - storage_type = "standard" : backend is always "nfs" (Google Filestore - ZONAL).
+    - storage_type = "ha"        : backend is always "netapp" (Google NetApp Volumes - Zone-Redundant).
+    NOTE: Filestore is no longer a valid backend for storage_type = "ha".
+          For Multi-Zone HA deployments, NetApp Volumes is the only supported zone-redundant RWX backend.
+  EOF
+  type    = string
+  default = "nfs"
 
   validation {
     condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
@@ -264,6 +277,11 @@ variable "node_pools" {
     local_ssd_count   = number
     accelerator_count = number
     accelerator_type  = string
+    # Optional: per-nodepool zone locations (comma-separated string).
+    # If set, overrides nodepools_locations for this specific nodepool.
+    # e.g., "us-east1-b,us-east1-c" for multi-zone or "us-east1-b" for single-zone.
+    # Equivalent to Azure availability_zones per nodepool.
+    node_locations    = optional(string, "")
   }))
   default = {
     cas = {
@@ -323,18 +341,14 @@ variable "node_pools" {
 }
 
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
-# TODO - NOTE
-#   This was made external to the node_pools map variable since a requirement of terraform v1.0.0 (the minimum version
-#   we require, see versions.tf) is that for variables with nested fields, all attributes are required otherwise
-#   execution fails.
-#   In Terraform v1.3+ you can mark nested attributes as optional.
-#   Since this is an experimental change, at the moment I do no want to impose new requirements on existing users.
-#   Potentially we upgrade Terraform modules and versions and we bump our minimum required terraform version to be >1.3
-#   then at that time I can deprecate this variable and instead allow the user to configure node_locations per node pool.
+# NOTE: Per-nodepool zone control is now supported via the optional `node_locations`
+#       attribute in the node_pools variable (requires Terraform >= 1.3).
+#       nodepools_locations acts as a global fallback for nodepools that do not
+#       specify their own node_locations.
 #   Refer to https://github.com/hashicorp/terraform/issues/29407#issuecomment-1150491619
 
 variable "nodepools_locations" {
-  description = "GCP zone(s) where the additional node pools will allocate nodes in. Comma separated list."
+  description = "Global fallback GCP zone(s) for all additional node pools that do not specify their own node_locations. Comma separated list. Per-nodepool zones can be set via node_pools.<name>.node_locations."
   type        = string
   default     = ""
 }
@@ -456,9 +470,9 @@ variable "enable_registry_access" {
 
 ## Google NetApp Volumes
 variable "netapp_service_level" {
-  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Note: PREMIUM and EXTREME are not available in all regions (e.g. us-east1 only supports STANDARD and FLEX)."
   type        = string
-  default     = "PREMIUM"
+  default     = "STANDARD"
 
   validation {
     condition     = var.netapp_service_level != null ? contains(["PREMIUM", "EXTREME", "STANDARD", "FLEX"], var.netapp_service_level) : null
@@ -583,9 +597,9 @@ variable "database_subnet_cidr" {
 }
 
 variable "netapp_subnet_cidr" {
-  description = "Address space for Google Cloud NetApp Volumes subnet"
+  description = "Address space for Google Cloud NetApp Volumes subnet. Must not overlap with other allocated IP ranges in the VPC. Needs to be at least a /24 range."
   type        = string
-  default     = "192.168.5.0/24"
+  default     = "192.168.6.0/24"
 }
 
 variable "gke_network_policy" {

@@ -51,7 +51,7 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   replica_zone = local.is_multizone && local.replica_zone != null ? local.replica_zone : null
 
   lifecycle {
-    ignore_changes = [network]
+    ignore_changes = [network, zone, replica_zone]
   }
 }
 
