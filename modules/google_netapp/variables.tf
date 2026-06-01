@@ -58,9 +58,6 @@ variable "default_nodepool_locations" {
   type        = string
 }
 
-
-}
-
 # Community Contribution
 variable "community_netapp_networking_components_enabled" {
   description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
@@ -83,3 +80,10 @@ variable "netapp_dns_hostname" {
   description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
   type        = string
   default     = "netapp-volume"
+}
+
+variable "netapp_dns_record_ttl" {
+  description = "TTL in seconds for the DNS A record. Only used when enable_netapp_dns=true."
+  type        = number
+  default     = 300
+}
