@@ -62,7 +62,7 @@ node_pools = {
     "local_ssd_count"   = 1
     "accelerator_count" = 0
     "accelerator_type"  = ""
-    # "node_locations" = "us-east1-b"  # Optional: single zone for compute (sas-compute-server does not support multi-zone)
+    # "node_locations" = "us-east1-b"  # Optional: override per-nodepool zone locations
   },
   stateless = {
     "vm_type"      = "n2-highmem-4"
@@ -108,6 +108,18 @@ jump_vm_admin         = "jumpuser"
 #            for Multi-Zone GKE deployments.
 storage_type = "ha"
 # storage_type_backend is no longer required. storage_type = "ha" always provisions Google NetApp Volumes.
+
+# Google NetApp Volumes Configuration
+netapp_service_level = "FLEX"     # Required for zone-redundant storage; valid values: PREMIUM, EXTREME, STANDARD, FLEX
+netapp_capacity_gib  = 2048       # Storage pool capacity in GiB (minimum 2048)
+netapp_protocols     = ["NFSV3"]  # Volume protocols; currently only NFSV3 is supported by SAS Viya
+
+# DNS Abstraction for NetApp Cross-Zone Replication (CZR) Endpoint
+# When enabled, creates a Private DNS zone with an A record pointing to the NetApp volume endpoint.
+# This allows for DNS-based failover in zone-redundant deployments.
+# Only applicable when storage_type="ha" AND multi-zone deployment is detected.
+netapp_dns_zone_name = "netapp.internal" # DNS zone name for NetApp endpoint (e.g., "netapp.internal")
+netapp_dns_record_ttl = 300              # TTL in seconds for DNS A record (default: 300)
 
 # GKE cluster control plane configuration
 regional = true # e.g., true for regional (multi-zone) control plane, false for zonal

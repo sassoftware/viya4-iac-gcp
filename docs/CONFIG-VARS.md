@@ -251,6 +251,9 @@ When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google 
 | netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFSV3 is supported by SAS Viya Platform. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
+| enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
+| netapp_dns_zone_name | Name for the Private DNS zone for NetApp endpoint. | string | "netapp-private.internal" | Only used when `enable_netapp_dns=true`. |
+| netapp_dns_hostname | DNS hostname for the NetApp volume endpoint. | string | "netapp-volume" | Only used when `enable_netapp_dns=true`. Must be a valid DNS hostname (lowercase alphanumeric and hyphens only). |
 
 ### Google NetApp Volumes — Zone Redundancy Limitations
 

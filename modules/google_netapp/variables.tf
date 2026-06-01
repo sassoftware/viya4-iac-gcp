@@ -58,9 +58,28 @@ variable "default_nodepool_locations" {
   type        = string
 }
 
+
+}
+
 # Community Contribution
 variable "community_netapp_networking_components_enabled" {
   description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
   type        = bool
   default     = true
 }
+variable "enable_netapp_dns" {
+  description = "Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Only applicable for multi-zone HA deployments with FLEX service level."
+  type        = bool
+  default     = false
+}
+
+variable "netapp_dns_zone_name" {
+  description = "Name for the Private DNS zone for NetApp endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-private.internal"
+}
+
+variable "netapp_dns_hostname" {
+  description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-volume"

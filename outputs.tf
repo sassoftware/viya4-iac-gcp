@@ -24,11 +24,11 @@ output "postgres_servers" {
 }
 
 output "rwx_filestore_endpoint" {
-  description = "Shared Storage private IP"
+  description = "Shared Storage endpoint (DNS hostname when enable_netapp_dns=true for HA NetApp, otherwise IP address)"
   value = (var.storage_type == "none"
     ? null
     : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0]
-    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].export_ip : module.nfs_server[0].private_ip
+    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].endpoint : module.nfs_server[0].private_ip
   )
 }
 

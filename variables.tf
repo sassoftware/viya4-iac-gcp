@@ -503,6 +503,29 @@ variable "netapp_volume_path" {
   default     = "export"
 }
 
+variable "enable_netapp_dns" {
+  description = "Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Requires storage_type='ha' and multi-zone deployment (default_nodepool_locations with multiple zones). Provides stable DNS hostname for failover scenarios."
+  type        = bool
+  default     = false
+}
+
+variable "netapp_dns_zone_name" {
+  description = "Name for the Private DNS zone for NetApp endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-private.internal"
+}
+
+variable "netapp_dns_hostname" {
+  description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-volume"
+
+  validation {
+    condition     = can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", var.netapp_dns_hostname))
+    error_message = "netapp_dns_hostname must be a valid DNS hostname (lowercase alphanumeric and hyphens only, cannot start or end with hyphen)."
+  }
+}
+
 # GKE Monitoring
 variable "create_gke_monitoring_service" {
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."

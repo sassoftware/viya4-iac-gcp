@@ -330,5 +330,10 @@ module "google_netapp" {
   default_nodepool_locations = var.default_nodepool_locations
   depends_on         = [ module.gke ]
 
+  # DNS abstraction for zone-redundant endpoint
+  enable_netapp_dns    = var.enable_netapp_dns
+  netapp_dns_zone_name = var.netapp_dns_zone_name
+  netapp_dns_hostname  = var.netapp_dns_hostname
+
   community_netapp_networking_components_enabled = var.community_netapp_networking_components_enabled
 }
