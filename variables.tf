@@ -526,6 +526,17 @@ variable "netapp_dns_hostname" {
   }
 }
 
+variable "netapp_dns_record_ttl" {
+  description = "TTL in seconds for the DNS A record. Only used when enable_netapp_dns=true."
+  type        = number
+  default     = 300
+
+  validation {
+    condition     = var.netapp_dns_record_ttl >= 60 && var.netapp_dns_record_ttl <= 86400
+    error_message = "netapp_dns_record_ttl must be between 60 and 86400 seconds (1 minute to 1 day)."
+  }
+}
+
 # GKE Monitoring
 variable "create_gke_monitoring_service" {
   description = "Enable GKE metrics from pods in the cluster to the Google Cloud Monitoring API."
