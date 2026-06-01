@@ -1,0 +1,291 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-21T12:04:45Z",
+    "tool": "iac-deprecation-checker",
+    "repo": "viya4-iac-gcp"
+  },
+  "summary": {
+    "status": "REVIEW_REQUIRED",
+    "current_version": "6.28.0",
+    "latest_version": "7.33.0",
+    "total_resources": 21,
+    "affected_count": 14,
+    "breaking_count": 3,
+    "deprecated_count": 0,
+    "changed_count": 11,
+    "changelog_range": "6.28.0 to 7.33.0"
+  },
+  "affected_resources": [
+    {
+      "resource_type": "external",
+      "files": [
+        "main.tf"
+      ],
+      "severity": "BREAKING",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* bigquery: fixed `ignore_auto_generated_schema` evaluation for `google_bigquery_table` external tables which caused spurious replacement ([#27188](https://github.com/hashicorp/terraform-provider-google/pull/27188))",
+        "* compute: added `params` field to `google_compute_external_vpn_gateway` resource ([#26348](https://github.com/hashicorp/terraform-provider-google/pull/26348))",
+        "* compute: added `params` field to `google_compute_external_vpn_gateway` resource ([#26089](https://github.com/hashicorp/terraform-provider-google/pull/26089))",
+        "* publicca: fixed `mac_key` fields not being properly set in `google_public_ca_external_account_key` ([#26099](https://github.com/hashicorp/terraform-provider-google/pull/26099))",
+        "* publicca: `google_public_ca_external_account_key.b64url_mac_key` is deprecated and will be removed in a future major release. Use `mac_key` instead. ([#25964](https://github.com/hashicorp/terraform-provider-google/pull/25964))",
+        "* publicca: added `mac_key` to `google_public_ca_external_account_key` ([#25964](https://github.com/hashicorp/terraform-provider-google/pull/25964))",
+        "* publicca: fixed `b64url_mac_key` sometimes being empty in `google_public_ca_external_account_key` ([#25964](https://github.com/hashicorp/terraform-provider-google/pull/25964))",
+        "* bigquery: added `external_data_configuration.decimal_target_types` to `google_bigquery_table` ([#24936](https://github.com/hashicorp/terraform-provider-google/pull/24936))",
+        "* bigquery: fixed extraneous diffs in `google_bigquery_table.external_data_configuration.schema` ([#24936](https://github.com/hashicorp/terraform-provider-google/pull/24936))",
+        "* beyondcorp: added `external`, `proxy_protocol`, and `schema` fields to `google_beyondcorp_security_gateway_application` resource ([#24542](https://github.com/hashicorp/terraform-provider-google/pull/24542))",
+        "* bigquery: fixed a crash in `google_bigquery_table` when configured as an external table with `parquet_options` ([#23808](https://github.com/hashicorp/terraform-provider-google/pull/23808))",
+        "* compute: added `external_managed_backend_bucket_migration_state` and `external_managed_backend_bucket_migration_testing_percentage` to `google_compute_global_forwarding_rule` resource. ([#22781](https://github.com/hashicorp/terraform-provider-google/pull/22781))",
+        "* compute: added `external_managed_migration_state` and `external_managed_migration_testing_percentage` to `google_compute_backend_service` resource. ([#22781](https://github.com/hashicorp/terraform-provider-google/pull/22781))",
+        "* compute: added update support for `load_balancing_scheme` in `google_compute_backend_service` and `google_compute_global_forwarding_rule` resources to allow migrating between classic and global external ALB ([#22781](https://github.com/hashicorp/terraform-provider-google/pull/22781))",
+        "* bigquery: added `external_catalog_dataset_options` fields to `google_bigquery_dataset` resource ([#22377](https://github.com/hashicorp/terraform-provider-google/pull/22377))",
+        "* bigquery: added `external_catalog_table_options` and `schema_foreign_type_info` fields to  `google_bigquery_table` resource ([#22302](https://github.com/hashicorp/terraform-provider-google/pull/22302))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_instance",
+      "files": [
+        "modules/google_vm/main.tf"
+      ],
+      "severity": "BREAKING",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: migrated `google_compute_instance_from_machine` resource  to use direct HTTP rather than a client library ([#27260](https://github.com/hashicorp/terraform-provider-google/pull/27260))",
+        "* compute: migrated `google_compute_instance_group_manager` resource to use direct HTTP rather than a client library ([#27259](https://github.com/hashicorp/terraform-provider-google/pull/27259))",
+        "* compute: added `replica_zones` field to `google_compute_instance` resource ([#27258](https://github.com/hashicorp/terraform-provider-google/pull/27258))",
+        "* compute: migrated `google_compute_instance.network_interface` field to use direct HTTP rather than a client library ([#27104](https://github.com/hashicorp/terraform-provider-google/pull/27104))",
+        "* compute: migrated `partner_metadata` field on `google_compute_instance`, `google_compute_instance_template`, and `google_compute_region_instance_template` to use direct HTTP rather than a client library ([#27131](https://github.com/hashicorp/terraform-provider-google/pull/27131))",
+        "* compute: fixed an issue where an erroneous error could occur for having an unset `zone` field in `google_compute_instance_template` ([#27076](https://github.com/hashicorp/terraform-provider-google/pull/27076))",
+        "* compute: migrated `data_source_google_compute_instance_template` datasource to use direct HTTP rather then a client library ([#26831](https://github.com/hashicorp/terraform-provider-google/pull/26831))",
+        "* compute: migrated `google_compute_instance_guest_attributes` datasource to use direct HTTP rather then a client library ([#26826](https://github.com/hashicorp/terraform-provider-google/pull/26826))",
+        "* compute: added `target_size_policy` field to `google_compute_instance_group_manager` and `google_compute_region_instance_group_manager` resources ([#26849](https://github.com/hashicorp/terraform-provider-google/pull/26849))",
+        "* compute: added `storage_pool` support to `google_compute_instance_template` and `google_compute_region_instance_template` disks ([#26347](https://github.com/hashicorp/terraform-provider-google/pull/26347))",
+        "* compute: `initialize_params.size` is now updatable in-place in the `google_compute_instance` resource ([#26195](https://github.com/hashicorp/terraform-provider-google/pull/26195))",
+        "* compute: added support for `network_interface.network_attachment` to `google_compute_instance_template` ([#25995](https://github.com/hashicorp/terraform-provider-google/pull/25995))",
+        "* compute: added support for `network_interface.vlan` to `google_compute_instance_template`, enabling dynamic NIC ([#25995](https://github.com/hashicorp/terraform-provider-google/pull/25995))",
+        "* compute: added support for `network_interface.vlan` to `google_compute_instance`, enabling dynamic NIC. Creating and deleting from an existing instance is not yet supported. ([#25995](https://github.com/hashicorp/terraform-provider-google/pull/25995))",
+        "* compute: added support for `igmp_query` field in `google_compute_instance`, `google_compute_instance_template`, and related instance resources. ([#25752](https://github.com/hashicorp/terraform-provider-google/pull/25752))",
+        "* compute: fixed a breaking change in `google_compute_instance` introduced in 7.9.0 where a destroy-diff is prompted for instances with preset GPUs ([#25021](https://github.com/hashicorp/terraform-provider-google/pull/25021))",
+        "* compute: fixed a breaking change in `google_compute_instance` introduced in 7.9.0 where a destroy-diff is prompted for instances with preset GPUs ([#25020](https://github.com/hashicorp/terraform-provider-google/pull/25020)",
+        "* compute: fixed scenario where `google_compute_instance` would not be staged for recreation if `guest_accelerator.count` was updated to 0 from non-zero value ([#24762](https://github.com/hashicorp/terraform-provider-google/pull/24762))",
+        "* compute: added new field `instance_lifecycle_policy.on_repair.allow_changing_zone` to `google_compute_region_instance_group_manager` & `google_compute_instance_group_manager` ([#24706](https://github.com/hashicorp/terraform-provider-google/pull/24706))",
+        "* compute: deprecated the option to deploy a container during VM creation using the container startup agent in `google_compute_instance`. Use alternative services to run containers on your VMs. Learn more at https://cloud.google.com/compute/docs/containers/migrate-containers. ([#24375](https://github.com/hashicorp/terraform-provider-google/pull/24375))",
+        "* compute: `labels` under `initialize_params` are now updatable on `google_compute_instance` ([#24349](https://github.com/hashicorp/terraform-provider-google/pull/24349))",
+        "* compute: `disk.type`, `disk.mode` and `disk.interface` no longer use provider configured default values and instead will be set by the API in `google_compute_instance_template` and `google_compute_region_instance_template` resources [#24055](https://github.com/hashicorp/terraform-provider-google/pull/24055)",
+        "* compute: added `resource_policies.workload_policy` field to `google_compute_instance_group_manager` resource ([#23420](https://github.com/hashicorp/terraform-provider-google/pull/23420))",
+        "* compute: fixed forced instance recreation when adding a `attached_disk` with `force_attach` being `false` to `google_compute_instance` ([#22954](https://github.com/hashicorp/terraform-provider-google/pull/22954))",
+        "* compute: fixed forced instance recreation when adding a `attached_disk` with unset `force_attach` to `google_compute_instance` ([#22954](https://github.com/hashicorp/terraform-provider-google/pull/22954))",
+        "* compute: added `force_attach` field to `boot_disk` and  `attached_disk` of  `google_compute_instance`  resource ([#22801](https://github.com/hashicorp/terraform-provider-google/pull/22801))",
+        "* compute: added `numeric_id` to `google_compute_instance_template` resource ([#22763](https://github.com/hashicorp/terraform-provider-google/pull/22763))",
+        "* compute: added `guest_os_features` and `architecture` to `google_compute_instance_template` and `google_compute_region_instance_template` ([#22644](https://github.com/hashicorp/terraform-provider-google/pull/22644))",
+        "* compute: fixed the bug when validating the subnetwork project in `google_compute_instance` resource ([#22571](https://github.com/hashicorp/terraform-provider-google/pull/22571))",
+        "* compute: added fields like `raw_key`, `rsa_encrypted_key`, `kms_key_service_account` to all relevant resources on `google_compute_instance_template` and `google_compute_region_instance_template` ([#22503](https://github.com/hashicorp/terraform-provider-google/pull/22503))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_subnetwork",
+      "files": [
+        "modules/network/main.tf"
+      ],
+      "severity": "BREAKING",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: added update support for `ip_collection` field to `google_compute_subnetwork` resource ([#27265](https://github.com/hashicorp/terraform-provider-google/pull/27265))",
+        "* compute: migrated `google_compute_subnetwork` data source to use direct HTTP rather than a client library ([#27167](https://github.com/hashicorp/terraform-provider-google/pull/27167))",
+        "* compute: supported in-place update for `secondary_ip_range` field in `google_compute_subnetwork` resource ([#26689](https://github.com/hashicorp/terraform-provider-google/pull/26689))",
+        "* compute: promoted `resolve_subnet_field` field in `google_compute_subnetwork` resource to GA ([#26570](https://github.com/hashicorp/terraform-provider-google/pull/26570))",
+        "* compute: added `allow_subnet_cidr_routes_overlap` field to `google_compute_subnetwork` resource ([#26019](https://github.com/hashicorp/terraform-provider-google/pull/26019))",
+        "* compute: added `internal_ipv6_prefix` field to the `google_compute_subnetwork` resource ([#25037](https://github.com/hashicorp/terraform-provider-google/pull/25037))",
+        "* compute: removed field `enable_flow_logs` from `google_compute_subnetwork` [#23704](https://github.com/hashicorp/terraform-provider-google/pull/23704)",
+        "* compute: deprecated `network_self_link` field in `google_compute_subnetworks` data source. Use `network_name` instead. ([#23753](https://github.com/hashicorp/terraform-provider-google/pull/23753))",
+        "* compute: added `network_name` field to `google_compute_subnetworks` data source ([#23753](https://github.com/hashicorp/terraform-provider-google/pull/23753))",
+        "* compute: added `params.resourceManagerTags` field to the `google_compute_subnetwork` ([#23618](https://github.com/hashicorp/terraform-provider-google/pull/23618))"
+      ]
+    },
+    {
+      "resource_type": "google_client_config",
+      "files": [
+        "main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* **New Ephemeral Resource:** `google_client_config` ([#24900](https://github.com/hashicorp/terraform-provider-google/pull/24900))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_address",
+      "files": [
+        "network.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: added `address_id` field to `google_compute_address` resource ([#27216](https://github.com/hashicorp/terraform-provider-google/pull/27216))",
+        "* compute: migrated `data_source_google_compute_addresses.go.tmpl` data source to use direct HTTP rather then a client library ([#27016](https://github.com/hashicorp/terraform-provider-google/pull/27016))",
+        "* compute: added `ip_collection` field to `google_compute_address` resource ([#25732](https://github.com/hashicorp/terraform-provider-google/pull/25732))",
+        "* compute: added `prefix_length` field to `google_compute_addresses` data source ([#25654](https://github.com/hashicorp/terraform-provider-google/pull/25654))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_disk",
+      "files": [
+        "modules/google_vm/main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: supported simultaneous updates for Hyperdisk IOPS and throughput in `google_compute_disk` and `google_compute_region_disk` resources ([#26815](https://github.com/hashicorp/terraform-provider-google/pull/26815))",
+        "* compute: fixed a crash in `google_compute_disk`/`google_compute_region_disk` when deleting a disk attached to an instance that had any scratch disks attached ([#25641](https://github.com/hashicorp/terraform-provider-google/pull/25641))",
+        "* compute: made no replication status in `google_compute_disk_async_replication` a retryable error ([#23492](https://github.com/hashicorp/terraform-provider-google/pull/23492))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_firewall",
+      "files": [
+        "network.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: added `dest_network_context`, `src_network_context` and `src_networks` fields to `google_compute_firewall_policy_rule` resource ([#26227](https://github.com/hashicorp/terraform-provider-google/pull/26227))",
+        "* compute: fixed a permadiff that could occur when using mixed short and long form IPv6 addresses in the `source_ranges` field of `google_compute_firewall` ([#25867](https://github.com/hashicorp/terraform-provider-google/pull/25867))",
+        "* compute: added `rule.match.src_secure_tags`, `rule.target_secure_tags`, `predefined_rules.match.src_secure_tags` and `predefined_rules.target_secure_tags` fields to `google_compute_firewall_policy_with_rules` resource ([#23635](https://github.com/hashicorp/terraform-provider-google/pull/23635))",
+        "* compute: added `params.resource_manager_tags` field to `google_compute_firewall` resource ([#23524](https://github.com/hashicorp/terraform-provider-google/pull/23524))",
+        "* compute: added `match.src_secure_tags` and `target_secure_tags` fields to `google_compute_firewall_policy_rule` resource ([#23414](https://github.com/hashicorp/terraform-provider-google/pull/23414))",
+        "* compute: fixed `google_compute_firewall_policy_rule` staying disabled after apply with `disabled = false` ([#23329](https://github.com/hashicorp/terraform-provider-google/pull/23329))",
+        "* compute: fixed an issue where `google_compute_firewall_policy_with_rules.target_resources` could see a diff between the beta and v1 API in the resource's self-link ([#23170](https://github.com/hashicorp/terraform-provider-google/pull/23170))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_network",
+      "files": [
+        "modules/network/main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* **New Data Source:** `google_compute_network_endpoint_groups` ([#26515](https://github.com/hashicorp/terraform-provider-google/pull/26515))",
+        "* compute: added `dest_network_context`, `src_network_context` and `src_networks` fields to `google_compute_network_firewall_policy_rule` resource ([#26227](https://github.com/hashicorp/terraform-provider-google/pull/26227))",
+        "* compute: fixed update logic that causes empty instance being sent for `google_compute_network_endpoints` ([#25621](https://github.com/hashicorp/terraform-provider-google/pull/25621))",
+        "* compute: fixed `google_compute_network` in-place update to enable `enable_ula_internal_ipv6`. ([#25468](https://github.com/hashicorp/terraform-provider-google/pull/25468))",
+        "* compute: fixed an issue where the `bgp_always_compare_med` field could not be unset in in `google_compute_network`. It can now be unset by configuring the new field `delete_bgp_always_compare_med` to a value of `true`. ([#25288](https://github.com/hashicorp/terraform-provider-google/pull/25288))",
+        "* compute: fixed crashes when no `network_endpoints` block specified in `google_compute_network_endpoints` resource or no network endpoints exist ([#25220](https://github.com/hashicorp/terraform-provider-google/pull/25220))",
+        "* compute: fixed `google_compute_network_firewall_policy_rule` staying disabled after apply with `disabled = false` ([#24879](https://github.com/hashicorp/terraform-provider-google/pull/24879))",
+        "* compute: promoted `policy_type` to GA in `google_compute_network_firewall_policy`, `google_compute_network_firewall_policy_with_rules`, `google_compute_region_network_firewall_policy`, `google_compute_region_network_firewall_policy_with_rules`. ([#24769](https://github.com/hashicorp/terraform-provider-google/pull/24769))",
+        "* compute: added `update_strategy`  field to `google_compute_network_peering ` resource ([#24180](https://github.com/hashicorp/terraform-provider-google/pull/24180))",
+        "* **New Data Source:** `google_compute_network_attachment` ([#23570](https://github.com/hashicorp/terraform-provider-google/pull/23570))",
+        "* compute: added `params.resource_manager_tags` field to `google_compute_network` resource ([#23421](https://github.com/hashicorp/terraform-provider-google/pull/23421))",
+        "* compute: fixed an issue with `bgp_always_compare_med` in `google_compute_network` where it was unable to be set from `true` to `false` ([#23477](https://github.com/hashicorp/terraform-provider-google/pull/23477))",
+        "* compute: added `params.resource_manager_tags` field to `google_compute_network` resource ([#23421](https://github.com/hashicorp/terraform-provider-google/pull/23421))",
+        "* compute: fixed a permadiff in `network_profile` field of `google_compute_network` related to specifying partial self-links ([#23164](https://github.com/hashicorp/terraform-provider-google/pull/23164))",
+        "* compute: added in-place update support for `mtu` field in `google_compute_network` ([#22956](https://github.com/hashicorp/terraform-provider-google/pull/22956))",
+        "* compute: promoted `google_compute_region_network_firewall_policy_with_rules`, `google_compute_network_firewall_policy_with_rules`,  and `compute_firewall_policy_with_rules` resources to GA ([#22958](https://github.com/hashicorp/terraform-provider-google/pull/22958))",
+        "* compute: added the numeric id as `generated_id` attribute to the `google_compute_network_endpoint_group` ([#22780](https://github.com/hashicorp/terraform-provider-google/pull/22780))",
+        "* compute: allowed in-place updates for `subnetworks`, `description`, `producer_accept_lists`, and `producer_reject_lists` on `google_compute_network_attachment` ([#22611](https://github.com/hashicorp/terraform-provider-google/pull/22611))",
+        "* compute: fixed perma-diff in `google_compute_network_firewall_policy_rule` when `security_profile_group` starts with `//` ([#22402](https://github.com/hashicorp/terraform-provider-google/pull/22402))"
+      ]
+    },
+    {
+      "resource_type": "google_compute_zones",
+      "files": [
+        "main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* compute: migrated `google_compute_zones` data source to use direct HTTP rather than a client library ([#27261](https://github.com/hashicorp/terraform-provider-google/pull/27261))"
+      ]
+    },
+    {
+      "resource_type": "google_container_engine_versions",
+      "files": [
+        "main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* container: added `release_channel_upgrade_target_version` to `google_container_engine_versions` data source ([#23336](https://github.com/hashicorp/terraform-provider-google/pull/23336))"
+      ]
+    },
+    {
+      "resource_type": "google_filestore_instance",
+      "files": [
+        "main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* filestore: added `source_backupdr_backup` field to `google_filestore_instance` resource ([#26238](https://github.com/hashicorp/terraform-provider-google/pull/26238))",
+        "* filestore: added `replica_action` to `google_filestore_instance` resource ([#26082](https://github.com/hashicorp/terraform-provider-google/pull/26082))",
+        "* filestore: added support for updating `directory_services` fields in place in `google_filestore_instance` ([#25315](https://github.com/hashicorp/terraform-provider-google/pull/25315))",
+        "* filestore: added `file_shares.nfs_export_options.network` and `networks.psc_config.endpoint_project` fields to `google_filestore_instance` resource ([#24567](https://github.com/hashicorp/terraform-provider-google/pull/24567))",
+        "* filestore: added `effective_replication.role` and `effective_replication.replicas.peer_instance` fields to `google_filestore_instance` resource ([#23001](https://github.com/hashicorp/terraform-provider-google/pull/23001))",
+        "* filestore: fixed bug where `google_filestore_instance.initial_replication` field could not be set ([#23001](https://github.com/hashicorp/terraform-provider-google/pull/23001))"
+      ]
+    },
+    {
+      "resource_type": "google_netapp_storage_pool",
+      "files": [
+        "modules/google_netapp/main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* netapp: added `scale_type` field to `google_netapp_storage_pool` resource ([#26821](https://github.com/hashicorp/terraform-provider-google/pull/26821))",
+        "* netapp: added `mode` field to `google_netapp_storage_pool` resource ([#26778](https://github.com/hashicorp/terraform-provider-google/pull/26778))",
+        "* netapp: added `mode` field to `google_netapp_storage_pool` resource ([#26319](https://github.com/hashicorp/terraform-provider-google/pull/26319))",
+        "* netapp: added `type` field to `google_netapp_storage_pool` resource ([#24867](https://github.com/hashicorp/terraform-provider-google/pull/24867))",
+        "* netapp: added `hot_tier_size_gib`, `enable_hot_tier_auto_resize`, `cold_tier_size_used_gib` and `hot_tier_size_used_gib` fields to `google_netapp_storage_pool` ([#24454](https://github.com/hashicorp/terraform-provider-google/pull/24454))",
+        "* netapp: updated `google_netapp_storage_pool` to source the default value for the `qos_type` field from the API. If not specified in the configuration, `qos_type` will now default to the value provided by the NetApp Volumes API. ([#24394](https://github.com/hashicorp/terraform-provider-google/pull/24394))",
+        "* netapp: added  `qos_type` and `available_throughput_mibps` fields to `google_netapp_storage_pool` resource ([#24161](https://github.com/hashicorp/terraform-provider-google/pull/24161))",
+        "* netapp: fixed a permadiff on `total_iops` in `google_netapp_storage_pool` resource ([#24207](https://github.com/hashicorp/terraform-provider-google/pull/24207))",
+        "* netapp: added in-place update support for `allow_auto_tiering` field in `google_netapp_storage_pool` resource ([#23614](https://github.com/hashicorp/terraform-provider-google/pull/23614))",
+        "* netapp: added `custom_performance_enabled`, `total_throughput_mibps`, and `total_iops` fields to `google_netapp_storage_pool` resource ([#22778](https://github.com/hashicorp/terraform-provider-google/pull/22778))"
+      ]
+    },
+    {
+      "resource_type": "google_netapp_volume",
+      "files": [
+        "modules/google_netapp/main.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* netapp: added `large_capacity_config` field to `google_netapp_volume` resource([#26927](https://github.com/hashicorp/terraform-provider-google/pull/26927))",
+        "* netapp: added 'nfsv4' to custom update export_policy object in `google_netapp_volume` resource ([#25442](https://github.com/hashicorp/terraform-provider-google/pull/25442))",
+        "* netapp: made `google_netapp_volume.export_policy.rules.squash_mode` not preserve values returned by the API. Without this change, unsetting `squash_mode` in the provider can cause an API error. ([#25059](https://github.com/hashicorp/terraform-provider-google/pull/25059))",
+        "* netapp: added `cache_parameters` field to `google_netapp_volume` resource ([#24909](https://github.com/hashicorp/terraform-provider-google/pull/24909))",
+        "* netapp: fixed bug where unsetting `export_policy.rules.squash_mode` on `google_netapp_volume` can cause an API error ([#25059](https://github.com/hashicorp/terraform-provider-google/pull/25059))",
+        "* netapp: added `hybrid_replication_user_commands` field  with subfield `commands` to `google_netapp_volume_replication` resource ([#24554](https://github.com/hashicorp/terraform-provider-google/pull/24554))",
+        "* netapp: added `replication_schedule`, `hybrid_replication_type`, `large_volume_constituent_count` fields to `hybrid_replication_parameters` field in `google_netapp_volume` resource ([#24554](https://github.com/hashicorp/terraform-provider-google/pull/24554))",
+        "* netapp: changed `peer_ip_addresses` field type from String to Array in `google_netapp_volume` resource, as it was unusable otherwise ([#24428](https://github.com/hashicorp/terraform-provider-google/pull/24428))",
+        "* netapp: added `hot_tier_bypass_mode_enabled` and `hot_tier_size_used_gib` fields to `google_netapp_volume` ([#24454](https://github.com/hashicorp/terraform-provider-google/pull/24454))",
+        "* netapp: fixed incorrect default value handling in `google_netapp_volume` for `export_policy.rules` attributes `has_root_access` and `squash_mode`. When not specified, these fields will now take on the API default value with no diff. ([#24395](https://github.com/hashicorp/terraform-provider-google/pull/24395))",
+        "* netapp: added `export_policy.rules.squash_mode` field to `google_netapp_volume` resource. ([#24350](https://github.com/hashicorp/terraform-provider-google/pull/24350))",
+        "* netapp: added  `throughput_mibps` field to `google_netapp_volume` resource ([#24161](https://github.com/hashicorp/terraform-provider-google/pull/24161))",
+        "* netapp: fixed bug where `google_netapp_volume.large_capacity` was not properly marked as immutable, causing updates to fail (and making it impossible to change the field value after creation) ([#24004](https://github.com/hashicorp/terraform-provider-google/pull/24004))",
+        "* netapp: added `hybrid_peering_details` and `hybrid_replication_type` fields to `google_netapp_volume_replication` resource ([#22975](https://github.com/hashicorp/terraform-provider-google/pull/22975))",
+        "* netapp: added `hybrid_replication_parameters` fields to `google_netapp_volume` resource ([#22975](https://github.com/hashicorp/terraform-provider-google/pull/22975))",
+        "* netapp: added `tiering_policy` to `google_netapp_volume_replication` resource ([#22223](https://github.com/hashicorp/terraform-provider-google/pull/22223))"
+      ]
+    },
+    {
+      "resource_type": "google_service_networking_connection",
+      "files": [
+        "modules/google_netapp/main.tf",
+        "network.tf"
+      ],
+      "severity": "CHANGED",
+      "lifecycle_note": null,
+      "changelog_lines": [
+        "* servicenetworking: fixed a permadiff issue of `reserved_peering_ranges` in `google_service_networking_connection` ([#27132](https://github.com/hashicorp/terraform-provider-google/pull/27132))",
+        "* servicenetworking: added retry when creating `google_service_networking_connection` if it looks like the service account permissions haven't yet propagated ([#26220](https://github.com/hashicorp/terraform-provider-google/pull/26220))"
+      ]
+    }
+  ],
+  "references": {
+    "terraform_registry": "https://registry.terraform.io/providers/hashicorp/google/7.33.0/docs",
+    "changelog": "https://github.com/hashicorp/terraform-provider-google/blob/main/CHANGELOG.md"
+  }
+}

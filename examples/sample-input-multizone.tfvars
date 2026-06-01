@@ -62,7 +62,7 @@ node_pools = {
     "local_ssd_count"   = 1
     "accelerator_count" = 0
     "accelerator_type"  = ""
-    # "node_locations" = "us-east1-b"  # Optional: single zone for compute (sas-compute-server does not support multi-zone)
+    # "node_locations" = "us-east1-b"  # Optional: override per-nodepool zone locations
   },
   stateless = {
     "vm_type"      = "n2-highmem-4"

@@ -1,0 +1,250 @@
+{
+  "last_checked_version": "6.28.0",
+  "last_checked_date": "2026-05-21",
+  "files": {
+    "main.tf": {
+      "hash": "4253c2384b79e35421fda22fd092d18fd82329c5073c6755e34d8fcca0d6c305",
+      "resources": {
+        "kubernetes_config_map": {
+          "arguments": [
+            "count",
+            "data",
+            "depends_on"
+          ]
+        },
+        "google_filestore_instance": {
+          "arguments": [
+            "count",
+            "labels",
+            "location",
+            "name",
+            "tier"
+          ]
+        },
+        "local_file": {
+          "arguments": [
+            "content",
+            "count",
+            "directory_permission",
+            "file_permission",
+            "filename"
+          ]
+        }
+      },
+      "data_sources": {
+        "google_client_config": {
+          "arguments": []
+        },
+        "google_compute_zones": {
+          "arguments": [
+            "region"
+          ]
+        },
+        "external": {
+          "arguments": [
+            "count",
+            "program"
+          ]
+        },
+        "google_container_engine_versions": {
+          "arguments": [
+            "location",
+            "provider",
+            "version_prefix"
+          ]
+        }
+      }
+    },
+    "modules/google_netapp/main.tf": {
+      "hash": "3e0e3fa9de1f1295d5e6735c5f25f4d9b3a711f1a190e122356b50483ead6fbb",
+      "resources": {
+        "google_compute_global_address": {
+          "arguments": [
+            "address",
+            "address_type",
+            "count",
+            "name",
+            "network",
+            "prefix_length",
+            "purpose"
+          ]
+        },
+        "google_service_networking_connection": {
+          "arguments": [
+            "count",
+            "deletion_policy",
+            "network",
+            "reserved_peering_ranges",
+            "service"
+          ]
+        },
+        "google_compute_network_peering_routes_config": {
+          "arguments": [
+            "count",
+            "export_custom_routes",
+            "import_custom_routes",
+            "network",
+            "peering"
+          ]
+        },
+        "google_netapp_storage_pool": {
+          "arguments": [
+            "capacity_gib",
+            "location",
+            "name",
+            "network",
+            "replica_zone",
+            "service_level",
+            "zone"
+          ]
+        },
+        "google_netapp_volume": {
+          "arguments": [
+            "capacity_gib",
+            "depends_on",
+            "location",
+            "name",
+            "protocols",
+            "share_name",
+            "storage_pool",
+            "unix_permissions"
+          ]
+        }
+      },
+      "data_sources": {}
+    },
+    "modules/google_vm/main.tf": {
+      "hash": "c61fbd2dfac1b502d430afb3435a0896e47f3c6e38c1960a19a0f527d4a4c0ad",
+      "resources": {
+        "google_compute_instance": {
+          "arguments": [
+            "allow_stopping_for_update",
+            "labels",
+            "machine_type",
+            "metadata",
+            "name",
+            "tags",
+            "zone"
+          ]
+        },
+        "google_compute_disk": {
+          "arguments": [
+            "count",
+            "labels",
+            "name",
+            "size",
+            "type",
+            "zone"
+          ]
+        }
+      },
+      "data_sources": {}
+    },
+    "modules/kubeconfig/main.tf": {
+      "hash": "4c54e00544a34c054012284514ca4cf2f3338a12595f297f9765114e10917c35",
+      "resources": {
+        "kubernetes_secret": {
+          "arguments": [
+            "count",
+            "depends_on",
+            "type",
+            "wait_for_service_account_token"
+          ]
+        },
+        "kubernetes_service_account": {
+          "arguments": [
+            "count"
+          ]
+        },
+        "kubernetes_cluster_role_binding": {
+          "arguments": [
+            "count"
+          ]
+        }
+      },
+      "data_sources": {}
+    },
+    "modules/network/main.tf": {
+      "hash": "ce2404fe24f9c183cb9aae257e7b4b20cfac86afd0b889ab174d99de63c4b29e",
+      "resources": {
+        "google_compute_network": {
+          "arguments": [
+            "auto_create_subnetworks",
+            "count",
+            "name"
+          ]
+        },
+        "google_compute_subnetwork": {
+          "arguments": [
+            "count",
+            "ip_cidr_range",
+            "name",
+            "network",
+            "private_ip_google_access",
+            "region"
+          ]
+        }
+      },
+      "data_sources": {
+        "google_compute_network": {
+          "arguments": [
+            "count",
+            "name"
+          ]
+        },
+        "google_compute_subnetwork": {
+          "arguments": [
+            "count",
+            "name",
+            "region"
+          ]
+        }
+      }
+    },
+    "network.tf": {
+      "hash": "b40651f05b82c7ef43f23831f2b0e9c68204df51840b635266efb611f30fbc7e",
+      "resources": {
+        "google_compute_global_address": {
+          "arguments": [
+            "address",
+            "address_type",
+            "count",
+            "name",
+            "network",
+            "prefix_length",
+            "purpose"
+          ]
+        },
+        "google_service_networking_connection": {
+          "arguments": [
+            "count",
+            "deletion_policy",
+            "network",
+            "reserved_peering_ranges",
+            "service"
+          ]
+        },
+        "google_compute_firewall": {
+          "arguments": [
+            "count",
+            "name",
+            "network",
+            "source_ranges",
+            "source_tags",
+            "target_tags"
+          ]
+        }
+      },
+      "data_sources": {
+        "google_compute_address": {
+          "arguments": [
+            "count",
+            "name",
+            "project",
+            "region"
+          ]
+        }
+      }
+    }
+  }
+}
