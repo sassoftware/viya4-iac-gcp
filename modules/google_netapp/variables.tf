@@ -40,6 +40,10 @@ variable "network" {
   type        = string
 }
 
+variable "network_self_link" {
+  description = "Full self-link URL of the VPC network for DNS private visibility config"
+  type        = string
+}
 
 variable "allowed_clients" {
   description = "CIDR blocks allowed to mount nfs exports"

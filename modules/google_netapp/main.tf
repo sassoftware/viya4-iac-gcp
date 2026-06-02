@@ -89,9 +89,11 @@ resource "google_dns_managed_zone" "netapp_private_zone" {
 
   private_visibility_config {
     networks {
-      network_url = var.network
+      network_url = var.network_self_link
     }
   }
+
+  depends_on = [google_service_networking_connection.default]
 }
 
 # DNS A record pointing to the NetApp volume IP
