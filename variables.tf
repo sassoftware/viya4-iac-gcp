@@ -299,8 +299,8 @@ variable "node_pools" {
   type = map(object({
     vm_type           = string
     os_disk_size      = number
-    min_nodes         = string
-    max_nodes         = string
+    min_nodes         = number
+    max_nodes         = number
     node_taints       = list(string)
     node_labels       = map(string)
     local_ssd_count   = number

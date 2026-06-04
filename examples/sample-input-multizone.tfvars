@@ -132,6 +132,6 @@ default_nodepool_locations = "us-east1-b,us-east1-c,us-east1-d" # e.g., "us-east
 
 # Additional node pool zone locations (comma-separated string)
 # These zones apply to ALL additional nodepools (cas, compute, stateless, stateful).
-# All nodepools share the same zone list. For per-nodepool zone control, see Jira story.
+# Per-nodepool overrides are supported via node_pools.<pool>.node_locations.
 nodepools_locations = "us-east1-b,us-east1-c,us-east1-d" # e.g., "us-east1-b,us-east1-c,us-east1-d"
 
