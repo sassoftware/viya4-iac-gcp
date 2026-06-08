@@ -118,6 +118,7 @@ netapp_protocols     = ["NFSV3"]  # Volume protocols; currently only NFSV3 is su
 # When enabled, creates a Private DNS zone with an A record pointing to the NetApp volume endpoint.
 # This allows for DNS-based failover in zone-redundant deployments.
 # Only applicable when storage_type="ha" AND multi-zone deployment is detected.
+enable_netapp_dns    = true             # Enable Private DNS zone and A record for CZR endpoint
 netapp_dns_zone_name = "netapp.internal" # DNS zone name for NetApp endpoint (e.g., "netapp.internal")
 netapp_dns_record_ttl = 300              # TTL in seconds for DNS A record (default: 300)
 

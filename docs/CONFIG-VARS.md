@@ -254,6 +254,7 @@ When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google 
 | enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
 | netapp_dns_zone_name | Name for the Private DNS zone for NetApp endpoint. | string | "netapp-private.internal" | Only used when `enable_netapp_dns=true`. |
 | netapp_dns_hostname | DNS hostname for the NetApp volume endpoint. | string | "netapp-volume" | Only used when `enable_netapp_dns=true`. Must be a valid DNS hostname (lowercase alphanumeric and hyphens only). |
+| netapp_dns_record_ttl | TTL in seconds for the DNS A record. | number | 300 | Only used when `enable_netapp_dns=true`. Must be between 60 and 86400 seconds (1 minute to 1 day). |
 
 ### Google NetApp Volumes — Zone Redundancy Limitations
 
