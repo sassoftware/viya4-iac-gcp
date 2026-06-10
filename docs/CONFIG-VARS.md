@@ -221,6 +221,16 @@ stateful = {
 | storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | "standard" creates an NFS server VM or Google Filestore instance. "ha" provisions Google NetApp Volumes — supports zone redundancy when using `FLEX` service level. See [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations). |
 | storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "netapp" | Valid Values: "nfs" or "filestore" if `storage_type=standard`; "netapp" if `storage_type=ha`. |
 
+### Storage Backend Compatibility Matrix
+
+| `storage_type` | `storage_type_backend` | Result |
+| :--- | :--- | :--- |
+| `standard` | `nfs` (default) | Provisions NFS server VM |
+| `standard` | `filestore` | Provisions Google Filestore |
+| `ha` | `netapp` (required) | Provisions Google NetApp Volumes |
+
+Any other `storage_type` + `storage_type_backend` combination is invalid and fails validation.
+
 ### For `storage_type=standard` only (NFS server VM)
 
 | Name | Description | Type | Default | Notes |

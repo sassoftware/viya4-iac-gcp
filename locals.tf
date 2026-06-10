@@ -26,12 +26,12 @@ locals {
   )
 
   # Storage
-  # Updated: storage_type = "ha" always maps to "netapp" (zone-redundant, required for Multi-Zone).
-  # storage_type = "standard" maps to "filestore" (zonal, single-zone only).
+  # storage_type = "standard" defaults to "nfs" VM. Optional override: "filestore".
+  # storage_type = "ha" always maps to "netapp" (zone-redundant, required for Multi-Zone).
   # NOTE: Filestore is ZONAL and does NOT provide zone-redundant storage.
   #       For Multi-Zone HA deployments, always use storage_type = "ha" (NetApp Volumes).
   storage_type_backend = (var.storage_type == "none" ? "none"
-    : var.storage_type == "standard" ? "nfs"
+    : var.storage_type == "standard" ? (lower(var.storage_type_backend) == "filestore" ? "filestore" : "nfs")
   : var.storage_type == "ha" ? "netapp" : "none")
 
   # Kubernetes
@@ -63,11 +63,14 @@ locals {
       # 2. Fall back to global nodepools_locations if set
       # 3. Fall back to single local.zone
       node_locations = (
-        settings.node_locations != null && settings.node_locations != ""
-        ? settings.node_locations
-        : (var.nodepools_locations != "" && var.nodepools_locations != null
-          ? var.nodepools_locations
-          : local.zone
+        var.storage_type != "ha"
+        ? local.zone
+        : (settings.node_locations != null && settings.node_locations != ""
+          ? settings.node_locations
+          : (var.nodepools_locations != "" && var.nodepools_locations != null
+            ? var.nodepools_locations
+            : local.zone
+          )
         )
       )
     }
@@ -85,7 +88,7 @@ locals {
       "accelerator_count"  = 0
       "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
-      "node_locations"     = var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone
+      "node_locations"     = var.storage_type != "ha" ? local.zone : (var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone)
     }
   })
 
