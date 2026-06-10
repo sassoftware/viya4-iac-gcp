@@ -24,11 +24,6 @@ variable "regional" {
   description = "Should the GKE cluster have a regional or zonal control plane"
   type        = bool
   default     = true
-
-  validation {
-    condition     = var.storage_type != "ha" || var.regional
-    error_message = "ERROR: regional must be true when storage_type='ha'."
-  }
 }
 
 variable "service_account_keyfile" {
@@ -181,12 +176,15 @@ variable "create_nfs_public_ip" {
 variable "storage_type" {
   description = <<-EOF
     Type of storage to provision for RWX volumes.
-    - "standard" : Provisions Google Filestore (ZONAL - single zone only, NOT zone-redundant).
+    - "standard" : Provisions NFS server VM (ZONAL - single zone only, NOT zone-redundant).
                    Suitable for single-zone GKE deployments only.
-    - "ha"        : Provisions Google NetApp Volumes (Zone-Redundant).
-                   Required for Multi-Zone GKE deployments.
-    NOTE: Google Filestore is ZONAL and does NOT provide zone-redundant storage.
-          For Multi-Zone GKE deployments, always use storage_type = "ha" (NetApp Volumes).
+                   No backend options allowed - only NFS VM is created.
+    - "ha"        : Provisions storage with zone-redundancy support.
+                   Default backend: Google Filestore (ZONAL - single zone only).
+                   Optional backend: Google NetApp Volumes (Zone-Redundant for multi-zone).
+                   To use NetApp for multi-zone deployments, set:
+                     - storage_type_backend = "netapp"
+                     - default_nodepool_locations or nodepools_locations (comma-separated zones)
     NOTE: storage_type="none" is for internal use only.
   EOF
   type        = string
@@ -200,30 +198,19 @@ variable "storage_type" {
 variable "storage_type_backend" {
   description = <<-EOF
     The storage backend used for the chosen storage type.
-    - storage_type = "standard" : backend defaults to "nfs" VM; optional "filestore" is supported.
-    - storage_type = "ha"        : backend is always "netapp" (Google NetApp Volumes - Zone-Redundant).
-    NOTE: Filestore is no longer a valid backend for storage_type = "ha".
-          For Multi-Zone HA deployments, NetApp Volumes is the only supported zone-redundant RWX backend.
+    - storage_type = "standard" : IGNORED - backend is always "nfs" VM (no choice allowed).
+    - storage_type = "ha"        : backend selection:
+        * Default (if not set or set to "filestore"): Google Filestore (ZONAL single-zone only).
+        * Optional (if set to "netapp"): Google NetApp Volumes (Zone-Redundant).
+          To use NetApp, also set default_nodepool_locations or nodepools_locations.
+    NOTE: For Multi-Zone HA deployments, NetApp Volumes is the only supported zone-redundant RWX backend.
   EOF
   type        = string
-  default     = "nfs"
+  default     = "filestore"
 
   validation {
-    condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
-    error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp or none."
-  }
-
-  validation {
-    condition = (
-      var.storage_type == "standard"
-      ? contains(["nfs", "filestore"], lower(var.storage_type_backend))
-      : var.storage_type == "ha"
-      ? lower(var.storage_type_backend) == "netapp"
-      : var.storage_type == "none"
-      ? lower(var.storage_type_backend) == "none"
-      : true
-    )
-    error_message = "ERROR: Invalid storage_type/storage_type_backend combination. Use standard with nfs or filestore, ha with netapp, and none with none."
+    condition     = contains(["filestore", "netapp", "none"], lower(var.storage_type_backend))
+    error_message = "ERROR: Supported values for `storage_type_backend` with storage_type='ha' are filestore or netapp."
   }
 }
 
@@ -281,17 +268,6 @@ variable "default_nodepool_locations" {
   description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
   type        = string
   default     = ""
-
-  validation {
-    condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
-      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
-      : true
-    )
-    error_message = "ERROR: default_nodepool_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
-  }
 }
 
 variable "node_pools" {
@@ -310,7 +286,7 @@ variable "node_pools" {
     # If set, overrides nodepools_locations for this specific nodepool.
     # e.g., "us-east1-b,us-east1-c" for multi-zone or "us-east1-b" for single-zone.
     # Equivalent to Azure availability_zones per nodepool.
-    node_locations = optional(string, "")
+    node_locations = optional(string)
   }))
   default = {
     cas = {
@@ -380,17 +356,6 @@ variable "nodepools_locations" {
   description = "Global fallback GCP zone(s) for all additional node pools that do not specify their own node_locations. Comma separated list. Per-nodepool zones can be set via node_pools.<name>.node_locations."
   type        = string
   default     = ""
-
-  validation {
-    condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
-      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
-      : true
-    )
-    error_message = "ERROR: nodepools_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
-  }
 }
 
 variable "enable_cluster_autoscaling" {

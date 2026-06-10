@@ -68,11 +68,11 @@ EOT
 }
 
 resource "google_filestore_instance" "rwx" {
-  name  = "${var.prefix}-rwx-filestore"
+  name = "${var.prefix}-rwx-filestore"
   # Filestore is a ZONAL service and does NOT provide zone-redundant storage.
-  # Filestore is only provisioned for storage_type = "standard" (single-zone deployments).
-  # For Multi-Zone / HA deployments, use storage_type = "ha" which provisions NetApp Volumes.
-  count    = var.storage_type == "standard" && local.storage_type_backend == "filestore" ? 1 : 0
+  # Filestore is only provisioned for storage_type = "ha" with filestore backend (default).
+  # For Multi-Zone HA deployments with NetApp, use storage_type = "ha" with storage_type_backend = "netapp".
+  count    = var.storage_type == "ha" && local.storage_type_backend == "filestore" ? 1 : 0
   tier     = upper(var.filestore_tier)
   location = local.zone
   labels   = var.tags
@@ -318,18 +318,18 @@ module "google_netapp" {
   # For single-zone / standard deployments, use storage_type = "standard" (Filestore).
   count = var.storage_type == "ha" ? 1 : 0
 
-  prefix             = var.prefix
-  region             = local.region
-  network            = module.vpc.network_name
-  network_self_link  = module.vpc.network_self_link
-  netapp_subnet_cidr = var.netapp_subnet_cidr
-  service_level      = var.netapp_service_level
-  capacity_gib       = var.netapp_capacity_gib
-  protocols          = var.netapp_protocols
-  volume_path        = "${var.prefix}-${var.netapp_volume_path}"
-  allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
+  prefix                     = var.prefix
+  region                     = local.region
+  network                    = module.vpc.network_name
+  network_self_link          = module.vpc.network_self_link
+  netapp_subnet_cidr         = var.netapp_subnet_cidr
+  service_level              = var.netapp_service_level
+  capacity_gib               = var.netapp_capacity_gib
+  protocols                  = var.netapp_protocols
+  volume_path                = "${var.prefix}-${var.netapp_volume_path}"
+  allowed_clients            = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
   default_nodepool_locations = var.default_nodepool_locations
-  depends_on         = [ module.gke ]
+  depends_on                 = [module.gke]
 
   # DNS abstraction for zone-redundant endpoint
   enable_netapp_dns     = var.enable_netapp_dns

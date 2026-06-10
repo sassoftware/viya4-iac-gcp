@@ -218,18 +218,18 @@ stateful = {
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | "standard" creates an NFS server VM or Google Filestore instance. "ha" provisions Google NetApp Volumes — supports zone redundancy when using `FLEX` service level. See [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations). |
-| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "netapp" | Valid Values: "nfs" or "filestore" if `storage_type=standard`; "netapp" if `storage_type=ha`. |
+| storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | `standard` creates only an NFS server VM (single-zone). `ha` uses Filestore by default for single-zone, and NetApp for multi-zone when nodepool location variables are set. |
+| storage_type_backend | Requested storage backend for the chosen `storage_type`. | string | "filestore" | For `storage_type=standard`, this value is ignored and NFS is used. For `storage_type=ha`, NetApp multi-zone behavior requires nodepool location variables (see matrix and notes below). |
 
 ### Storage Backend Compatibility Matrix
 
 | `storage_type` | `storage_type_backend` | Result |
 | :--- | :--- | :--- |
 | `standard` | `nfs` (default) | Provisions NFS server VM |
-| `standard` | `filestore` | Provisions Google Filestore |
-| `ha` | `netapp` (required) | Provisions Google NetApp Volumes |
+| `ha` | `filestore` (default) | Provisions Google Filestore (single-zone) |
+| `ha` | `netapp` + `default_nodepool_locations` and `nodepools_locations` set | Provisions Google NetApp Volumes (multi-zone intent) |
 
-Any other `storage_type` + `storage_type_backend` combination is invalid and fails validation.
+If `storage_type="ha"` and `storage_type_backend="netapp"` are set **without** `default_nodepool_locations` and `nodepools_locations`, the NetApp intent is ignored and Filestore is provisioned.
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -239,9 +239,14 @@ Any other `storage_type` + `storage_type_backend` combination is invalid and fai
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
-### For `storage_type=standard` with Google Filestore
+### For `storage_type=ha` with Google Filestore (default single-zone)
 
-> **Note:** Google Filestore is a **zonal** service with no zone-redundancy. For Multi-Zone HA deployments use `storage_type="ha"` (Google NetApp Volumes) instead.
+> **Note:** Google Filestore is a **zonal** service with no zone-redundancy.
+> For Multi-Zone HA deployments with NetApp, set both:
+> - `default_nodepool_locations`
+> - `nodepools_locations`
+>
+> If these are not set, `storage_type="ha"` falls back to Filestore behavior.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
@@ -250,7 +255,11 @@ Any other `storage_type` + `storage_type_backend` combination is invalid and fai
 
 ### For `storage_type=ha` with Google NetApp Volumes
 
-When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
+When `storage_type=ha` and `storage_type_backend=netapp` are specified for multi-zone behavior, set both `default_nodepool_locations` and `nodepools_locations` with comma-separated zones (for example, `"us-east1-b,us-east1-c,us-east1-d"`).
+
+If these location variables are not set, the configuration ignores the NetApp intent and uses Filestore behavior.
+
+Before using this storage option,
 - Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
 - Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
 - NetApp Volumes is available in several regions. For details about region availability, see [NetApp Volumes locations](https://cloud.google.com/netapp/volumes/docs/locations).

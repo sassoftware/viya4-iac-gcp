@@ -4,6 +4,8 @@
 terraform {
   required_version = ">= 1.8.0"
 
+  experiments = [module_variable_optional_attrs]
+
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -19,7 +21,7 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.5.2"  
+      version = "~> 2.5.2"
     }
     random = {
       source  = "hashicorp/random"

@@ -24,11 +24,13 @@ output "postgres_servers" {
 }
 
 output "rwx_filestore_endpoint" {
-  description = "Shared Storage endpoint (DNS hostname when enable_netapp_dns=true for HA NetApp, otherwise IP address)"
+  description = "Shared Storage endpoint (IP address or DNS hostname for NetApp with enable_netapp_dns=true)"
   value = (var.storage_type == "none"
     ? null
-    : var.storage_type == "standard" && local.storage_type_backend == "filestore" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0]
-    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].endpoint : module.nfs_server[0].private_ip
+    : var.storage_type == "standard" ? module.nfs_server[0].private_ip
+    : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? google_filestore_instance.rwx[0].networks[0].ip_addresses[0]
+    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].endpoint
+    : null
   )
 }
 
@@ -36,8 +38,10 @@ output "rwx_filestore_path" {
   description = "Shared Storage mount path"
   value = (var.storage_type == "none"
     ? null
-    : var.storage_type == "standard" && local.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
-    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].mountpath : "/export"
+    : var.storage_type == "standard" ? "/export"
+    : var.storage_type == "ha" && local.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
+    : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].mountpath
+    : null
   )
 }
 
@@ -81,15 +85,15 @@ output "jump_admin_username" {
 
 # NFS server
 output "nfs_private_ip" {
-  value = var.storage_type == "standard" && local.storage_type_backend == "nfs" ? module.nfs_server[0].private_ip : null
+  value = var.storage_type == "standard" ? module.nfs_server[0].private_ip : null
 }
 
 output "nfs_public_ip" {
-  value = var.storage_type == "standard" && local.storage_type_backend == "nfs" ? module.nfs_server[0].public_ip : null
+  value = var.storage_type == "standard" ? module.nfs_server[0].public_ip : null
 }
 
 output "nfs_admin_username" {
-  value = var.storage_type == "standard" && local.storage_type_backend == "nfs" ? module.nfs_server[0].admin_username : null
+  value = var.storage_type == "standard" ? module.nfs_server[0].admin_username : null
 }
 
 # Container registry
@@ -115,5 +119,5 @@ output "storage_type_backend" {
 }
 
 output "netapp_volume_path" {
-  value       = local.storage_type_backend == "netapp" ? var.netapp_volume_path : "export"
+  value = local.storage_type_backend == "netapp" ? var.netapp_volume_path : "export"
 }

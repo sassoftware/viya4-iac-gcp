@@ -26,13 +26,20 @@ locals {
   )
 
   # Storage
-  # storage_type = "standard" defaults to "nfs" VM. Optional override: "filestore".
-  # storage_type = "ha" always maps to "netapp" (zone-redundant, required for Multi-Zone).
-  # NOTE: Filestore is ZONAL and does NOT provide zone-redundant storage.
-  #       For Multi-Zone HA deployments, always use storage_type = "ha" (NetApp Volumes).
+  # storage_type = "standard": always uses "nfs" VM backend (single-zone only, no choice allowed).
+  # storage_type = "ha": 
+  #   - Default (no location vars): uses "filestore" (single-zone only).
+  #   - With location vars (default_nodepool_locations or nodepools_locations): uses "netapp" (zone-redundant multi-zone).
   storage_type_backend = (var.storage_type == "none" ? "none"
-    : var.storage_type == "standard" ? (lower(var.storage_type_backend) == "filestore" ? "filestore" : "nfs")
-  : var.storage_type == "ha" ? "netapp" : "none")
+    : var.storage_type == "standard" ? "nfs"
+    : var.storage_type == "ha" ? (
+      (var.default_nodepool_locations != "" && var.default_nodepool_locations != null) ||
+      (var.nodepools_locations != "" && var.nodepools_locations != null)
+      ? "netapp"
+      : "filestore"
+    )
+    : "none"
+  )
 
   # Kubernetes
   kubeconfig_path = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
@@ -58,12 +65,14 @@ locals {
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
       initial_node_count = max(local.initial_node_count, settings.min_nodes)
-      # Per-nodepool zone control :
-      # 1. Use node_locations from the nodepool's own settings if set
-      # 2. Fall back to global nodepools_locations if set
-      # 3. Fall back to single local.zone
+      # Node location logic:
+      # - storage_type="standard": ALWAYS single-zone (local.zone), no multizone allowed
+      # - storage_type="ha" with netapp: Honor node_locations from pool settings, or nodepools_locations, or single zone
+      # - storage_type="ha" with filestore: ALWAYS single-zone (filestore is zonal only)
       node_locations = (
         var.storage_type != "ha"
+        ? local.zone
+        : local.storage_type_backend != "netapp"
         ? local.zone
         : (settings.node_locations != null && settings.node_locations != ""
           ? settings.node_locations
@@ -88,7 +97,20 @@ locals {
       "accelerator_count"  = 0
       "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
-      "node_locations"     = var.storage_type != "ha" ? local.zone : (var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone)
+      # Default nodepool location logic:
+      # - storage_type="standard": ALWAYS single-zone
+      # - storage_type="ha" with netapp: Use default_nodepool_locations if set, otherwise single zone
+      # - storage_type="ha" with filestore: ALWAYS single-zone (filestore is zonal only)
+      "node_locations" = (
+        var.storage_type != "ha"
+        ? local.zone
+        : local.storage_type_backend != "netapp"
+        ? local.zone
+        : (var.default_nodepool_locations != "" && var.default_nodepool_locations != null
+          ? var.default_nodepool_locations
+          : local.zone
+        )
+      )
     }
   })
 
