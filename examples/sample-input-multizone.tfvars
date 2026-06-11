@@ -107,7 +107,7 @@ jump_vm_admin         = "jumpuser"
 #            Google NetApp Volumes is the only supported zone-redundant RWX storage backend
 #            for Multi-Zone GKE deployments.
 storage_type = "ha"
-# storage_type_backend is no longer required. storage_type = "ha" always provisions Google NetApp Volumes.
+storage_type_backend = "netapp" # Required when storage_type = "ha"
 
 # Google NetApp Volumes Configuration
 netapp_service_level = "FLEX"     # Required for zone-redundant storage; valid values: PREMIUM, EXTREME, STANDARD, FLEX

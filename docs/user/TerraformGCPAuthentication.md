@@ -39,7 +39,7 @@ The Service Account will need the following [IAM roles](https://cloud.google.com
 | `roles/container.admin` | Kubernetes Engine Admin | Cluster creation |
 | `roles/container.clusterAdmin` | Kubernetes Engine Cluster Admin | Terraform Kubernetes Engine Module |
 | `roles/container.developer` | Kubernetes Engine Developer | Cluster creation |
-| `roles/file.editor` | Cloud Filestore Editor | Needed for [`storage_type=="ha" && storage_type_backend = "filestore"`](../CONFIG-VARS.md#storage) |
+| `roles/file.editor` | Cloud Filestore Editor | Needed for [`storage_type=="standard" && storage_type_backend=="filestore"`](../CONFIG-VARS.md#storage) |
 | `roles/netapp.admin` | NetApp Admin | Needed for [`storage_type=="ha" && storage_type_backend = "netapp"`](../CONFIG-VARS.md#storage) |
 | `roles/netapp.viewer` | NetApp Viewer | Needed for [`storage_type=="ha" && storage_type_backend = "netapp"`](../CONFIG-VARS.md#storage) |
 | `roles/dns.admin` | DNS Administrator | Needed when [`enable_netapp_dns=true`](../CONFIG-VARS.md#for-storage_typeha-with-google-netapp-volumes) for NetApp Cross-Zone Replication DNS abstraction |
