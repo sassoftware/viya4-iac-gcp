@@ -521,7 +521,7 @@ variable "netapp_service_level" {
 }
 
 variable "netapp_protocols" {
-  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFS is supported."
+  description = "Valid values: NFSV3, NFSV4, SMB. Default: NFSV3. When using NetApp with viya4-deployment, mount options are automatically set to nfsvers=3 for compatibility"
   type        = list(string)
   default     = ["NFSV3"]
 
