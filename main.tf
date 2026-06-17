@@ -321,6 +321,7 @@ module "google_netapp" {
   prefix             = var.prefix
   region             = local.region
   network            = module.vpc.network_name
+  network_self_link  = module.vpc.network_self_link
   netapp_subnet_cidr = var.netapp_subnet_cidr
   service_level      = var.netapp_service_level
   capacity_gib       = var.netapp_capacity_gib
@@ -329,6 +330,12 @@ module "google_netapp" {
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
   default_nodepool_locations = var.default_nodepool_locations
   depends_on         = [ module.gke ]
+
+  # DNS abstraction for zone-redundant endpoint
+  enable_netapp_dns     = var.enable_netapp_dns
+  netapp_dns_zone_name  = var.netapp_dns_zone_name
+  netapp_dns_hostname   = var.netapp_dns_hostname
+  netapp_dns_record_ttl = var.netapp_dns_record_ttl
 
   community_netapp_networking_components_enabled = var.community_netapp_networking_components_enabled
 }

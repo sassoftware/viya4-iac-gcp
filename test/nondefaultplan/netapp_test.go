@@ -20,6 +20,8 @@ func TestPlanNetApp(t *testing.T) {
 	variables["prefix"] = "net-app"
 	variables["storage_type"] = "ha"
 	variables["storage_type_backend"] = "netapp"
+	variables["default_nodepool_locations"] = "us-east1-b,us-east1-c"
+	variables["nodepools_locations"] = "us-east1-b,us-east1-c"
 
 	tests := map[string]helpers.TestCase{
 		"poolExists": {

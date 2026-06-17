@@ -24,6 +24,11 @@ variable "regional" {
   description = "Should the GKE cluster have a regional or zonal control plane"
   type        = bool
   default     = true
+
+  validation {
+    condition     = var.storage_type != "ha" || var.regional
+    error_message = "ERROR: regional must be true when storage_type='ha'."
+  }
 }
 
 variable "service_account_keyfile" {
@@ -184,8 +189,8 @@ variable "storage_type" {
           For Multi-Zone GKE deployments, always use storage_type = "ha" (NetApp Volumes).
     NOTE: storage_type="none" is for internal use only.
   EOF
-  type    = string
-  default = "standard"
+  type        = string
+  default     = "standard"
   validation {
     condition     = contains(["standard", "ha", "none"], lower(var.storage_type))
     error_message = "ERROR: Supported values for `storage_type` are - standard, ha."
@@ -195,17 +200,30 @@ variable "storage_type" {
 variable "storage_type_backend" {
   description = <<-EOF
     The storage backend used for the chosen storage type.
-    - storage_type = "standard" : backend is always "nfs" (Google Filestore - ZONAL).
+    - storage_type = "standard" : backend defaults to "nfs" VM; optional "filestore" is supported.
     - storage_type = "ha"        : backend is always "netapp" (Google NetApp Volumes - Zone-Redundant).
     NOTE: Filestore is no longer a valid backend for storage_type = "ha".
           For Multi-Zone HA deployments, NetApp Volumes is the only supported zone-redundant RWX backend.
   EOF
-  type    = string
-  default = "nfs"
+  type        = string
+  default     = "nfs"
 
   validation {
     condition     = contains(["nfs", "filestore", "netapp", "none"], lower(var.storage_type_backend))
     error_message = "ERROR: Supported values for `storage_type_backend` are nfs, filestore, netapp or none."
+  }
+
+  validation {
+    condition = (
+      var.storage_type == "standard"
+      ? contains(["nfs", "filestore"], lower(var.storage_type_backend))
+      : var.storage_type == "ha"
+      ? lower(var.storage_type_backend) == "netapp"
+      : var.storage_type == "none"
+      ? lower(var.storage_type_backend) == "none"
+      : true
+    )
+    error_message = "ERROR: Invalid storage_type/storage_type_backend combination. Use standard with nfs or filestore, ha with netapp, and none with none."
   }
 }
 
@@ -263,6 +281,17 @@ variable "default_nodepool_locations" {
   description = "GCP zone(s) where the default nodepool will allocate nodes in. Comma separated list."
   type        = string
   default     = ""
+
+  validation {
+    condition = (
+      var.storage_type == "ha"
+      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
+      : var.storage_type == "standard"
+      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+      : true
+    )
+    error_message = "ERROR: default_nodepool_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+  }
 }
 
 variable "node_pools" {
@@ -281,7 +310,7 @@ variable "node_pools" {
     # If set, overrides nodepools_locations for this specific nodepool.
     # e.g., "us-east1-b,us-east1-c" for multi-zone or "us-east1-b" for single-zone.
     # Equivalent to Azure availability_zones per nodepool.
-    node_locations    = optional(string, "")
+    node_locations = optional(string, "")
   }))
   default = {
     cas = {
@@ -351,6 +380,17 @@ variable "nodepools_locations" {
   description = "Global fallback GCP zone(s) for all additional node pools that do not specify their own node_locations. Comma separated list. Per-nodepool zones can be set via node_pools.<name>.node_locations."
   type        = string
   default     = ""
+
+  validation {
+    condition = (
+      var.storage_type == "ha"
+      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
+      : var.storage_type == "standard"
+      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+      : true
+    )
+    error_message = "ERROR: nodepools_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+  }
 }
 
 variable "enable_cluster_autoscaling" {
@@ -406,7 +446,7 @@ variable "postgres_servers" {
   description = "Map of PostgreSQL server objects"
   type        = any
   default     = null
- 
+
   # Checking for user provided "default" server
   validation {
     condition     = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? contains(keys(var.postgres_servers), "default") : false : true
@@ -431,8 +471,8 @@ variable "postgres_servers" {
       for k, v in var.postgres_servers : (
         # If the object is empty, use default values
         length(keys(v)) == 0 ? true : (
-          can(try(v.server_version, null)) && 
-          can(try(v.edition, null)) && 
+          can(try(v.server_version, null)) &&
+          can(try(v.edition, null)) &&
           can(try(v.machine_type, null)) && (
             (tonumber(try(v.server_version, "15")) >= 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE_PLUS" && can(regex("^db-perf-optimized-N-", try(v.machine_type, "")))) ||
             (tonumber(try(v.server_version, "15")) < 16 && try(v.edition, "ENTERPRISE") == "ENTERPRISE" && can(regex("^db-custom-", try(v.machine_type, ""))))
@@ -501,6 +541,40 @@ variable "netapp_volume_path" {
   description = "A unique file path for the volume. Used when creating mount targets. Needs to be unique per location."
   type        = string
   default     = "export"
+}
+
+variable "enable_netapp_dns" {
+  description = "Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Requires storage_type='ha' and multi-zone deployment (default_nodepool_locations with multiple zones). Provides stable DNS hostname for failover scenarios."
+  type        = bool
+  default     = false
+}
+
+variable "netapp_dns_zone_name" {
+  description = "Name for the Private DNS zone for NetApp endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-private.internal"
+}
+
+variable "netapp_dns_hostname" {
+  description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-volume"
+
+  validation {
+    condition     = can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", var.netapp_dns_hostname))
+    error_message = "netapp_dns_hostname must be a valid DNS hostname (lowercase alphanumeric and hyphens only, cannot start or end with hyphen)."
+  }
+}
+
+variable "netapp_dns_record_ttl" {
+  description = "TTL in seconds for the DNS A record. Only used when enable_netapp_dns=true."
+  type        = number
+  default     = 300
+
+  validation {
+    condition     = var.netapp_dns_record_ttl >= 60 && var.netapp_dns_record_ttl <= 86400
+    error_message = "netapp_dns_record_ttl must be between 60 and 86400 seconds (1 minute to 1 day)."
+  }
 }
 
 # GKE Monitoring

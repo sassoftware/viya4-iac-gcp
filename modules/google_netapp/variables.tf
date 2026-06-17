@@ -40,6 +40,10 @@ variable "network" {
   type        = string
 }
 
+variable "network_self_link" {
+  description = "Full self-link URL of the VPC network for DNS private visibility config"
+  type        = string
+}
 
 variable "allowed_clients" {
   description = "CIDR blocks allowed to mount nfs exports"
@@ -63,4 +67,27 @@ variable "community_netapp_networking_components_enabled" {
   description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
   type        = bool
   default     = true
+}
+variable "enable_netapp_dns" {
+  description = "Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Only applicable for multi-zone HA deployments with FLEX service level."
+  type        = bool
+  default     = false
+}
+
+variable "netapp_dns_zone_name" {
+  description = "Name for the Private DNS zone for NetApp endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-private.internal"
+}
+
+variable "netapp_dns_hostname" {
+  description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-volume"
+}
+
+variable "netapp_dns_record_ttl" {
+  description = "TTL in seconds for the DNS A record. Only used when enable_netapp_dns=true."
+  type        = number
+  default     = 300
 }

@@ -69,7 +69,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_service_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
 | gke_control_plane_subnet_cidr |  Address space for the hosted primary subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
-| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
+| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="standard"` and `storage_type_backend="filestore"`. |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
 | netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.6.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"`. Default changed from 192.168.5.0/24 to avoid overlap with database_subnet_cidr (192.168.4.0/23). |
 | gke_network_policy | Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. | string | false | Supported values are true (calico) and false (kubenet). |
@@ -219,7 +219,17 @@ stateful = {
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | "standard" creates an NFS server VM or Google Filestore instance. "ha" provisions Google NetApp Volumes — supports zone redundancy when using `FLEX` service level. See [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations). |
-| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "netapp" | Valid Values: "nfs" or "filestore" if `storage_type=standard`; "netapp" if `storage_type=ha`. |
+| storage_type_backend | The storage backend for the chosen `storage_type`. | string | `"nfs"` | Valid Values: `"nfs"` or `"filestore"` if `storage_type="standard"`; `"netapp"` if `storage_type="ha"`. For `storage_type="ha"`, set `storage_type_backend="netapp"` explicitly. |
+
+### Storage Backend Compatibility Matrix
+
+| `storage_type` | `storage_type_backend` | Result |
+| :--- | :--- | :--- |
+| `standard` | `nfs` (default) | Provisions NFS server VM |
+| `standard` | `filestore` | Provisions Google Filestore |
+| `ha` | `netapp` (required) | Provisions Google NetApp Volumes |
+
+Any other `storage_type` + `storage_type_backend` combination is invalid and fails validation.
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -240,7 +250,7 @@ stateful = {
 
 ### For `storage_type=ha` with Google NetApp Volumes
 
-When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
+When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input validation and provision [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview). Before using this storage option,
 - Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
 - Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
 - NetApp Volumes is available in several regions. For details about region availability, see [NetApp Volumes locations](https://cloud.google.com/netapp/volumes/docs/locations).
@@ -251,6 +261,10 @@ When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google 
 | netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFSV3 is supported by SAS Viya Platform. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
+| enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
+| netapp_dns_zone_name | Name for the Private DNS zone for NetApp endpoint. | string | "netapp-private.internal" | Only used when `enable_netapp_dns=true`. |
+| netapp_dns_hostname | DNS hostname for the NetApp volume endpoint. | string | "netapp-volume" | Only used when `enable_netapp_dns=true`. Must be a valid DNS hostname (lowercase alphanumeric and hyphens only). |
+| netapp_dns_record_ttl | TTL in seconds for the DNS A record. | number | 300 | Only used when `enable_netapp_dns=true`. Must be between 60 and 86400 seconds (1 minute to 1 day). |
 
 ### Google NetApp Volumes — Zone Redundancy Limitations
 

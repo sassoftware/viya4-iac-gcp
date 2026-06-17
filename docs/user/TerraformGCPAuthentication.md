@@ -39,9 +39,10 @@ The Service Account will need the following [IAM roles](https://cloud.google.com
 | `roles/container.admin` | Kubernetes Engine Admin | Cluster creation |
 | `roles/container.clusterAdmin` | Kubernetes Engine Cluster Admin | Terraform Kubernetes Engine Module |
 | `roles/container.developer` | Kubernetes Engine Developer | Cluster creation |
-| `roles/file.editor` | Cloud Filestore Editor | Needed for [`storage_type=="ha" && storage_type_backend = "filestore"`](../CONFIG-VARS.md#storage) |
+| `roles/file.editor` | Cloud Filestore Editor | Needed for [`storage_type=="standard" && storage_type_backend=="filestore"`](../CONFIG-VARS.md#storage) |
 | `roles/netapp.admin` | NetApp Admin | Needed for [`storage_type=="ha" && storage_type_backend = "netapp"`](../CONFIG-VARS.md#storage) |
 | `roles/netapp.viewer` | NetApp Viewer | Needed for [`storage_type=="ha" && storage_type_backend = "netapp"`](../CONFIG-VARS.md#storage) |
+| `roles/dns.admin` | DNS Administrator | Needed when [`enable_netapp_dns=true`](../CONFIG-VARS.md#for-storage_typeha-with-google-netapp-volumes) for NetApp Cross-Zone Replication DNS abstraction |
 | `roles/iam.serviceAccountAdmin` | Service Account Admin | Terraform Kubernetes Engine Module |
 | `roles/iam.serviceAccountUser` | Service Account User | Terraform Kubernetes Engine Module |
 | `roles/resourcemanager.projectIamAdmin` | Project IAM Admin | Terraform Kubernetes Engine Module |
@@ -63,6 +64,7 @@ gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAM
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/file.editor
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/netapp.admin
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/netapp.viewer
+gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/dns.admin
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/iam.serviceAccountAdmin
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 gcloud projects add-iam-policy-binding $PROJECT --member serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --role roles/resourcemanager.projectIamAdmin

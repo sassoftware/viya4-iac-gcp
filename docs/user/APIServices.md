@@ -6,7 +6,9 @@ Make sure your Google Cloud Project has at least the following API Services enab
 | :--- | :--- | :---  |
 | `container.googleapis.com` | [Kubernetes Engine API](https://console.cloud.google.com/apis/library/container.googleapis.com) ||
 | `compute.googleapis.com`| [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com) ||
-| `file.googleapis.com` | [Cloud Filestore API](https://console.cloud.google.com/apis/library/file.googleapis.com) | Needed for `storage_type="ha"` |
+| `file.googleapis.com` | [Cloud Filestore API](https://console.cloud.google.com/apis/library/file.googleapis.com) | Needed for `storage_type="standard"` with `storage_type_backend="filestore"` |
+| `netapp.googleapis.com` | [Cloud NetApp API](https://console.cloud.google.com/apis/library/netapp.googleapis.com) | Needed for `storage_type="ha"` with `storage_type_backend="netapp"` |
+| `dns.googleapis.com` | [Cloud DNS API](https://console.cloud.google.com/apis/library/dns.googleapis.com) | Needed when `enable_netapp_dns=true` for NetApp Cross-Zone Replication DNS abstraction |
 | `sqladmin.googleapis.com`| [Cloud SQL Admin API](https://console.cloud.google.com/apis/library/sqladmin.googleapis.com) | Needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres-servers) |
 | `servicenetworking.googleapis.com`| [Service Networking API](https://console.cloud.google.com/apis/library/servicenetworking.googleapis.com) | Needed when creating an [SQL Postgres instance](../CONFIG-VARS.md#postgres-servers) |
 | `cloudresourcemanager.googleapis.com`| [Cloud Resource Manager API](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com) | Needed if you create an [SQL Postgres instance](../CONFIG-VARS.md#postgres-servers) |

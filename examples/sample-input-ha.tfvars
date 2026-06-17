@@ -100,4 +100,4 @@ jump_vm_admin         = "jumpuser"
 #            For HA / Multi-Zone deployments, storage_type = "ha" provisions Google NetApp Volumes.
 #            Do NOT use storage_type = "ha" expecting Google Filestore as an HA backend.
 storage_type = "ha"
-# storage_type_backend is no longer required. storage_type = "ha" always provisions Google NetApp Volumes.
+storage_type_backend = "netapp" # Required when storage_type = "ha"
