@@ -112,7 +112,7 @@ storage_type_backend = "netapp" # Required when storage_type = "ha"
 # Google NetApp Volumes Configuration
 netapp_service_level = "FLEX"     # Required for zone-redundant storage; valid values: PREMIUM, EXTREME, STANDARD, FLEX
 netapp_capacity_gib  = 2048       # Storage pool capacity in GiB (minimum 2048)
-netapp_protocols     = ["NFSV3"]  # Volume protocols; currently only NFSV3 is supported by SAS Viya
+netapp_protocols     = ["NFSV3"]  # Volume protocols; use NFSV3 for SAS Viya deployments
 
 # DNS Abstraction for NetApp Cross-Zone Replication (CZR) Endpoint
 # When enabled, creates a Private DNS zone with an A record pointing to the NetApp volume endpoint.
