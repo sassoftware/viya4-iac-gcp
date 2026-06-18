@@ -262,7 +262,7 @@ When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
-| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV3. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV3. For SAS Viya on GKE with NetApp storage, use NFSV3 (validated configuration). |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
 | enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
