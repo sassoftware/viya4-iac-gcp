@@ -83,7 +83,7 @@ locals {
       "min_nodes"          = var.default_nodepool_min_nodes
       "max_nodes"          = var.default_nodepool_max_nodes
       "node_taints"        = var.default_nodepool_taints
-      "node_labels"        = merge(var.tags, var.default_nodepool_labels, { "kubernetes.azure.com/mode" = "system" })
+      "node_labels"        = merge(var.tags, var.default_nodepool_labels)
       "local_ssd_count"    = var.default_nodepool_local_ssd_count
       "accelerator_count"  = 0
       "accelerator_type"   = ""
