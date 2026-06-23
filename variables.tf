@@ -54,15 +54,17 @@ variable "iac_tooling" {
   default     = "terraform"
 }
 
-## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID
+## Channel - UNSPECIFIED/STABLE/REGULAR/RAPID/EXTENDED
 variable "kubernetes_channel" {
-  description = "The GKE cluster channel for auto-updates"
+  description = "The GKE cluster channel for auto-updates (UNSPECIFIED, STABLE, REGULAR, RAPID, EXTENDED)"
   type        = string
   default     = "UNSPECIFIED"
 }
 
-# Google Cloud will utilize the current default value for the given channel.
-# A specific version can be provided to override the default.
+# If a specific kubernetes_version is provided (not "latest"), it will be used with the selected channel.
+# If kubernetes_version is "latest" or a channel default version is needed, Google Cloud will utilize
+# the current default value for the given channel.
+# A specific version can be provided to override the default channel version.
 # Available Versions: gcloud container get-server-config
 #                     https://cloud.google.com/kubernetes-engine/docs/release-notes
 variable "kubernetes_version" {
