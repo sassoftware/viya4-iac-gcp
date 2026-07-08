@@ -426,7 +426,7 @@ variable "postgres_server_defaults" {
   description = "default values for a postgres server"
   type        = any
   default = {
-    machine_type                           = "db-custom-4-16384"
+    machine_type                           = "db-perf-optimized-N-8"
     storage_gb                             = 128
     backups_enabled                        = true
     backups_start_time                     = "21:00"
@@ -435,11 +435,11 @@ variable "postgres_server_defaults" {
     backup_count                           = "7" # Number of backups to retain, not days
     administrator_login                    = "pgadmin"
     administrator_password                 = "my$up3rS3cretPassw0rd"
-    server_version                         = "15"
+    server_version                         = "16"
     availability_type                      = "ZONAL"
     ssl_enforcement_enabled                = true
     database_flags                         = []
-    edition                                = "ENTERPRISE"
+    edition                                = "ENTERPRISE_PLUS"
   }
 }
 
