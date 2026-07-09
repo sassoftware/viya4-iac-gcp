@@ -23,11 +23,25 @@ variable "location" {
 variable "regional" {
   description = "Should the GKE cluster have a regional or zonal control plane"
   type        = bool
-  default     = true
+  default     = false
 
   validation {
-    condition     = var.storage_type != "ha" || var.regional
-    error_message = "ERROR: regional must be true when storage_type='ha'."
+    condition = (
+      var.storage_type != "ha"
+      ? true
+      : (
+        (
+          length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+          && length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+          && !anytrue([
+            for _, pool in var.node_pools : length([for zone in split(",", pool.node_locations) : trimspace(zone) if trimspace(zone) != ""]) > 1
+          ])
+        )
+        ? true
+        : var.regional
+      )
+    )
+    error_message = "ERROR: regional must be true when storage_type='ha' and any of default_nodepool_locations, nodepools_locations, or node_pools.<name>.node_locations contains 2+ zones."
   }
 }
 
@@ -286,13 +300,11 @@ variable "default_nodepool_locations" {
 
   validation {
     condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
+      var.storage_type == "standard"
       ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
       : true
     )
-    error_message = "ERROR: default_nodepool_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+    error_message = "ERROR: default_nodepool_locations must contain at most 1 zone when storage_type='standard'. For storage_type='ha', use 2+ zones to enable multi-zone behavior."
   }
 }
 
@@ -385,13 +397,11 @@ variable "nodepools_locations" {
 
   validation {
     condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
+      var.storage_type == "standard"
       ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
       : true
     )
-    error_message = "ERROR: nodepools_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+    error_message = "ERROR: nodepools_locations must contain at most 1 zone when storage_type='standard'. For storage_type='ha', use 2+ zones to enable multi-zone behavior."
   }
 }
 
