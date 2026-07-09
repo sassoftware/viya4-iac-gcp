@@ -522,7 +522,7 @@ variable "enable_registry_access" {
 
 ## Google NetApp Volumes
 variable "netapp_service_level" {
-  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Note: PREMIUM and EXTREME are not available in all regions (e.g. us-east1 only supports STANDARD and FLEX)."
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes at deployment time. Verify support for your target region before deployment."
   type        = string
   default     = "STANDARD"
 

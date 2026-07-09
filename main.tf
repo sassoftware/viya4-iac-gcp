@@ -328,7 +328,8 @@ module "google_netapp" {
   protocols          = var.netapp_protocols
   volume_path        = "${var.prefix}-${var.netapp_volume_path}"
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
-  default_nodepool_locations = var.default_nodepool_locations
+  # Pass an effective zone list to NetApp module. For single-zone HA, fall back to the resolved deployment zone.
+  default_nodepool_locations = (var.default_nodepool_locations != "" && var.default_nodepool_locations != null) ? var.default_nodepool_locations : local.zone
   depends_on         = [ module.gke ]
 
   # DNS abstraction for zone-redundant endpoint

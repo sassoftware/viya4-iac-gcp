@@ -60,6 +60,11 @@ variable "netapp_subnet_cidr" {
 variable "default_nodepool_locations" {
   description = "Comma-separated list of default node pool locations"
   type        = string
+
+  validation {
+    condition     = length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) > 0
+    error_message = "default_nodepool_locations must contain at least one zone."
+  }
 }
 
 # Community Contribution

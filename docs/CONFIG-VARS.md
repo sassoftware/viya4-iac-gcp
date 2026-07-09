@@ -261,7 +261,7 @@ When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
+| netapp_service_level | The service level of the storage pool. | string | "STANDARD" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
 | netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV3. For SAS Viya on GKE with NetApp storage, use NFSV3. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
@@ -276,7 +276,7 @@ For additional background, see [Understanding NFS Mount Options for SAS Viya on 
 
 > **Important:** Per [GCP documentation](https://docs.cloud.google.com/netapp/volumes/docs/configure-and-use/storage-pools/overview#availability), zone-redundant (regional) storage pools are **only** supported by the **`FLEX`** service level (Flex Unified and Flex File). `STANDARD`, `PREMIUM`, and `EXTREME` service levels are **zonal only** and do not support regional/zone-redundant pools.
 
-To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `default_nodepool_locations` contains at least 2 zones. The `FLEX` service level is available in all major GCP regions. If you omit multi-zone node locations (or provide a single zone), `storage_type="ha"` remains valid and behaves as single-zone NetApp.
+To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `default_nodepool_locations` contains at least 2 zones. Service-level availability is determined by Google Cloud and can vary by region over time. If you omit multi-zone node locations (or provide a single zone), `storage_type="ha"` remains valid and behaves as single-zone NetApp.
 
 | Service Level | Zone Redundancy (Regional Pool) | Notes |
 | :--- | :--- | :--- |
@@ -285,7 +285,7 @@ To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `defau
 | `PREMIUM` | **No** — zonal only | Cross-region volume replication only |
 | `EXTREME` | **No** — zonal only | Cross-region volume replication only |
 
-To verify which service levels are available in your region:
+To verify which service levels are available in your region, consult the Google NetApp Volumes supported regions documentation or run:
 ```bash
 gcloud netapp locations describe <region> --project=<project-id>
 ```
