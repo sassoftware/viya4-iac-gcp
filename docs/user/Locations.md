@@ -2,31 +2,43 @@
 
 Google Cloud resources are hosted in different data centers worldwide, divided into [Regions and Zones](https://cloud.google.com/compute/docs/regions-zones).
 
-You control the location of your Viya4 IAC resources by setting the `location` variable to either a Region or a Zone.
+Resource placement behavior is controlled by both `location` and `regional`:
 
-In each case, a regional Cluster will be created, that is, the cluster control plane will be replicated in all zones in the region.
+- `location`: accepts either a Region (for example, `us-east1`) or a Zone (for example, `us-east1-b`).
+- `regional`: controls whether the GKE control plane is regional (`true`) or zonal (`false`).
 
-All other resources will be zonal.
+When `location` is a Region, zonal resources default to the first available zone in that region.
 
+Control plane behavior:
+
+| `regional` | GKE Control Plane |
+| :--- | :--- |
+| `true` | Regional control plane in the resolved Region |
+| `false` | Zonal control plane in the resolved Zone |
 
 If you choose a Region:
 
 | Resource | Location |
 | :--- | :--- |
-| Cluster Control Plane | Regional in the specified Region |
+| Cluster Control Plane | Regional if `regional=true`; zonal (in 1st zone) if `regional=false` |
 | Default Node VMs | 1st Zone of the specified Region |
-| GKE Cluster node VMs | 1st Zone of the specified Region |
+| GKE Cluster node VMs | 1st Zone by default; can span zones when node pool location variables are set |
 | Jump VM | 1st Zone of the specified Region |
 | NFS VM | 1st Zone of the specified Region |
-| Postgres | Zonal in the 1st Zone the specified Region |
+| Postgres | Zonal in the 1st Zone of the specified Region |
 
 If you chose a Zone:
 
 | Resource | Location |
 | :--- | :--- |
-| Cluster Control Plane | Regional in the Region of the specified Zone |
+| Cluster Control Plane | Regional if `regional=true`; zonal in the specified Zone if `regional=false` |
 | Default Node VMs | In the specified Zone |
-| GKE Cluster node VMs | In the specified Zone |
+| GKE Cluster node VMs | In the specified Zone by default; can span zones when node pool location variables are set |
 | Jump VM | In the specified Zone |
 | NFS VM | In the specified Zone |
 | Postgres | Zonal in the specified Zone |
+
+Notes:
+
+- Current default is `regional=false`, which creates a zonal control plane unless you explicitly set `regional=true`.
+- Node pool placement is controlled by `default_nodepool_locations`, `nodepools_locations`, and `node_pools.<name>.node_locations`.
