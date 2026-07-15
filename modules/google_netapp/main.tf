@@ -69,8 +69,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
       allowed_clients = var.allowed_clients
       has_root_access = true
       nfsv3           = contains(var.protocols, "NFSV3") ? true : false
-      nfsv4           = contains(var.protocols, "NFSV4") ? true : false
-      nfsv41          = contains(var.protocols, "NFSV4_1") ? true : false
+      nfsv4           = contains(var.protocols, "NFSV4") || contains(var.protocols, "NFSV4_1") ? true : false
     }
   }
 
