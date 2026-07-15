@@ -5,6 +5,11 @@
 # GitHub Repository  : https://github.com/terraform-google-modules
 #
 
+# Map NFSV4_1 to NFSV4 since the Google NetApp Volume resource only accepts NFSV3, NFSV4, SMB
+locals {
+  supported_protocols = [for p in var.protocols : p == "NFSV4_1" ? "NFSV4" : p]
+}
+
 # Reserve compute address CIDR for NetApp Volumes to use
 resource "google_compute_global_address" "private_ip_alloc" {
   count         = var.community_netapp_networking_components_enabled ? 1 : 0
@@ -61,7 +66,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
   capacity_gib     = var.capacity_gib # Size can be up to space available in pool
   share_name       = var.volume_path
   storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
-  protocols        = var.protocols
+  protocols        = local.supported_protocols
   unix_permissions = "0777"
   export_policy {
     rules {
