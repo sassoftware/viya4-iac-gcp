@@ -40,5 +40,6 @@ If you chose a Zone:
 
 Notes:
 
-- Current default is `regional=false`, which creates a zonal control plane unless you explicitly set `regional=true`.
-- Node pool placement is controlled by `default_nodepool_locations`, `nodepools_locations`, and `node_pools.<name>.node_locations`.
+- Current default is `regional=true`, which creates a regional control plane unless you explicitly set `regional=false`.
+- Worker node placement is controlled by `default_nodepool_locations`, `nodepools_locations`, and `node_pools.<name>.node_locations`.
+- With current defaults, a deployment uses a regional control plane and single-zone worker nodes.

@@ -28,11 +28,11 @@ This guide describes how to deploy SAS Viya on Google Cloud Platform (GCP) in a 
 
 The GCP multizone model in this repository is built around three pieces:
 
-- **GKE node placement** via `default_nodepool_locations` and `nodepools_locations`
-- **Regional control plane** via `regional`
+- **GKE worker node placement** via `default_nodepool_locations` and `nodepools_locations`
+- **GKE control plane mode** via `regional`
 - **Google NetApp Volumes DNS abstraction** for zone-redundant storage via `enable_netapp_dns`
 
-All multizone behavior in this repository is opt-in and uses safe defaults for single-zone deployments.
+Multi-zone worker placement and NetApp DNS behavior are opt-in. The GKE control plane defaults to regional unless you explicitly set `regional = false`.
 
 ### What Gets Protected
 
@@ -56,13 +56,13 @@ Relevant implementation details:
 
 ## GKE Multi-Zone Configuration
 
-Enable multizone GKE placement by setting the control plane and node pool zone inputs.
+Enable multi-zone GKE worker placement by setting the node pool zone inputs. Use `regional` only if you want to override the default regional control plane behavior.
 
 ### Configuration Variables
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | --- |
-| `regional` | Use a regional or zonal GKE control plane | bool | `false` | Set `true` for a regional control plane |
+| `regional` | Use a regional or zonal GKE control plane | bool | `true` | Set `false` for a zonal control plane |
 | `default_nodepool_locations` | Comma-separated list of zones for the default node pool | string | `""` | Use 2 or more zones to enable multizone behavior |
 | `nodepools_locations` | Comma-separated list of zones for additional node pools | string | `""` | Optional global fallback for additional node pools |
 
@@ -82,7 +82,7 @@ The configuration is considered multizone when `default_nodepool_locations` cont
 Validation expectations:
 
 - `default_nodepool_locations` must contain at least two zones for multizone behavior
-- `regional = true` is recommended for a regional control plane in multizone deployments
+- `regional = true` keeps the control plane regional and is already the default
 - Additional node pools may use `nodepools_locations` as a global fallback
 
 ## Google NetApp Volumes Cross-Zone Replication
@@ -178,22 +178,24 @@ Suggested settings:
 
 ## Backward Compatibility
 
-Existing single-zone deployments continue to work with the current defaults.
+Existing single-zone worker-node deployments continue to work with the current defaults.
 
-- `regional` defaults to `false`
+- `regional` defaults to `true`
 - `default_nodepool_locations` defaults to an empty string
 - `nodepools_locations` defaults to an empty string
 - `enable_netapp_dns` defaults to `false`
 
 ## Default Values
 
-### GKE Defaults (Single-Zone Behavior)
+### GKE Defaults
 
 ```hcl
-regional = false
+regional = true
 default_nodepool_locations = ""
 nodepools_locations = ""
 ```
+
+With these defaults, the control plane is regional and worker nodes stay in a single zone unless node pool location variables are set.
 
 ### NetApp Defaults (DNS Disabled)
 
