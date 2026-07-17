@@ -12,7 +12,7 @@ locals {
     : var.storage_type == "standard" && local.storage_type_backend == "filestore" ? "/${google_filestore_instance.rwx[0].file_shares[0].name}"
     : var.storage_type == "ha" && local.storage_type_backend == "netapp" ? module.google_netapp[0].mountpath : "/export"
   )
-  protocol_version = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? contains(var.netapp_protocols, "NFSV4_1") ? "4.1" : "3" : "3"
+  protocol_version = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? contains(var.netapp_protocols, "NFSV4_1") ? "4.1" : contains(var.netapp_protocols, "NFSV4") ? "4" : "3" : "3"
 
 }
 

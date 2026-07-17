@@ -5,7 +5,7 @@
 # GitHub Repository  : https://github.com/terraform-google-modules
 #
 
-# Map NFSV4_1 to NFSV4 since the Google NetApp Volume resource accepts NFSV4 (for NFSv4.1 mounts).
+# Map NFSV4_1 to NFSV4 since the Google NetApp Volume resource only accepts NFSV3, NFSV4, SMB
 locals {
   supported_protocols = [for p in var.protocols : p == "NFSV4_1" ? "NFSV4" : p]
 }
@@ -74,7 +74,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
       allowed_clients = var.allowed_clients
       has_root_access = true
       nfsv3           = contains(var.protocols, "NFSV3") ? true : false
-      nfsv4           = contains(var.protocols, "NFSV4_1") ? true : false
+      nfsv4           = contains(var.protocols, "NFSV4") || contains(var.protocols, "NFSV4_1") ? true : false
     }
   }
 
