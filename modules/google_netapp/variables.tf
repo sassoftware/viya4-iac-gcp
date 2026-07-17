@@ -20,7 +20,7 @@ variable "service_level" {
 variable "protocols" {
   description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['NFSV4_1'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, NFSV4_1, SMB."
   type        = list(string)
-  default     = ["NFSV3"]
+  default     = ["NFSV4_1"]
 }
 
 variable "capacity_gib" {
