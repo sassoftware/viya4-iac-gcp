@@ -533,13 +533,13 @@ variable "netapp_service_level" {
 }
 
 variable "netapp_protocols" {
-  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, NFSV4_1, SMB."
+  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4_1."
   type        = list(string)
-  default     = ["NFSV3"]
+  default     = ["NFSV4_1"]
 
   validation {
-    condition     = var.netapp_protocols != null ? startswith(var.netapp_protocols[0], "NFS") : null
-    error_message = "ERROR: Currently, only NFS protocol is supported."
+    condition     = var.netapp_protocols != null ? length(var.netapp_protocols) > 0 && alltrue([for protocol in var.netapp_protocols : contains(["NFSV3", "NFSV4_1"], protocol)]) : null
+    error_message = "ERROR: netapp_protocols supports only NFSV3 and NFSV4_1."
   }
 }
 
