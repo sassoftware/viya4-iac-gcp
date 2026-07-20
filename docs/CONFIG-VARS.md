@@ -114,7 +114,7 @@ The application of a Kubernetes version in Google Cloud has some limitations whe
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
 | cluster_autoscaling_profile | Configuration options for the [Autoscaling profile](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-autoscaler#autoscaling_profiles) feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster | string | "BALANCED" | Possible values are: `BALANCED` and `OPTIMIZE_UTILIZATION`. For more details see the [provider argument reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#autoscaling_profile) |
 | create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | true | A value of `false` will default to using the cloud providers mechanism for generating the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials. |
-| regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created. **WARNING: changing this after cluster creation is destructive** |
+| regional | Create a regional GKE control plane | bool | false | If false a zonal GKE control plane is created. **WARNING: changing this after cluster creation is destructive** |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | |
@@ -261,8 +261,8 @@ When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
-| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV3. For SAS Viya on GKE with NetApp storage, use NFSV3. |
+| netapp_service_level | The service level of the storage pool. | string | "STANDARD" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV4_1"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV4_1. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
 | enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
@@ -276,7 +276,7 @@ For additional background, see [Understanding NFS Mount Options for SAS Viya on 
 
 > **Important:** Per [GCP documentation](https://docs.cloud.google.com/netapp/volumes/docs/configure-and-use/storage-pools/overview#availability), zone-redundant (regional) storage pools are **only** supported by the **`FLEX`** service level (Flex Unified and Flex File). `STANDARD`, `PREMIUM`, and `EXTREME` service levels are **zonal only** and do not support regional/zone-redundant pools.
 
-To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `default_nodepool_locations` contains at least 2 zones. The `FLEX` service level is available in all major GCP regions.
+To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `default_nodepool_locations` contains at least 2 zones. Service-level availability is determined by Google Cloud and can vary by region over time. If you omit multi-zone node locations (or provide a single zone), `storage_type="ha"` remains valid and behaves as single-zone NetApp.
 
 | Service Level | Zone Redundancy (Regional Pool) | Notes |
 | :--- | :--- | :--- |
@@ -285,7 +285,7 @@ To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `defau
 | `PREMIUM` | **No** — zonal only | Cross-region volume replication only |
 | `EXTREME` | **No** — zonal only | Cross-region volume replication only |
 
-To verify which service levels are available in your region:
+To verify which service levels are available in your region, consult the Google NetApp Volumes supported regions documentation or run:
 ```bash
 gcloud netapp locations describe <region> --project=<project-id>
 ```

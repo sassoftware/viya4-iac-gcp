@@ -130,7 +130,7 @@ The repository validates the following multizone behavior:
 - `enable_netapp_dns` only creates DNS resources when multizone is detected
 - `netapp_dns_hostname` must be a valid DNS hostname
 - `netapp_dns_record_ttl` must be between `60` and `86400`
-- `netapp_service_level = "FLEX"` is required for zone-redundant NetApp storage pools
+- `netapp_service_level = "FLEX"` is required only for zone-redundant NetApp storage pools
 
 ## Complete Multi-Zone Example
 
@@ -172,7 +172,7 @@ Suggested settings:
 ## Limitations Summary
 
 - The DNS abstraction is only created when the deployment is multizone
-- `netapp_service_level` must be `FLEX` for zone-redundant storage pools
+- `netapp_service_level` must be `FLEX` only when you need zone-redundant storage pools
 - The feature provides a stable endpoint, but application failover still requires operational recovery steps
 - If you use single-zone node placement, the DNS abstraction is not created
 
