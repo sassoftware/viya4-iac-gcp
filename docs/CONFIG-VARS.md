@@ -77,7 +77,7 @@ You can use `default_public_access_cidrs` to set a default range for all created
 
 ### Use Existing
 
-If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need a private subnet for the GKE nodes and a public subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing).
+If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need one subnet for the GKE nodes and another subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing).
 
 The existing subnets need to match the same region given in the `location` variable defined [here](#required-variables)
 
@@ -329,16 +329,16 @@ If you provide an empty block for default, the following default values will be 
 terraform
 postgres_servers = {
   default = {
-    server_version = "15"
-    edition        = "ENTERPRISE"
-    machine_type   = "db-custom-4-16384"
+    server_version = "16"
+    edition        = "ENTERPRISE_PLUS"
+    machine_type   = "db-perf-optimized-N-8"
   }
 }
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |
-| edition | Cloud SQL edition type | string | "ENTERPRISE" | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
+| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-perf-optimized-N-8" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |
+| edition | Cloud SQL edition type | string | "ENTERPRISE_PLUS" | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
 | storage_gb | Minimum storage allowed for the PostgreSQL server | number | 128 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
@@ -347,7 +347,7 @@ postgres_servers = {
 | backup_count | The number of automated backups to retain, from 1 to 365 | string | "7" | Take note this is a **COUNT** not number of days |
 | administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
-| server_version | The version of the  PostgreSQL server instance | string | "15" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
+| server_version | The version of the  PostgreSQL server instance | string | "16" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
 | availability_type | The availability type for the primary instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
 | database_flags | Database flags for the primary instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
