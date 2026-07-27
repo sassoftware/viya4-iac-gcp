@@ -13,7 +13,8 @@ variable "prefix" {
 variable "location" {
   description = <<EOF
   The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script.
-  Choosing a Region will make this a multi-zonal cluster.
+  The GKE control plane topology is controlled by the 'regional' variable, not by whether location is a Region or Zone.
+  With regional=true (default), the control plane is regional. With regional=false, the control plane is zonal.
   If you aren't sure which to choose, go with a ZONE instead of a region.
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
