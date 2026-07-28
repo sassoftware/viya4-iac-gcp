@@ -328,7 +328,10 @@ module "google_netapp" {
   protocols          = var.netapp_protocols
   volume_path        = "${var.prefix}-${var.netapp_volume_path}"
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
-  default_nodepool_locations = var.default_nodepool_locations
+  # Pass an effective zone list to NetApp module.
+  # If the user does not set default_nodepool_locations and FLEX is selected,
+  # provide a second zone fallback so NetApp can create a regional (zone-redundant) pool.
+  default_nodepool_locations = ((var.default_nodepool_locations != "" && var.default_nodepool_locations != null) ? var.default_nodepool_locations : (var.netapp_service_level == "FLEX" ? join(",", compact([local.zone, try([for z in data.google_compute_zones.available.names : z if z != local.zone][0], null)])) : local.zone))
   depends_on         = [ module.gke ]
 
   # DNS abstraction for zone-redundant endpoint
