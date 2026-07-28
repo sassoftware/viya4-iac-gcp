@@ -23,6 +23,7 @@ func TestPlanNetApp(t *testing.T) {
 	variables["default_nodepool_locations"] = "us-east1-b,us-east1-c"
 	variables["nodepools_locations"] = "us-east1-b,us-east1-c"
 	variables["regional"] = true
+	variables["netapp_protocols"] = []string{"NFSV3"}
 
 	tests := map[string]helpers.TestCase{
 		"poolExists": {
