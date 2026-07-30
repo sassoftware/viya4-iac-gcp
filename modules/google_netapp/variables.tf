@@ -18,9 +18,9 @@ variable "service_level" {
 }
 
 variable "protocols" {
-  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, SMB."
+  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['NFSV4_1'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, NFSV4_1, SMB."
   type        = list(string)
-  default     = ["NFSV3"]
+  default     = ["NFSV4_1"]
 }
 
 variable "capacity_gib" {
@@ -60,6 +60,11 @@ variable "netapp_subnet_cidr" {
 variable "default_nodepool_locations" {
   description = "Comma-separated list of default node pool locations"
   type        = string
+
+  validation {
+    condition     = length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) > 0
+    error_message = "default_nodepool_locations must contain at least one zone."
+  }
 }
 
 # Community Contribution

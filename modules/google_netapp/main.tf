@@ -5,6 +5,11 @@
 # GitHub Repository  : https://github.com/terraform-google-modules
 #
 
+# Map NFSV4_1 to NFSV4 since the Google NetApp Volume resource only accepts NFSV3, NFSV4, SMB
+locals {
+  supported_protocols = [for p in var.protocols : p == "NFSV4_1" ? "NFSV4" : p]
+}
+
 # Reserve compute address CIDR for NetApp Volumes to use
 resource "google_compute_global_address" "private_ip_alloc" {
   count         = var.community_netapp_networking_components_enabled ? 1 : 0
@@ -46,8 +51,8 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   capacity_gib  = var.capacity_gib
   network       = var.network
 
-  # Conditionally assign zone attributes only if multizone detected
-  zone         = local.is_multizone && local.primary_zone != null ? local.primary_zone : null
+  # Always set primary zone when available; set replica zone only for multi-zone.
+  zone         = local.primary_zone != null ? local.primary_zone : null
   replica_zone = local.is_multizone && local.replica_zone != null ? local.replica_zone : null
 
   lifecycle {
@@ -61,7 +66,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
   capacity_gib     = var.capacity_gib # Size can be up to space available in pool
   share_name       = var.volume_path
   storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
-  protocols        = var.protocols
+  protocols        = local.supported_protocols
   unix_permissions = "0777"
   export_policy {
     rules {
@@ -69,7 +74,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
       allowed_clients = var.allowed_clients
       has_root_access = true
       nfsv3           = contains(var.protocols, "NFSV3") ? true : false
-      nfsv4           = contains(var.protocols, "NFSV4") ? true : false
+      nfsv4           = contains(var.protocols, "NFSV4") || contains(var.protocols, "NFSV4_1") ? true : false
     }
   }
 
