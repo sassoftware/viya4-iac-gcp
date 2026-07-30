@@ -49,7 +49,7 @@ func TestPlanNetApp(t *testing.T) {
 			AssertFunction:    assert.NotEqual,
 		},
 		"volumeProtocols": {
-			Expected:          `["NFSV3"]`,
+			Expected:          `["NFSV4_1"]`,
 			ResourceMapName:   "module.google_netapp[0].google_netapp_volume.netapp-nfs-volume",
 			AttributeJsonPath: "{$.protocols}",
 			AssertFunction:    assert.Contains,
