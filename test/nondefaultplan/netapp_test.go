@@ -23,7 +23,7 @@ func TestPlanNetApp(t *testing.T) {
 	variables["default_nodepool_locations"] = "us-east1-b,us-east1-c"
 	variables["nodepools_locations"] = "us-east1-b,us-east1-c"
 	variables["regional"] = true
-	variables["netapp_protocols"] = []string{"NFSV3"}
+	variables["netapp_protocols"] = []string{"NFSV4"}
 
 	tests := map[string]helpers.TestCase{
 		"poolExists": {
@@ -49,7 +49,7 @@ func TestPlanNetApp(t *testing.T) {
 			AssertFunction:    assert.NotEqual,
 		},
 		"volumeProtocols": {
-			Expected:          `["NFSV3"]`,
+			Expected:          `["NFSV4"]`,
 			ResourceMapName:   "module.google_netapp[0].google_netapp_volume.netapp-nfs-volume",
 			AttributeJsonPath: "{$.protocols}",
 			AssertFunction:    assert.Contains,
