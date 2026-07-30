@@ -34,6 +34,8 @@ The GCP multizone model in this repository is built around three pieces:
 
 All multizone behavior in this repository is opt-in and uses safe defaults for single-zone deployments.
 
+If you deploy an external PostgreSQL instance with this IaC for a multi-zone SAS Viya environment, configure that Cloud SQL instance for high availability by setting `availability_type = "REGIONAL"`. The default PostgreSQL configuration is `ZONAL`, which does not provide multi-zone database resilience.
+
 ### What Gets Protected
 
 | Component | Multizone Behavior | Outcome |
@@ -142,6 +144,7 @@ That example includes:
 
 - Regional GKE control plane configuration
 - Multi-zone node placement
+- External PostgreSQL configured for Cloud SQL high availability with `availability_type = "REGIONAL"`
 - Google NetApp Volumes configuration
 - DNS abstraction for the shared storage endpoint
 
@@ -155,6 +158,7 @@ Suggested settings:
 
 - `regional = true`
 - `default_nodepool_locations` with 2+ zones
+- `availability_type = "REGIONAL"` when provisioning external PostgreSQL with this IaC
 - `enable_netapp_dns = false`
 
 ### Scenario 2: Full Multizone with NetApp DNS
@@ -165,6 +169,7 @@ Suggested settings:
 
 - `regional = true`
 - `default_nodepool_locations` with 2+ zones
+- `availability_type = "REGIONAL"` when provisioning external PostgreSQL with this IaC
 - `storage_type = "ha"`
 - `netapp_service_level = "FLEX"`
 - `enable_netapp_dns = true`
@@ -235,10 +240,11 @@ When the NetApp DNS abstraction is enabled, application workloads reference a st
 
 1. Use `regional = true` when deploying across multiple zones.
 2. Set `default_nodepool_locations` with at least two zones.
-3. Use `storage_type = "ha"` only when you need Google NetApp Volumes.
-4. Set `netapp_service_level = "FLEX"` for zone-redundant storage pools.
-5. Enable `enable_netapp_dns = true` only for multizone deployments.
-6. Keep `netapp_dns_record_ttl` at a value that balances failover speed and DNS stability.
+3. If provisioning external PostgreSQL with this IaC, set `availability_type = "REGIONAL"`.
+4. Use `storage_type = "ha"` only when you need Google NetApp Volumes.
+5. Set `netapp_service_level = "FLEX"` for zone-redundant storage pools.
+6. Enable `enable_netapp_dns = true` only for multizone deployments.
+7. Keep `netapp_dns_record_ttl` at a value that balances failover speed and DNS stability.
 
 ## References
 
