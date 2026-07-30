@@ -13,7 +13,8 @@ variable "prefix" {
 variable "location" {
   description = <<EOF
   The GCP Region (i.e. us-east1) or GCP Zone (i.e. us-east1-b) to provision all resources in this script.
-  Choosing a Region will make this a multi-zonal cluster.
+  The GKE control plane topology is controlled by the 'regional' variable, not by whether location is a Region or Zone.
+  With regional=true (default), the control plane is regional. With regional=false, the control plane is zonal.
   If you aren't sure which to choose, go with a ZONE instead of a region.
   If not set, it defaults to the google environment variables, as documented in https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference"
   EOF
@@ -23,11 +24,25 @@ variable "location" {
 variable "regional" {
   description = "Should the GKE cluster have a regional or zonal control plane"
   type        = bool
-  default     = true
+  default     = false
 
   validation {
-    condition     = var.storage_type != "ha" || var.regional
-    error_message = "ERROR: regional must be true when storage_type='ha'."
+    condition = (
+      var.storage_type != "ha"
+      ? true
+      : (
+        (
+          length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+          && length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
+          && !anytrue([
+            for _, pool in var.node_pools : length([for zone in split(",", pool.node_locations) : trimspace(zone) if trimspace(zone) != ""]) > 1
+          ])
+        )
+        ? true
+        : var.regional
+      )
+    )
+    error_message = "ERROR: regional must be true when storage_type='ha' and any of default_nodepool_locations, nodepools_locations, or node_pools.<name>.node_locations contains 2+ zones."
   }
 }
 
@@ -286,13 +301,11 @@ variable "default_nodepool_locations" {
 
   validation {
     condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
+      var.storage_type == "standard"
       ? length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
       : true
     )
-    error_message = "ERROR: default_nodepool_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+    error_message = "ERROR: default_nodepool_locations must contain at most 1 zone when storage_type='standard'. For storage_type='ha', use 2+ zones to enable multi-zone behavior."
   }
 }
 
@@ -385,13 +398,11 @@ variable "nodepools_locations" {
 
   validation {
     condition = (
-      var.storage_type == "ha"
-      ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) >= 2
-      : var.storage_type == "standard"
+      var.storage_type == "standard"
       ? length([for zone in split(",", var.nodepools_locations) : trimspace(zone) if trimspace(zone) != ""]) <= 1
       : true
     )
-    error_message = "ERROR: nodepools_locations must contain 2+ zones when storage_type='ha' and at most 1 zone when storage_type='standard'."
+    error_message = "ERROR: nodepools_locations must contain at most 1 zone when storage_type='standard'. For storage_type='ha', use 2+ zones to enable multi-zone behavior."
   }
 }
 
@@ -512,7 +523,7 @@ variable "enable_registry_access" {
 
 ## Google NetApp Volumes
 variable "netapp_service_level" {
-  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Note: PREMIUM and EXTREME are not available in all regions (e.g. us-east1 only supports STANDARD and FLEX)."
+  description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes at deployment time. Verify support for your target region before deployment."
   type        = string
   default     = "STANDARD"
 
@@ -523,9 +534,9 @@ variable "netapp_service_level" {
 }
 
 variable "netapp_protocols" {
-  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, SMB."
+  description = "The target volume protocol expressed as a list. Each value may be one of: NFSV3, NFSV4, NFSV4_1, SMB."
   type        = list(string)
-  default     = ["NFSV3"]
+  default     = ["NFSV4_1"]
 
   validation {
     condition     = var.netapp_protocols != null ? startswith(var.netapp_protocols[0], "NFS") : null
