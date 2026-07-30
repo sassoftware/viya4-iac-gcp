@@ -112,7 +112,7 @@ storage_type = "ha"
 storage_type_backend = "netapp" # Required when storage_type = "ha"
 
 # Google NetApp Volumes Configuration
-netapp_service_level = "FLEX"     # Required for zone-redundant storage; valid values: PREMIUM, EXTREME, STANDARD, FLEX
+netapp_service_level = "FLEX"     # Required for zone-redundant storage
 netapp_capacity_gib  = 2048       # Storage pool capacity in GiB (minimum 2048)
 netapp_protocols     = ["NFSV4_1"]  # Volume protocols; use NFSV4_1 for SAS Viya deployments
 
