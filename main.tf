@@ -325,6 +325,7 @@ module "google_netapp" {
   netapp_subnet_cidr = var.netapp_subnet_cidr
   service_level      = var.netapp_service_level
   capacity_gib       = var.netapp_capacity_gib
+  tags               = var.tags
   protocols          = var.netapp_protocols
   volume_path        = "${var.prefix}-${var.netapp_volume_path}"
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])

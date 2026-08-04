@@ -11,6 +11,12 @@ variable "region" {
   type        = string
 }
 
+variable "tags" {
+  description = "Map of labels to apply to supported resources in this module"
+  type        = map(any)
+  default     = {}
+}
+
 variable "service_level" {
   description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
   type        = string

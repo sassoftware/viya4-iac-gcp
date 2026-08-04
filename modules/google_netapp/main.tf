@@ -50,6 +50,7 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   service_level = var.service_level
   capacity_gib  = var.capacity_gib
   network       = var.network
+  labels        = var.tags
 
   # Always set primary zone when available; set replica zone only for multi-zone.
   zone         = local.primary_zone != null ? local.primary_zone : null
@@ -68,6 +69,7 @@ resource "google_netapp_volume" "netapp-nfs-volume" {
   storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
   protocols        = local.supported_protocols
   unix_permissions = "0777"
+  labels           = var.tags
   export_policy {
     rules {
       access_type     = "READ_WRITE"
@@ -91,6 +93,7 @@ resource "google_dns_managed_zone" "netapp_private_zone" {
   dns_name    = "${var.netapp_dns_zone_name}."
   description = "Private DNS zone for zone-redundant NetApp volume endpoint"
   visibility  = "private"
+  labels      = var.tags
 
   private_visibility_config {
     networks {
