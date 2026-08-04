@@ -290,6 +290,10 @@ To verify which service levels are available in your region, consult the Google 
 gcloud netapp locations describe <region> --project=<project-id>
 ```
 
+### RWO Block Storage (RabbitMQ / Crunchy Postgres)
+
+> **Note:** The RWO block StorageClasses for RabbitMQ (`pd-ssd-mq`) and Crunchy Postgres (`pd-ssd-pg`) are created by [viya4-deployment](https://github.com/sassoftware/viya4-deployment), not by this IaC project. These classes provision **zonal** Persistent Disks by default and are not zone-redundant. In multi-zone GKE deployments, if zone-redundant RWO block storage is required, set `V4_CFG_MANAGE_STORAGE = false` in viya4-deployment and pre-create your own StorageClasses with `replication-type: regional-pd`. See the [GCP Regional Persistent Disk documentation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) and the [Multi-Zone Deployment Guide](user/Multi-ZoneDeploymentGuide.md#rwo-block-storage-in-multi-zone-deployments) for details.
+
 ## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 
 | Name | Description | Type | Default | Notes |

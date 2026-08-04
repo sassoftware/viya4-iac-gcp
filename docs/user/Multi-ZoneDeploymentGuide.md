@@ -42,8 +42,9 @@ If you deploy an external PostgreSQL instance with this IaC for a multi-zone SAS
 | :--- | :--- | :--- |
 | GKE node pools | Nodes spread across multiple zones | Pods can reschedule if a zone fails |
 | GKE control plane | Regional control plane when `regional = true` | Better control-plane resilience |
-| Google NetApp Volumes | Zone-redundant storage with optional DNS abstraction | Stable endpoint for failover scenarios |
+| Google NetApp Volumes (RWX) | Zone-redundant storage with optional DNS abstraction | Stable endpoint for failover scenarios |
 | Shared storage endpoint | DNS hostname when enabled | Avoids depending on a static IP |
+| RWO block storage (RabbitMQ / Crunchy) | Zonal Persistent Disks by default (`pd-ssd-mq`, `pd-ssd-pg`) | Volumes are created in a single zone; not zone-redundant. See [RWO Block Storage in Multi-Zone Deployments](#rwo-block-storage-in-multi-zone-deployments) below. |
 
 ### Multizone Rules in This Repository
 
@@ -174,12 +175,25 @@ Suggested settings:
 - `netapp_service_level = "FLEX"`
 - `enable_netapp_dns = true`
 
+## RWO Block Storage in Multi-Zone Deployments
+
+The default GCP StorageClasses for RabbitMQ (`pd-ssd-mq`) and Crunchy Postgres (`pd-ssd-pg`) provision **zonal** Persistent Disks. These classes use `volumeBindingMode: WaitForFirstConsumer`, which means the disk is created in the same zone as the consuming pod.
+
+In a multi-zone GKE deployment this has the following implications:
+
+- If a pod is rescheduled to a **different zone**, it cannot attach to the existing zonal PD.
+- Application-level HA (e.g., RabbitMQ mirrored queues, Crunchy Postgres replicas) handles cross-zone resilience at the application layer, not the storage layer.
+- GCP supports [Regional Persistent Disks](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) that replicate data across two zones. These are **not** used by default in the current StorageClass definitions.
+
+If your deployment requires zone-redundant RWO block storage, you can supply your own Regional PD StorageClasses by setting `V4_CFG_MANAGE_STORAGE = false` in viya4-deployment and pre-creating StorageClasses with `replication-type: regional-pd` in their parameters. Refer to the [GCP Regional PD documentation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) for details.
+
 ## Limitations Summary
 
 - The DNS abstraction is only created when the deployment is multizone
 - `netapp_service_level` must be `FLEX` only when you need zone-redundant storage pools
 - The feature provides a stable endpoint, but application failover still requires operational recovery steps
 - If you use single-zone node placement, the DNS abstraction is not created
+- Default RWO StorageClasses (`pd-ssd-mq`, `pd-ssd-pg`) use zonal Persistent Disks and are not zone-redundant
 
 ## Backward Compatibility
 
@@ -245,6 +259,7 @@ When the NetApp DNS abstraction is enabled, application workloads reference a st
 5. Set `netapp_service_level = "FLEX"` for zone-redundant storage pools.
 6. Enable `enable_netapp_dns = true` only for multizone deployments.
 7. Keep `netapp_dns_record_ttl` at a value that balances failover speed and DNS stability.
+8. Be aware that default RWO block StorageClasses (`pd-ssd-mq`, `pd-ssd-pg`) use zonal Persistent Disks. If zone-redundant RWO storage is needed, create custom Regional PD StorageClasses and set `V4_CFG_MANAGE_STORAGE = false`.
 
 ## References
 
