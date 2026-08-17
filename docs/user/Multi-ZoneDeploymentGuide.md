@@ -14,6 +14,8 @@
 	- [Validation](#validation-1)
 - [Complete Multi-Zone Example](#complete-multi-zone-example)
 - [Deployment Scenarios](#deployment-scenarios)
+- [RWO Block Storage in Multi-Zone Deployments](#rwo-block-storage-in-multi-zone-deployments)
+	- [Expected Scheduling Delays for Stateful Workloads During Initial Deployment](#expected-scheduling-delays-for-stateful-workloads-during-initial-deployment)
 - [Limitations Summary](#limitations-summary)
 - [Backward Compatibility](#backward-compatibility)
 - [Default Values](#default-values)
@@ -187,6 +189,50 @@ In a multi-zone GKE deployment this has the following implications:
 
 If your deployment requires zone-redundant RWO block storage, you can supply your own Regional PD StorageClasses by setting `V4_CFG_MANAGE_STORAGE = false` in viya4-deployment and pre-creating StorageClasses with `replication-type: regional-pd` in their parameters. Refer to the [GCP Regional PD documentation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) for details.
 
+### Expected Scheduling Delays for Stateful Workloads During Initial Deployment
+
+During the initial startup of a GCP multi-zone Viya deployment, stateful workloads such as Consul and RabbitMQ may appear in `Pending` state for several minutes. This is **expected behavior**, not a deployment failure.
+
+**Why this happens:**
+
+When `volumeBindingMode: WaitForFirstConsumer` is in effect, the scheduler must reconcile several constraints simultaneously:
+
+- **PersistentVolume node affinity** : once a zonal PD is provisioned the PV gains a node-affinity rule that pins it to the provisioning zone
+- **Topology spread constraints** : viya4-deployment enforces `maxSkew: 1` across zones for StatefulSets when `V4_CFG_MULTI_ZONE_ENABLED: true`
+- **Node selectors and taints** : stateful workloads target labeled stateful node pools via `workload.sas.com/class=stateful`
+
+During initial provisioning, before all PVs are created, the scheduler is evaluating these constraints in a partially-provisioned state. The result is transient `Pending` events that resolve once GKE completes disk provisioning and zone placement stabilizes.
+
+**Example scheduler event (expected during startup):**
+
+```
+0/16 nodes are available:
+1 node(s) didn't match PersistentVolume's node affinity,
+2 node(s) didn't match pod topology spread constraints,
+4 node(s) didn't match Pod's node affinity/selector,
+9 node(s) had untolerated taint(s).
+Preemption is not helpful for scheduling.
+```
+
+**How to distinguish expected delay from a real problem:**
+
+| Signal | Expected Delay | Investigate Further |
+| :--- | :--- | :--- |
+| Duration of `Pending` state | Resolves within 5–15 minutes | Persists beyond 30 minutes |
+| Scheduler event message | PV node affinity + topology spread constraints | Insufficient CPU/memory, image pull errors |
+| Pod count | Only 1-2 pods Pending at a time | All replicas Pending simultaneously |
+| Events after `kubectl describe pod` | Node affinity / topology constraint messages | `FailedScheduling` with unrelated reasons |
+
+**Checking pod scheduling events:**
+
+```bash
+kubectl describe pod <pending-pod-name> -n <viya-namespace>
+# Look for the Events section "didn't match PersistentVolume's node affinity"
+# and "didn't match pod topology spread constraints" are normal during startup.
+```
+
+If pods remain `Pending` for more than 30 minutes, or if events indicate resource exhaustion rather than placement constraints, investigate further.
+
 ## Limitations Summary
 
 - The DNS abstraction is only created when the deployment is multizone
@@ -194,6 +240,7 @@ If your deployment requires zone-redundant RWO block storage, you can supply you
 - The feature provides a stable endpoint, but application failover still requires operational recovery steps
 - If you use single-zone node placement, the DNS abstraction is not created
 - Default RWO StorageClasses (`pd-ssd-mq`, `pd-ssd-pg`) use zonal Persistent Disks and are not zone-redundant
+- Stateful workloads may show transient `Pending` scheduling events during initial GCP multi-zone deployment; this is expected and self-resolving (see [Expected Scheduling Delays](#expected-scheduling-delays-for-stateful-workloads-during-initial-deployment))
 
 ## Backward Compatibility
 
@@ -260,6 +307,7 @@ When the NetApp DNS abstraction is enabled, application workloads reference a st
 6. Enable `enable_netapp_dns = true` only for multizone deployments.
 7. Keep `netapp_dns_record_ttl` at a value that balances failover speed and DNS stability.
 8. Be aware that default RWO block StorageClasses (`pd-ssd-mq`, `pd-ssd-pg`) use zonal Persistent Disks. If zone-redundant RWO storage is needed, create custom Regional PD StorageClasses and set `V4_CFG_MANAGE_STORAGE = false`.
+9. Expect stateful workloads (Consul, RabbitMQ) to show brief `Pending` scheduling events during initial deployment. This is normal — pods resolve within 5–15 minutes as PVs are provisioned and zone placement stabilizes.
 
 ## References
 
