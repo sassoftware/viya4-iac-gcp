@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ARG TERRAFORM_VERSION=1.10.5
-ARG GCP_CLI_VERSION=513.0.0
+ARG GCP_CLI_VERSION=582.0.0
 
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 FROM google/cloud-sdk:$GCP_CLI_VERSION-alpine
