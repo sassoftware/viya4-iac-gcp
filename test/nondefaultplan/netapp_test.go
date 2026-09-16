@@ -38,7 +38,9 @@ func TestPlanNetApp(t *testing.T) {
 			AttributeJsonPath: "{$.service_level}",
 		},
 		"poolTypeNotSetForNonFlex": {
-			Expected:          `nil`,
+			// A null/absent attribute on an existing resource resolves to "" (not the "nil"
+			// sentinel, which is only returned when the resource map itself isn't found).
+			Expected:          ``,
 			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
 			AttributeJsonPath: "{$.type}",
 		},
