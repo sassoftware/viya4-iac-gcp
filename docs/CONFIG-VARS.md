@@ -261,7 +261,7 @@ When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| netapp_service_level | The service level of the storage pool. | string | "STANDARD" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. |
+| netapp_service_level | The service level of the storage pool. | string | "STANDARD" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. `FLEX` pools are always provisioned as Flex Unified (`type=UNIFIED`); Google no longer allows creating new Flex File pools. |
 | netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV4_1"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV4_1. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |

@@ -12,7 +12,7 @@ locals {
 
 # Reserve compute address CIDR for NetApp Volumes to use
 resource "google_compute_global_address" "private_ip_alloc" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   name          = "${var.network}-ip-range"
   purpose       = "VPC_PEERING"
@@ -24,7 +24,7 @@ resource "google_compute_global_address" "private_ip_alloc" {
 
 # Create the PSA peering
 resource "google_service_networking_connection" "default" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   network                 = var.network
   service                 = "netapp.servicenetworking.goog"
@@ -35,7 +35,7 @@ resource "google_service_networking_connection" "default" {
 
 # Modify the PSA Connection to allow import/export of custom routes
 resource "google_compute_network_peering_routes_config" "route_updates" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   peering = google_service_networking_connection.default[0].peering
   network = var.network
@@ -48,9 +48,11 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   name          = "${var.prefix}-netapp-storage-pool"
   location      = var.region
   service_level = var.service_level
-  capacity_gib  = var.capacity_gib
-  network       = var.network
-  labels        = var.tags
+  # Google no longer allows creating new Flex File pools (type defaults to FILE); FLEX pools must request Flex Unified.
+  type         = var.service_level == "FLEX" ? "UNIFIED" : null
+  capacity_gib = var.capacity_gib
+  network      = var.network
+  labels       = var.tags
 
   # Always set primary zone when available; set replica zone only for multi-zone.
   zone         = local.primary_zone != null ? local.primary_zone : null
@@ -59,11 +61,15 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   lifecycle {
     ignore_changes = [network, zone, replica_zone]
   }
+
+  # Pool creation requires the PSA peering to netapp.servicenetworking.goog to exist first
+  depends_on = [google_service_networking_connection.default]
 }
 
 resource "google_netapp_volume" "netapp-nfs-volume" {
-  location         = var.region
-  name             = "${var.prefix}-netapp-volume"
+  location = var.region
+  # volume_id only allows lowercase letters, numbers, and underscores (no hyphens)
+  name             = replace("${var.prefix}-netapp-volume", "-", "_")
   capacity_gib     = var.capacity_gib # Size can be up to space available in pool
   share_name       = var.volume_path
   storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
