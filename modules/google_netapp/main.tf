@@ -61,10 +61,13 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   lifecycle {
     ignore_changes = [network, zone, replica_zone]
   }
+
+  # Pool creation requires the PSA peering to netapp.servicenetworking.goog to exist first
+  depends_on = [google_service_networking_connection.default]
 }
 
 resource "google_netapp_volume" "netapp-nfs-volume" {
-  location         = var.region
+  location = var.region
   # volume_id only allows lowercase letters, numbers, and underscores (no hyphens)
   name             = replace("${var.prefix}-netapp-volume", "-", "_")
   capacity_gib     = var.capacity_gib # Size can be up to space available in pool
