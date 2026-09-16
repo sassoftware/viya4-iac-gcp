@@ -12,7 +12,7 @@ locals {
 
 # Reserve compute address CIDR for NetApp Volumes to use
 resource "google_compute_global_address" "private_ip_alloc" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   name          = "${var.network}-ip-range"
   purpose       = "VPC_PEERING"
@@ -24,7 +24,7 @@ resource "google_compute_global_address" "private_ip_alloc" {
 
 # Create the PSA peering
 resource "google_service_networking_connection" "default" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   network                 = var.network
   service                 = "netapp.servicenetworking.goog"
@@ -35,7 +35,7 @@ resource "google_service_networking_connection" "default" {
 
 # Modify the PSA Connection to allow import/export of custom routes
 resource "google_compute_network_peering_routes_config" "route_updates" {
-  count         = var.community_netapp_networking_components_enabled ? 1 : 0
+  count = var.community_netapp_networking_components_enabled ? 1 : 0
 
   peering = google_service_networking_connection.default[0].peering
   network = var.network
@@ -48,9 +48,11 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
   name          = "${var.prefix}-netapp-storage-pool"
   location      = var.region
   service_level = var.service_level
-  capacity_gib  = var.capacity_gib
-  network       = var.network
-  labels        = var.tags
+  # Google no longer allows creating new Flex File pools (type defaults to FILE); FLEX pools must request Flex Unified.
+  type         = var.service_level == "FLEX" ? "UNIFIED" : null
+  capacity_gib = var.capacity_gib
+  network      = var.network
+  labels       = var.tags
 
   # Always set primary zone when available; set replica zone only for multi-zone.
   zone         = local.primary_zone != null ? local.primary_zone : null
