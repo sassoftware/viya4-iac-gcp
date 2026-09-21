@@ -37,6 +37,13 @@ func TestPlanNetApp(t *testing.T) {
 			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
 			AttributeJsonPath: "{$.service_level}",
 		},
+		"poolTypeNotSetForNonFlex": {
+			// A null/absent attribute on an existing resource resolves to "" (not the "nil"
+			// sentinel, which is only returned when the resource map itself isn't found).
+			Expected:          ``,
+			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
+			AttributeJsonPath: "{$.type}",
+		},
 		"capactityGib": {
 			Expected:          `2048`,
 			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
@@ -76,6 +83,38 @@ func TestPlanNetApp(t *testing.T) {
 			ResourceMapName:   "module.google_netapp[0].google_service_networking_connection.default[0]",
 			AttributeJsonPath: "{$}",
 			AssertFunction:    assert.NotEqual,
+		},
+	}
+
+	plan := helpers.GetPlan(t, variables)
+	helpers.RunTests(t, tests, plan)
+}
+
+// Test that a FLEX service level storage pool is provisioned as Flex Unified
+// (type=UNIFIED), since Google no longer allows creating new Flex File pools.
+func TestPlanNetAppFlex(t *testing.T) {
+	t.Parallel()
+
+	variables := helpers.GetDefaultPlanVars(t)
+	variables["prefix"] = "net-app-flex"
+	variables["storage_type"] = "ha"
+	variables["storage_type_backend"] = "netapp"
+	variables["netapp_service_level"] = "FLEX"
+	variables["default_nodepool_locations"] = "us-east1-b,us-east1-c"
+	variables["nodepools_locations"] = "us-east1-b,us-east1-c"
+	variables["regional"] = true
+	variables["netapp_protocols"] = []string{"NFSV4"}
+
+	tests := map[string]helpers.TestCase{
+		"poolServiceLevel": {
+			Expected:          `FLEX`,
+			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
+			AttributeJsonPath: "{$.service_level}",
+		},
+		"poolType": {
+			Expected:          `UNIFIED`,
+			ResourceMapName:   "module.google_netapp[0].google_netapp_storage_pool.netapp-tf-pool",
+			AttributeJsonPath: "{$.type}",
 		},
 	}
 
