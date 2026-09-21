@@ -14,6 +14,9 @@
 provider "google" {
   credentials = var.service_account_keyfile != null ? can(file(var.service_account_keyfile)) ? file(var.service_account_keyfile) : null : null
   project     = var.project
+  default_labels = {
+    goog-partner-solution = "isol_plb32_0014m00001h35jvqaa_qxe2gvexrm4ooh7tfz7tvel7ffjdujvk"
+  }
 }
 
 provider "google-beta" {
@@ -65,8 +68,11 @@ EOT
 }
 
 resource "google_filestore_instance" "rwx" {
-  name     = "${var.prefix}-rwx-filestore"
-  count    = var.storage_type == "ha" && local.storage_type_backend == "filestore" ? 1 : 0
+  name  = "${var.prefix}-rwx-filestore"
+  # Filestore is a ZONAL service and does NOT provide zone-redundant storage.
+  # Filestore is only provisioned for storage_type = "standard" (single-zone deployments).
+  # For Multi-Zone / HA deployments, use storage_type = "ha" which provisions NetApp Volumes.
+  count    = var.storage_type == "standard" && local.storage_type_backend == "filestore" ? 1 : 0
   tier     = upper(var.filestore_tier)
   location = local.zone
   labels   = var.tags
@@ -91,7 +97,7 @@ data "google_container_engine_versions" "gke-version" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "~> 36.2.0"
+  version                       = "~> 40.0"
   project_id                    = var.project
   name                          = "${var.prefix}-gke"
   region                        = local.region
@@ -114,7 +120,7 @@ module "gke" {
   add_cluster_firewall_rules = true
 
   release_channel    = var.kubernetes_channel
-  kubernetes_version = var.kubernetes_channel == "UNSPECIFIED" ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
+  kubernetes_version = (var.kubernetes_channel == "UNSPECIFIED" || var.kubernetes_version != "latest") ? var.kubernetes_version : data.google_container_engine_versions.gke-version.release_channel_default_version[var.kubernetes_channel]
 
   network_policy           = var.gke_network_policy
   remove_default_node_pool = true
@@ -241,7 +247,7 @@ resource "local_file" "kubeconfig" {
 # Module Registry - https://registry.terraform.io/modules/GoogleCloudPlatform/sql-db/google/12.0.0/submodules/postgresql
 module "postgresql" {
   source     = "GoogleCloudPlatform/sql-db/google//modules/postgresql"
-  version    = "~> 25.2.2"
+  version    = "~> 27.0"
   project_id = var.project
 
   for_each = local.postgres_servers != null ? length(local.postgres_servers) != 0 ? local.postgres_servers : {} : {}
@@ -295,7 +301,7 @@ module "postgresql" {
 
 module "sql_proxy_sa" {
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.4.0"
+  version       = "~> 4.6"
   count         = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
   project_id    = var.project
   prefix        = var.prefix
@@ -307,18 +313,33 @@ module "sql_proxy_sa" {
 module "google_netapp" {
   source = "./modules/google_netapp"
 
-  count = var.storage_type == "ha" && local.storage_type_backend == "netapp" ? 1 : 0
+  # NetApp Volumes is the only supported zone-redundant RWX storage backend for HA.
+  # When storage_type = "ha", NetApp Volumes are always provisioned.
+  # For single-zone / standard deployments, use storage_type = "standard" (Filestore).
+  count = var.storage_type == "ha" ? 1 : 0
 
   prefix             = var.prefix
   region             = local.region
   network            = module.vpc.network_name
+  network_self_link  = module.vpc.network_self_link
   netapp_subnet_cidr = var.netapp_subnet_cidr
   service_level      = var.netapp_service_level
   capacity_gib       = var.netapp_capacity_gib
+  tags               = var.tags
   protocols          = var.netapp_protocols
   volume_path        = "${var.prefix}-${var.netapp_volume_path}"
   allowed_clients    = join(",", [local.gke_subnet_cidr, local.misc_subnet_cidr])
+  # Pass an effective zone list to NetApp module.
+  # If the user does not set default_nodepool_locations and FLEX is selected,
+  # provide a second zone fallback so NetApp can create a regional (zone-redundant) pool.
+  default_nodepool_locations = ((var.default_nodepool_locations != "" && var.default_nodepool_locations != null) ? var.default_nodepool_locations : (var.netapp_service_level == "FLEX" ? join(",", compact([local.zone, try([for z in data.google_compute_zones.available.names : z if z != local.zone][0], null)])) : local.zone))
   depends_on         = [ module.gke ]
+
+  # DNS abstraction for zone-redundant endpoint
+  enable_netapp_dns     = var.enable_netapp_dns
+  netapp_dns_zone_name  = var.netapp_dns_zone_name
+  netapp_dns_hostname   = var.netapp_dns_hostname
+  netapp_dns_record_ttl = var.netapp_dns_record_ttl
 
   community_netapp_networking_components_enabled = var.community_netapp_networking_components_enabled
 }

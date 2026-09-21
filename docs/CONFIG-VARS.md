@@ -17,8 +17,9 @@ Supported configuration variables are listed in the table below.  All variables 
     - [Additional Nodepools](#additional-nodepools)
   - [Storage](#storage)
     - [For `storage_type=standard` only (NFS server VM)](#for-storage_typestandard-only-nfs-server-vm)
-    - [For `storage_type=ha` with Google Filestore](#for-storage_typeha-with-google-filestore)
+    - [For `storage_type=standard` with Google Filestore](#for-storage_typestandard-with-google-filestore)
     - [For `storage_type=ha` with Google NetApp Volumes](#for-storage_typeha-with-google-netapp-volumes)
+      - [Google NetApp Volumes — Zone Redundancy Limitations](#google-netapp-volumes--zone-redundancy-limitations)
   - [Google Artifact Registry (GAR) and Google Container Registry (GCR)](#google-artifact-registry-gar-and-google-container-registry-gcr)
   - [Postgres Servers](#postgres-servers)
   - [Monitoring](#monitoring)
@@ -68,13 +69,15 @@ You can use `default_public_access_cidrs` to set a default range for all created
 | gke_service_subnet_cidr | Secondary address space in the GKE subnet for Kubernetes Services | string | "10.1.0.0/22" | This variable is ignored when `subnet_names` is set (aka bring your own subnets) |
 | gke_control_plane_subnet_cidr |  Address space for the hosted primary subnet | string | "10.2.0.0/28" | When providing your own subnets (by setting `subnet_names` make sure your subnets do not overlap this range  |
 | misc_subnet_cidr | Address space for the the auxiliary resources (Jump VM and optionally NFS VM) subnet | string | "192.168.2.0/24" | This variable is ignored when `subnet_names` is set (aka bring your own subnet) |
-| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="ha"` |
+| filestore_subnet_cidr | Address space for Google Filestore subnet | string | "192.168.3.0/29" | Needs to be at least a /29 range. Only used when `storage_type="standard"` and `storage_type_backend="filestore"`. |
 | database_subnet_cidr | Address space for Google Cloud SQL Postgres subnet | string | "192.168.4.0/23" | Only used with external postgres |
-| netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.5.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"` and `storage_type_backend="netapp"` |
+| netapp_subnet_cidr | Address space for Google Cloud NetApp Volumes subnet | string | "192.168.6.0/24" | Needs to be at least a /24 range. Only used when `storage_type="ha"`. Default changed from 192.168.5.0/24 to avoid overlap with database_subnet_cidr (192.168.4.0/23). |
+| gke_network_policy | Sets up network policy to be used with GKE CNI. Network policy allows us to control the traffic flow between pods. | string | false | Supported values are true (calico) and false (kubenet). |
+
 
 ### Use Existing
 
-If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need a private subnet for the GKE nodes and a public subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing).
+If desired, you can deploy into an existing VPC, use existing subnets, and provide an existing Cloud NAT IP address. You will need one subnet for the GKE nodes and another subnet for the Jump VM and (if used) the NFS VM. The GKE subnet requires two secondary CIDR ranges for the Kubernetes Pods and Services (see https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing).
 
 The existing subnets need to match the same region given in the `location` variable defined [here](#required-variables)
 
@@ -105,13 +108,13 @@ The application of a Kubernetes version in Google Cloud has some limitations whe
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
 | kubernetes_version | The GKE cluster K8S version | string | "latest" | Valid values depend on the kubernetes_channel and version required, see https://cloud.google.com/kubernetes-engine/docs/release-notes |
-| kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID"; Set "UNSPECIFIED" for no auto-updates |
+| kubernetes_channel | The GKE cluster channel for auto-updates | string | "UNSPECIFIED" | Possible values: "STABLE", "REGULAR", "RAPID", "EXTENDED"; Set "UNSPECIFIED" for no auto-updates |
 | enable_cluster_autoscaling | Per-cluster configuration of [Node Auto-Provisioning](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning) with Cluster Autoscaler to automatically adjust the size of the cluster and create/delete node pools based on the current needs of the cluster's workload | bool | false | This is different from node autoscaling which is controlled by `max_node` & `min_node` in your [node pool definitions](#Nodepools)|
 | cluster_autoscaling_max_cpu_cores | MAX number of cores in the cluster | number | 500 | |
 | cluster_autoscaling_max_memory_gb | MAX number of gb of memory in the cluster | number | 10000 | |
 | cluster_autoscaling_profile | Configuration options for the [Autoscaling profile](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-autoscaler#autoscaling_profiles) feature, which lets you choose whether the cluster autoscaler should optimize for resource utilization or resource availability when deciding to remove nodes from a cluster | string | "BALANCED" | Possible values are: `BALANCED` and `OPTIMIZE_UTILIZATION`. For more details see the [provider argument reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#autoscaling_profile) |
 | create_static_kubeconfig | Allows the user to create a provider / service account based kube config file | bool | true | A value of `false` will default to using the cloud providers mechanism for generating the kubeconfig file. A value of `true` will create a static kubeconfig which utilizes a `Service Account` and `Cluster Role Binding` to provide credentials. |
-| regional | Create a regional GKE control plane | bool | true | If false a zonal GKE control plane is created. **WARNING: changing this after cluster creation is destructive** |
+| regional | Create a regional GKE control plane | bool | false | If false a zonal GKE control plane is created. **WARNING: changing this after cluster creation is destructive** |
 | create_jump_vm | Create bastion host | bool | true | |
 | create_jump_public_ip | Add public ip to jump VM | bool | true | |
 | jump_vm_admin | OS Admin User for the Jump VM | string | "jumpuser" | |
@@ -134,6 +137,7 @@ The application of a Kubernetes version in Google Cloud has some limitations whe
 | default_nodepool_local_ssd_count | Number 375 GB local ssd disks to provision | number | 0 | You can pick up to 24 ssd drives per node |
 | default_nodepool_taints | Taints for the default nodepool VMs | list of strings | [] | |
 | default_nodepool_labels | Labels to add to the default nodepool VMs | map | {} | |
+| default_nodepool_locations | Comma-separated list of zones for the default node pool. Ensures nodes are distributed across multiple zones | string | "" | Use multiple values to enable multi-zone (multi-AZ) deployment for node pools. Example: `default_nodepool_locations = "us-east1-b,us-east1-c,us-east1-d"` |
 
 ### Additional Nodepools
 
@@ -150,6 +154,11 @@ Additional node pools can be created separate from the default nodepool. This is
 | local_ssd_count | Number of 375 GB local ssd disks to provision  | number | |
 | accelerator_count | Number of GPU accelerators associated with this nodepool | number | |
 | accelerator_type | Type of GPU accelerator associated with this nodepool | string | To list the available accelerators in your zone use the following command `gcloud compute accelerator-types list --filter="zone:( <your zone> )"` |
+| node_locations | Optional comma-separated list of zones for this specific nodepool | string | Overrides `nodepools_locations` for that pool. Example: `node_locations = "us-east1-b"` |
+| nodepools_locations | Comma-separated list of zones for additional node pools. Ensures new pools are deployed across multiple zones | string | Use multiple values to enable multi-zone (multi-AZ) deployment for node pools. Example: `nodepools_locations = "us-east1-b,us-east1-c,us-east1-d"` |
+
+Zone selection precedence for additional nodepools is:
+`node_pools.<pool>.node_locations` > `nodepools_locations` > single deployment zone.
 
 The default values for the `node_pools` variable are:
 
@@ -213,8 +222,18 @@ stateful = {
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| storage_type | Type of Storage. Valid Values: "standard", "ha"  | string | "standard" |  "standard" creates NFS server VM, "ha" Google Filestore instance |
-| storage_type_backend | The storage backend for the chosen `storage_type`. | string | If `storage_type=standard` the default is "nfs";<br>If `storage_type=ha` the default is "filestore" | Valid Values: "nfs" if `storage_type=standard`; "filestore" or "netapp" if `storage_type=ha` |
+| storage_type | Type of Storage. Valid Values: "standard", "ha" | string | "standard" | "standard" creates an NFS server VM or Google Filestore instance. "ha" provisions Google NetApp Volumes — supports zone redundancy when using `FLEX` service level. See [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations). |
+| storage_type_backend | The storage backend for the chosen `storage_type`. | string | `"nfs"` | Valid Values: `"nfs"` or `"filestore"` if `storage_type="standard"`; `"netapp"` if `storage_type="ha"`. For `storage_type="ha"`, set `storage_type_backend="netapp"` explicitly. |
+
+### Storage Backend Compatibility Matrix
+
+| `storage_type` | `storage_type_backend` | Result |
+| :--- | :--- | :--- |
+| `standard` | `nfs` (default) | Provisions NFS server VM |
+| `standard` | `filestore` | Provisions Google Filestore |
+| `ha` | `netapp` (required) | Provisions Google NetApp Volumes |
+
+Any other `storage_type` + `storage_type_backend` combination is invalid and fails validation.
 
 ### For `storage_type=standard` only (NFS server VM)
 
@@ -224,7 +243,9 @@ stateful = {
 | nfs_vm_admin | OS Admin User for the NFS server VM | string | "nfsuser" | The NFS server VM is only created when storage_type="standard" |
 | nfs_raid_disk_size | Size in Gb for each disk of the RAID5 cluster on the NFS server VM | number | 1000 | The NFS server VM is only created when storage_type="standard" |
 
-### For `storage_type=ha` with Google Filestore
+### For `storage_type=standard` with Google Filestore
+
+> **Note:** Google Filestore is a **zonal** service with no zone-redundancy. For Multi-Zone HA deployments use `storage_type="ha"` (Google NetApp Volumes) instead.
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
@@ -233,17 +254,45 @@ stateful = {
 
 ### For `storage_type=ha` with Google NetApp Volumes
 
-When `storage_type=ha` and `storage_type_backend=netapp` are specified, [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview) service is created. Before using this storage option,
+When `storage_type=ha`, configure `storage_type_backend=netapp` to satisfy input validation and provision [Google NetApp Volumes](https://cloud.google.com/netapp/volumes/docs/discover/overview). Before using this storage option,
 - Enable the Google Cloud NetApp Volumes API for your project, see how to enable [here](https://cloud.google.com/netapp/volumes/docs/get-started/configure-access/initiate-console-settings#enable_the_api).
 - Grant access to NetApp Volumes operations by granting IAM roles to users. The two predefined roles are `roles/netapp.admin` and `roles/netapp.viewer`. You can assign these roles to specific users or service accounts.
 - NetApp Volumes is available in several regions. For details about region availability, see [NetApp Volumes locations](https://cloud.google.com/netapp/volumes/docs/locations).
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| netapp_service_level | The service level of the storage pool. | string | "PREMIUM" | Valid Values are: PREMIUM, EXTREME, STANDARD, FLEX. |
-| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV3"] | Each value may be one of: NFSV3, NFSV4, SMB. Currently, only NFSV3 is supported by SAS Viya Platform. |
+| netapp_service_level | The service level of the storage pool. | string | "STANDARD" | Valid Values: PREMIUM, EXTREME, STANDARD, FLEX. Service-level availability is region-dependent and enforced by Google Cloud NetApp Volumes. Only `FLEX` supports zone-redundant (regional) pools — see [zone redundancy limitations](#google-netapp-volumes--zone-redundancy-limitations) below. `FLEX` pools are always provisioned as Flex Unified (`type=UNIFIED`); Google no longer allows creating new Flex File pools. |
+| netapp_protocols | The target volume protocol expressed as a list. | list(string) | ["NFSV4_1"] | Valid values: NFSV3, NFSV4, SMB. Default: NFSV4_1. |
 | netapp_capacity_gib | Capacity of the storage pool (in GiB). Storage Pool capacity specified must be between 2048 GiB and 10485760 GiB. | string | "2048" | |
 | netapp_volume_path | A unique file path for the volume. Used when creating mount targets. Needs to be unique per location.| string | | |
+| enable_netapp_dns | Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Provides stable DNS hostname for Cross-Zone Replication failover scenarios. | bool | false | Only applicable for multi-zone HA deployments with NetApp Volumes. When enabled, the `rwx_filestore_endpoint` output will return a DNS hostname instead of an IP address. |
+| netapp_dns_zone_name | Name for the Private DNS zone for NetApp endpoint. | string | "netapp-private.internal" | Only used when `enable_netapp_dns=true`. |
+| netapp_dns_hostname | DNS hostname for the NetApp volume endpoint. | string | "netapp-volume" | Only used when `enable_netapp_dns=true`. Must be a valid DNS hostname (lowercase alphanumeric and hyphens only). |
+| netapp_dns_record_ttl | TTL in seconds for the DNS A record. | number | 300 | Only used when `enable_netapp_dns=true`. Must be between 60 and 86400 seconds (1 minute to 1 day). |
+
+For additional background, see [Understanding NFS Mount Options for SAS Viya on Kubernetes](https://communities.sas.com/t5/SAS-Communities-Library/Understanding-NFS-Mount-Options-for-SAS-Viya-on-Kubernetes/ta-p/989121).
+
+### Google NetApp Volumes — Zone Redundancy Limitations
+
+> **Important:** Per [GCP documentation](https://docs.cloud.google.com/netapp/volumes/docs/configure-and-use/storage-pools/overview#availability), zone-redundant (regional) storage pools are **only** supported by the **`FLEX`** service level (Flex Unified and Flex File). `STANDARD`, `PREMIUM`, and `EXTREME` service levels are **zonal only** and do not support regional/zone-redundant pools.
+
+To enable zone redundancy, set `netapp_service_level = "FLEX"` and ensure `default_nodepool_locations` contains at least 2 zones. Service-level availability is determined by Google Cloud and can vary by region over time. If you omit multi-zone node locations (or provide a single zone), `storage_type="ha"` remains valid and behaves as single-zone NetApp.
+
+| Service Level | Zone Redundancy (Regional Pool) | Notes |
+| :--- | :--- | :--- |
+| `FLEX` | **Yes** — zonal or regional | Set `default_nodepool_locations` to 2+ zones to activate |
+| `STANDARD` | **No** — zonal only | Cross-region volume replication only |
+| `PREMIUM` | **No** — zonal only | Cross-region volume replication only |
+| `EXTREME` | **No** — zonal only | Cross-region volume replication only |
+
+To verify which service levels are available in your region, consult the Google NetApp Volumes supported regions documentation or run:
+```bash
+gcloud netapp locations describe <region> --project=<project-id>
+```
+
+### RWO Block Storage (RabbitMQ / Crunchy Postgres)
+
+> **Note:** The RWO block StorageClasses for RabbitMQ (`pd-ssd-mq`) and Crunchy Postgres (`pd-ssd-pg`) are created by [viya4-deployment](https://github.com/sassoftware/viya4-deployment), not by this IaC project. These classes provision **zonal** Persistent Disks by default and are not zone-redundant. In multi-zone GKE deployments, if zone-redundant RWO block storage is required, set `V4_CFG_MANAGE_STORAGE = false` in viya4-deployment and pre-create your own StorageClasses with `replication-type: regional-pd`. See the [GCP Regional Persistent Disk documentation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk) and the [Multi-Zone Deployment Guide](user/Multi-ZoneDeploymentGuide.md#rwo-block-storage-in-multi-zone-deployments) for details.
 
 ## Google Artifact Registry (GAR) and Google Container Registry (GCR)
 
@@ -269,6 +318,8 @@ postgres_servers = {
 
 **NOTE**: The `default = {}` elements is always required when creating external databases. This is the systems default database server.
 
+For multi-zone SAS Viya deployments, an external PostgreSQL instance created by this IaC should set `availability_type = "REGIONAL"`. The default PostgreSQL configuration is `ZONAL`, which is suitable for single-zone deployments only.
+
 Each server element, like `foo = {}`, can contain none, some, or all of the parameters listed below. The `machine_type` and `edition` parameters must be explicitly specified and will be validated based on the `server_version`:
 
 - For PostgreSQL 16+:
@@ -284,16 +335,16 @@ If you provide an empty block for default, the following default values will be 
 terraform
 postgres_servers = {
   default = {
-    server_version = "15"
-    edition        = "ENTERPRISE"
-    machine_type   = "db-custom-4-16384"
+    server_version = "16"
+    edition        = "ENTERPRISE_PLUS"
+    machine_type   = "db-perf-optimized-N-8"
   }
 }
 
 | Name | Description | Type | Default | Notes |
 | :--- | ---: | ---: | ---: | ---: |
-| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-custom-4-16384" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |
-| edition | Cloud SQL edition type | string | "ENTERPRISE" | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
+| machine_type| The machine type for the PostgreSQL server VMs" | string | "db-perf-optimized-N-8" | Google Cloud Postgres supports only shared-core machine types such as db-f1-micro, and custom machine types such as db-custom-2-13312. Must match the PostgreSQL version requirements. |
+| edition | Cloud SQL edition type | string | "ENTERPRISE_PLUS" | Must be `"ENTERPRISE"` for PostgreSQL < 16 or `"ENTERPRISE_PLUS"` for PostgreSQL 16+. |
 | storage_gb | Minimum storage allowed for the PostgreSQL server | number | 128 | |
 | backups_enabled | Enables postgres backups | bool | true | |
 | backups_start_time | Start time for postgres backups | string | "21:00" | |
@@ -302,9 +353,9 @@ postgres_servers = {
 | backup_count | The number of automated backups to retain, from 1 to 365 | string | "7" | Take note this is a **COUNT** not number of days |
 | administrator_login | The Administrator Login for the PostgreSQL Server. Changing this forces a new resource to be created. | string | "pgadmin" | | |
 | administrator_password | The Password associated with the administrator_login for the PostgreSQL Server | string | "my$up3rS3cretPassw0rd" |  |
-| server_version | The version of the  PostgreSQL server instance | string | "15" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
+| server_version | The version of the  PostgreSQL server instance | string | "16" | Refer to the [SAS Viya Platform Administration Guide](https://documentation.sas.com/?cdcId=sasadmincdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#p1wq8ouke3c6ixn1la636df9oa1u) for the supported versions of PostgreSQL for the SAS Viya platform. |
 | ssl_enforcement_enabled | Enforce SSL on connection to the PostgreSQL database | bool | true | |
-| availability_type | The availability type for the primary instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. |
+| availability_type | The availability type for the primary instance. | string | "ZONAL" | This is only used to set up high availability for the PostgreSQL instance. Can be either `ZONAL` or `REGIONAL`. Use `REGIONAL` for multi-zone SAS Viya deployments. |
 | database_flags | Database flags for the primary instance. | list(object({})) |  | More details can be found [here](https://cloud.google.com/sql/docs/postgres/flags) |
 
 Multiple SAS offerings require a second PostgreSQL instance referred to as SAS Common Data Store, or CDS PostgreSQL. For more information, see [Common Customizations](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#p0wkxxi9s38zbzn19ukjjaxsc0kl). A list of SAS offerings that require CDS PostgreSQL is provided in [SAS Common Data Store Requirements](https://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=itopssr&docsetTarget=p05lfgkwib3zxbn1t6nyihexp12n.htm#n03wzanutmc6gon1val5fykas9aa). To create and configure an external CDS PostgreSQL instance in addition to the external platform PostgreSQL instance named `default`, specify `cds-postgres` as a second PostgreSQL instance, as shown in the example below.

@@ -30,14 +30,15 @@ postgres_servers = {
 kubernetes_version         = "1.35"
 default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
+gke_network_policy = true
 
 # Node Pools config
 node_pools = {
   cas = {
     "vm_type"      = "n2-highmem-16"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 3
+    "min_nodes"    = 1
+    "max_nodes"    = 5
     "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "cas"
@@ -49,8 +50,8 @@ node_pools = {
   compute = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 3
+    "min_nodes"    = 1
+    "max_nodes"    = 5
     "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class"        = "compute"
@@ -63,8 +64,8 @@ node_pools = {
   stateless = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 4
+    "min_nodes"    = 1
+    "max_nodes"    = 5
     "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "stateless"
@@ -76,13 +77,26 @@ node_pools = {
   stateful = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 4
+    "min_nodes"    = 1
+    "max_nodes"    = 3
     "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "stateful"
     }
     "local_ssd_count"   = 0
+    "accelerator_count" = 0
+    "accelerator_type"  = ""
+  },
+  singlestore = {
+    "vm_type" = "n2-highmem-16"
+    "os_disk_size" = 200
+    "min_nodes" = 2
+    "max_nodes" = 7
+    "node_taints" = ["workload.sas.com/class=singlestore:NoSchedule"]
+    "node_labels" = {
+      "workload.sas.com/class" = "singlestore"
+    }
+    "local_ssd_count"   = 2
     "accelerator_count" = 0
     "accelerator_type"  = ""
   }

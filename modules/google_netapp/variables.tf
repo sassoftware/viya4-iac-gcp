@@ -11,6 +11,12 @@ variable "region" {
   type        = string
 }
 
+variable "tags" {
+  description = "Map of labels to apply to supported resources in this module"
+  type        = map(any)
+  default     = {}
+}
+
 variable "service_level" {
   description = "Service level of the storage pool. Possible values are: PREMIUM, EXTREME, STANDARD, FLEX."
   type        = string
@@ -18,9 +24,9 @@ variable "service_level" {
 }
 
 variable "protocols" {
-  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, SMB."
+  description = "The target volume protocol expressed as a list. Allowed combinations are ['NFSV3'], ['NFSV4'], ['NFSV4_1'], ['SMB'], ['NFSV3', 'NFSV4'], ['SMB', 'NFSV3'] and ['SMB', 'NFSV4']. Each value may be one of: NFSV3, NFSV4, NFSV4_1, SMB."
   type        = list(string)
-  default     = ["NFSV3"]
+  default     = ["NFSV4_1"]
 }
 
 variable "capacity_gib" {
@@ -40,6 +46,10 @@ variable "network" {
   type        = string
 }
 
+variable "network_self_link" {
+  description = "Full self-link URL of the VPC network for DNS private visibility config"
+  type        = string
+}
 
 variable "allowed_clients" {
   description = "CIDR blocks allowed to mount nfs exports"
@@ -53,9 +63,42 @@ variable "netapp_subnet_cidr" {
   default     = "192.168.5.0/24"
 }
 
+variable "default_nodepool_locations" {
+  description = "Comma-separated list of default node pool locations"
+  type        = string
+
+  validation {
+    condition     = length([for zone in split(",", var.default_nodepool_locations) : trimspace(zone) if trimspace(zone) != ""]) > 0
+    error_message = "default_nodepool_locations must contain at least one zone."
+  }
+}
+
 # Community Contribution
 variable "community_netapp_networking_components_enabled" {
   description = "Community Contribution. Enable/Disable the deployment of Networking components for Netapp resources. Enabled by default."
   type        = bool
   default     = true
+}
+variable "enable_netapp_dns" {
+  description = "Enable Private DNS zone and A record for zone-redundant NetApp endpoint. Only applicable for multi-zone HA deployments with FLEX service level."
+  type        = bool
+  default     = false
+}
+
+variable "netapp_dns_zone_name" {
+  description = "Name for the Private DNS zone for NetApp endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-private.internal"
+}
+
+variable "netapp_dns_hostname" {
+  description = "DNS hostname for the NetApp volume endpoint. Only used when enable_netapp_dns=true."
+  type        = string
+  default     = "netapp-volume"
+}
+
+variable "netapp_dns_record_ttl" {
+  description = "TTL in seconds for the DNS A record. Only used when enable_netapp_dns=true."
+  type        = number
+  default     = 300
 }
