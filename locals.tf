@@ -26,10 +26,13 @@ locals {
   )
 
   # Storage
+  # storage_type = "standard" defaults to "nfs" VM. Optional override: "filestore".
+  # storage_type = "ha" always maps to "netapp" (zone-redundant, required for Multi-Zone).
+  # NOTE: Filestore is ZONAL and does NOT provide zone-redundant storage.
+  #       For Multi-Zone HA deployments, always use storage_type = "ha" (NetApp Volumes).
   storage_type_backend = (var.storage_type == "none" ? "none"
-    : var.storage_type == "standard" ? "nfs"
-    : var.storage_type == "ha" && var.storage_type_backend == "netapp" ? "netapp"
-  : var.storage_type == "ha" ? "filestore" : "none")
+    : var.storage_type == "standard" ? (lower(var.storage_type_backend) == "filestore" ? "filestore" : "nfs")
+  : var.storage_type == "ha" ? "netapp" : "none")
 
   # Kubernetes
   kubeconfig_path = var.iac_tooling == "docker" ? "/workspace/${var.prefix}-gke-kubeconfig.conf" : "${var.prefix}-gke-kubeconfig.conf"
@@ -55,7 +58,21 @@ locals {
       vm_type            = settings.vm_type
       node_taints        = settings.accelerator_count > 0 ? concat(settings.node_taints, ["nvidia.com/gpu=present:NoSchedule"]) : settings.node_taints
       initial_node_count = max(local.initial_node_count, settings.min_nodes)
-      node_locations     = var.nodepools_locations != "" && var.nodepools_locations != null ? var.nodepools_locations : local.zone
+      # Per-nodepool zone control :
+      # 1. Use node_locations from the nodepool's own settings if set
+      # 2. Fall back to global nodepools_locations if set
+      # 3. Fall back to single local.zone
+      node_locations = (
+        var.storage_type != "ha"
+        ? local.zone
+        : (settings.node_locations != null && settings.node_locations != ""
+          ? settings.node_locations
+          : (var.nodepools_locations != "" && var.nodepools_locations != null
+            ? var.nodepools_locations
+            : local.zone
+          )
+        )
+      )
     }
   }
 
@@ -66,12 +83,12 @@ locals {
       "min_nodes"          = var.default_nodepool_min_nodes
       "max_nodes"          = var.default_nodepool_max_nodes
       "node_taints"        = var.default_nodepool_taints
-      "node_labels"        = merge(var.tags, var.default_nodepool_labels, { "kubernetes.azure.com/mode" = "system" })
+      "node_labels"        = merge(var.tags, var.default_nodepool_labels)
       "local_ssd_count"    = var.default_nodepool_local_ssd_count
       "accelerator_count"  = 0
       "accelerator_type"   = ""
       "initial_node_count" = var.default_nodepool_min_nodes
-      "node_locations"     = var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone
+      "node_locations"     = var.storage_type != "ha" ? local.zone : (var.default_nodepool_locations != "" && var.default_nodepool_locations != null ? var.default_nodepool_locations : local.zone)
     }
   })
 

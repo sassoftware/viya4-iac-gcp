@@ -22,9 +22,10 @@ tags = {} # e.g., { "key1" = "value1", "key2" = "value2" }
 # Postgres config - By having this entry a database server is created. If you do not
 #                   need an external database server remove the 'postgres_servers'
 #                   block below.
+
 postgres_servers = {
   default = {},
-}
+},
 
 # GKE config
 kubernetes_version         = "1.35"
@@ -32,25 +33,34 @@ default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
 
 # Node Pools config
+# ****************  OPTIONAL CAS CONFIGURATION  ****************
+# This configuration is optimized for SAS Viya Programming-only deployments.
+# 
+#
+# Keep the cas block commented out (no CAS node pool created)
+#    - No CAS node pool created
+#    - CAS cannot be deployed without infrastructure changes
+#
+# ******************************************************************
 node_pools = {
-  cas = {
-    "vm_type"      = "n2-highmem-16"
-    "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 3
-    "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
-    "node_labels" = {
-      "workload.sas.com/class" = "cas"
-    }
-    "local_ssd_count"   = 2
-    "accelerator_count" = 0
-    "accelerator_type"  = ""
-  },
+#  cas = {
+#    "vm_type"      = "n2-highmem-16"
+#    "os_disk_size" = 200
+#    "min_nodes"    = 1
+#    "max_nodes"    = 1
+#    "node_taints"  = ["workload.sas.com/class=cas:NoSchedule"]
+#    "node_labels" = {
+#      "workload.sas.com/class" = "cas"
+#    }
+#    "local_ssd_count"   = 2
+#    "accelerator_count" = 0
+#    "accelerator_type"  = ""
+#  },
   compute = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 3
+    "min_nodes"    = 1
+    "max_nodes"    = 1
     "node_taints"  = ["workload.sas.com/class=compute:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class"        = "compute"
@@ -63,7 +73,7 @@ node_pools = {
   stateless = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
+    "min_nodes"    = 1
     "max_nodes"    = 4
     "node_taints"  = ["workload.sas.com/class=stateless:NoSchedule"]
     "node_labels" = {
@@ -76,8 +86,8 @@ node_pools = {
   stateful = {
     "vm_type"      = "n2-highmem-4"
     "os_disk_size" = 200
-    "min_nodes"    = 2
-    "max_nodes"    = 4
+    "min_nodes"    = 1
+    "max_nodes"    = 2
     "node_taints"  = ["workload.sas.com/class=stateful:NoSchedule"]
     "node_labels" = {
       "workload.sas.com/class" = "stateful"
@@ -87,17 +97,14 @@ node_pools = {
     "accelerator_type"  = ""
   }
 }
+
 # Jump Box
 create_jump_public_ip = true
 jump_vm_admin         = "jumpuser"
 
-# Storage for Viya Compute Services
-# Supported storage_type values
-#    "standard" - Custom managed NFS Server VM and disks (ZONAL - single zone only)
-#    "ha"       - Google NetApp Volumes (Zone-Redundant)
-#
-# IMPORTANT: Google Filestore is a ZONAL service and does NOT provide zone-redundant storage.
-#            For HA / Multi-Zone deployments, storage_type = "ha" provisions Google NetApp Volumes.
-#            Do NOT use storage_type = "ha" expecting Google Filestore as an HA backend.
-storage_type = "ha"
-storage_type_backend = "netapp" # Required when storage_type = "ha"
+# Storage for SAS Viya CAS/Compute
+storage_type = "standard"
+# required ONLY when storage_type is "standard" to create NFS Server VM
+create_nfs_public_ip = false
+nfs_vm_admin         = "nfsuser"
+nfs_raid_disk_size   = 1000

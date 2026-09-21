@@ -19,6 +19,7 @@ import (
 
 var lock = &sync.Mutex{}
 var CACHE *PlanCache
+var credentialsLock sync.Mutex
 var credentialsFile string
 var credentialsContents map[string]string
 
@@ -72,6 +73,10 @@ func GetPlan(t *testing.T, variables map[string]interface{}) *terraform.PlanStru
 
 // Validate that the credentials file exists
 func GetCredentials(t *testing.T) (string, map[string]string, error) {
+	// Guard against concurrent map writes when tests call this in parallel (t.Parallel())
+	credentialsLock.Lock()
+	defer credentialsLock.Unlock()
+
 	if credentialsFile != "" {
 		return credentialsFile, credentialsContents, nil
 	}
@@ -142,7 +147,7 @@ func GetDefaultPlanVars(t *testing.T) map[string]interface{} {
 	variables["default_public_access_cidrs"] = []string{"123.45.67.89/16"}
 	variables["project"] = credsFileContents["project_id"]
 	variables["service_account_keyfile"] = "/.viya4-tf-gcp-service-account.json"
-	variables["kubernetes_version"] = "1.32"
+	variables["kubernetes_version"] = "1.35"
 
 	return variables
 }

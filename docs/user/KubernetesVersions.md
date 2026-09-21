@@ -153,6 +153,8 @@ channels:
 
 From this example output if you are looking to create a kubernetes cluster with v1.25 then you would choose the 'RAPID' channel.
 
+Similarly, if your target version appears under the 'EXTENDED' channel, set the channel to `EXTENDED`. This is useful when you need older supported versions for long-term support testing.
+
 From here you would set the `kubernetes_channel` variable in your tfvars files like this:
 
 ```terraform

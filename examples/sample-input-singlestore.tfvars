@@ -27,9 +27,10 @@ postgres_servers = {
 }
 
 # GKE config
-kubernetes_version         = "1.32"
+kubernetes_version         = "1.35"
 default_nodepool_min_nodes = 2
 default_nodepool_vm_type   = "n2-highmem-8"
+gke_network_policy = true
 
 # Node Pools config
 node_pools = {
@@ -106,7 +107,11 @@ jump_vm_admin         = "jumpuser"
 
 # Storage for Viya Compute Services
 # Supported storage_type values
-#    "standard" - Custom managed NFS Server VM and disks
-#    "ha"       - Google Filestore  or Google NetApp Volumes
+#    "standard" - Custom managed NFS Server VM and disks (ZONAL - single zone only)
+#    "ha"       - Google NetApp Volumes (Zone-Redundant)
+#
+# IMPORTANT: Google Filestore is a ZONAL service and does NOT provide zone-redundant storage.
+#            For HA / Multi-Zone deployments, storage_type = "ha" provisions Google NetApp Volumes.
+#            Do NOT use storage_type = "ha" expecting Google Filestore as an HA backend.
 storage_type = "ha"
-storage_type_backend = "filestore"  # "filestore" is the default, use "netapp" to create Google NetApp Volumes
+storage_type_backend = "netapp" # Required when storage_type = "ha"

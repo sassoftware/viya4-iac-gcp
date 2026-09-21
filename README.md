@@ -27,7 +27,7 @@ This project contains Terraform scripts to provision Google Cloud infrastructure
   >- Managed Google Kubernetes Engine (GKE) cluster
   >- System and User GKE Node pools with required Labels and Taints
   >- Infrastructure to deploy SAS Viya platform CAS in SMP or MPP mode
-  >- Shared Storage options for SAS Viya platform -  Google Filestore (ha), Google NetApp Volumes (ha) or NFS Server (standard)
+  >- Shared Storage options for SAS Viya platform - NFS Server or Google Filestore (`storage_type="standard"`) and Google NetApp Volumes (`storage_type="ha"`)
   >- Google Cloud SQL for PostgreSQL instance, optional
 
 [<img src="./docs/images/viya4-iac-gcp-diag.png" alt="Architecture Diagram" width="750"/>](./docs/images/viya4-iac-gcp-diag.png?raw=true)
@@ -51,7 +51,7 @@ Operational knowledge of
 - Terraform or Docker
   - #### Terraform
     - [Terraform](https://www.terraform.io/downloads.html) - v1.10.5
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.32.6
+    - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) - v1.35.6
     - [jq](https://stedolan.github.io/jq/) - v1.7
     - [gcloud CLI](https://cloud.google.com/sdk/gcloud) - (optional - useful as an alternative to the Google Cloud Platform Portal) - v513.0.0
     - [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin) - (optional - only for provider based Kubernetes configuration files) - >= v1.26
