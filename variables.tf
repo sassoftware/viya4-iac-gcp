@@ -290,7 +290,9 @@ variable "default_nodepool_taints" {
 variable "default_nodepool_labels" {
   description = "Labels to add to the default nodepool VMs"
   type        = map(any)
-  default     = {}
+  default     = {
+    "kubernetes.azure.com/mode" = "system"
+  }
 }
 
 # Multi-zonal cluster support - Experimental - may change, use at your own risk
