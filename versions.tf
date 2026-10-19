@@ -23,7 +23,7 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7.1" # Constrained by Google
+      version = "~> 3.9.1" # Constrained by Google
     }
     null = {
       source  = "hashicorp/null"
