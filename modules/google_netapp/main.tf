@@ -68,8 +68,7 @@ resource "google_netapp_storage_pool" "netapp-tf-pool" {
 
 resource "google_netapp_volume" "netapp-nfs-volume" {
   location = var.region
-  # volume_id only allows lowercase letters, numbers, and underscores (no hyphens)
-  name             = replace("${var.prefix}-netapp-volume", "-", "_")
+  name             = "${var.prefix}-netapp-volume"
   capacity_gib     = var.capacity_gib # Size can be up to space available in pool
   share_name       = var.volume_path
   storage_pool     = google_netapp_storage_pool.netapp-tf-pool.name
