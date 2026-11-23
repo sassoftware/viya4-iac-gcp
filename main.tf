@@ -301,7 +301,7 @@ module "postgresql" {
 
 module "sql_proxy_sa" {
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.6"
+  version       = "~> 5.1"
   count         = var.postgres_servers != null ? length(var.postgres_servers) != 0 ? 1 : 0 : 0
   project_id    = var.project
   prefix        = var.prefix
